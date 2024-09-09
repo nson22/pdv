@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html data-bs-theme="light">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+        integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+    <title>PJ Variedades | Tudo para sua casa</title>
+    <base target="_top">
+</head>
+
+<body>
+    <header class="bg-dark text-light d-flex align-items-center fixed-top" style="height: 80px;">
+        <div class="container  ">
+            <div class="row ">
+                <div class="col-10">
+                    <div class="input-group input-group-lg">
+                        <input type="text" class="form-control" placeholder="Procure por código ou nome do produto"
+                            list="products">
+                        <button class="btn btn-info btn-lg" type="button"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="d-grid col-2 mx-auto">
+                    <button class="btn btn-success btn-lg" type="button" data-bs-toggle="modal"
+                        data-bs-target="#staticBackdrop"><i class="fa-solid fa-cash-register"></i></button>
+                </div>
+            </div>
+        </div>
+    </header>
+    <main class="vh-100 d-flex align-items-start py-5 mt-5">
+        <div class="container">
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col">Item</th>
+                        <th scope="col">Código</th>
+                        <th scope="col">Descrição</th>
+                        <th scope="col" style="width: 8rem;">Quantidade</th>
+                        <th scope="col" style="width: 8rem;">Valor (unit)</th>
+                        <th scope="col" style="width: 8rem;">Sub Total</th>
+                    </tr>
+                </thead>
+                <tbody class="scrollable-body">
+                    <tr>
+                        <th scope="row">1</th>
+                        <th><kbd>7896396109181</kbd></th>
+                        <td><label>Toalha de geladeira com 3 pçs ref 918</label></td>
+                        <td><input type="number" min="1" placeholder="0"></td>
+                        <td><input required data-currency="currency" placeholder="R$ 0,00" />
+                        <td><input required disabled placeholder="R$ 0,00" />
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+            aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Metodos de pagamentos</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="radio" class="btn-check" name="payment-options" id="pix-outlined"
+                            autocomplete="off" checked>
+                        <label class="btn btn-outline-secondary" for="pix-outlined"><i class="fa-brands fa-pix"></i> PIX</label>
+
+                        <input type="radio" class="btn-check" name="payment-options" id="credit-outlined"
+                            autocomplete="off">
+                        <label class="btn btn-outline-secondary" for="credit-outlined"><i class="fa-solid fa-credit-card"></i> Crédito</label>
+
+                        <input type="radio" class="btn-check" name="payment-options" id="debit-outlined"
+                            autocomplete="off">
+                        <label class="btn btn-outline-secondary" for="debit-outlined"><i class="fa-regular fa-credit-card"></i> Débito</label>
+
+                        <input type="radio" class="btn-check" name="payment-options" id="money-outlined"
+                            autocomplete="off">
+                        <label class="btn btn-outline-secondary" for="money-outlined"><i class="fa-solid fa-brazilian-real-sign"></i> Dinheiro</label>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-success">Confirmar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer class="bg-dark text-light d-flex align-items-center fixed-bottom" style="height: 100px;">
+        <div class="container">
+            <div class="row text-center">
+                <h1>Total a pagar: <strong>R$ 25,00</strong></h1>
+            </div>
+        </div>
+    </footer>
+    <!-- <header class="container">
+        <div class="grid">
+            <fieldset role="group">
+                <input type="text" id="search" placeholder="Procure por código ou nome do produto" list="products">
+                <datalist id="products"></datalist>
+                <option value="7896396109181 - Toalha de geladeira com 3 pçs ref 918"></option>
+                <option value="AVULSO - Jogo de pratos"></option>
+                </datalist>
+                <button data-tooltip="Adicionar produto" data-placement="bottom" data-target="add_item"
+                    onclick="addItems(event)"><i class="fa-solid fa-plus"></i></button>
+            </fieldset>
+            <button data-tooltip="Fechar venda" data-placement="bottom" class="pico-background-jade-500"
+                data-target="modal_payments" onclick="toggleModal(event)"><i class="fa-solid fa-cash-register"></i>
+            </button>
+        </div>
+    </header>
+    <main class="container">
+        <section>
+            <div class="overflow-auto">
+                <table class="striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Item</th>
+                            <th scope="col">Código</th>
+                            <th scope="col">Descrição</th>
+                            <th scope="col" style="width: 8rem;">Quantidade</th>
+                            <th scope="col" style="width: 8rem;">Valor (unit)</th>
+                            <th scope="col" style="width: 8rem;">Sub Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>1</th>
+                            <th scope="row"><kbd>7896396109181</kbd></th>
+                            <td><label>Toalha de geladeira com 3 pçs ref 918</label></td>
+                            <td><input type="number" min="1" value="1"></td>
+                            <td><input required data-currency="currency" placeholder="R$ 0,00" />
+                            <td><input required disabled placeholder="R$ 0,00" />
+                        </tr>
+                        <tr>
+                            <th>1</th>
+                            <th scope="row"><kbd class="pico-background-yellow-100">AVULSO</kbd></th>
+                            <td><label>Jogo de pratos</label></td>
+                            <td><input type="number" min="1" value="1"></td>
+                            <td><input required data-currency="currency" placeholder="R$ 0,00" />
+                            <td><input required disabled placeholder="R$ 0,00" />
+                        </tr>
+                        <tr>
+                            <th>1</th>
+                            <th scope="row"><kbd>7896396109181</kbd></th>
+                            <td><label>Toalha de geladeira com 3 pçs ref 918</label></td>
+                            <td><input type="number" min="1" value="1"></td>
+                            <td><input required data-currency="currency" placeholder="R$ 0,00" />
+                            <td><input required disabled placeholder="R$ 0,00" />
+                        </tr>
+                        <tr>
+                            <th>1</th>
+                            <th scope="row"><kbd class="pico-background-yellow-100">AVULSO</kbd></th>
+                            <td><label>Jogo de pratos</label></td>
+                            <td><input type="number" min="1" value="1"></td>
+                            <td><input required data-currency="currency" placeholder="R$ 0,00" />
+                            <td><input required disabled placeholder="R$ 0,00" />
+                        </tr>
+                        <tr>
+                            <th>1</th>
+                            <th scope="row"><kbd>7896396109181</kbd></th>
+                            <td><label>Toalha de geladeira com 3 pçs ref 918</label></td>
+                            <td><input type="number" min="1" value="1"></td>
+                            <td><input required data-currency="currency" placeholder="R$ 0,00" />
+                            <td><input required disabled placeholder="R$ 0,00" />
+                        </tr>
+                        <tr>
+                            <th>1</th>
+                            <th scope="row"><kbd class="pico-background-yellow-100">AVULSO</kbd></th>
+                            <td><label>Jogo de pratos</label></td>
+                            <td><input type="number" min="1" value="1"></td>
+                            <td><input required data-currency="currency" placeholder="R$ 0,00" />
+                            <td><input required disabled placeholder="R$ 0,00" />
+                        </tr>
+                        <tr>
+                            <th>1</th>
+                            <th scope="row"><kbd>7896396109181</kbd></th>
+                            <td><label>Toalha de geladeira com 3 pçs ref 918</label></td>
+                            <td><input type="number" min="1" value="1"></td>
+                            <td><input required data-currency="currency" placeholder="R$ 0,00" />
+                            <td><input required disabled placeholder="R$ 0,00" />
+                        </tr>
+                        <tr>
+                            <th>1</th>
+                            <th scope="row"><kbd class="pico-background-yellow-100">AVULSO</kbd></th>
+                            <td><label>Jogo de pratos</label></td>
+                            <td><input type="number" min="1" value="1"></td>
+                            <td><input required data-currency="currency" placeholder="R$ 0,00" />
+                            <td><input required disabled placeholder="R$ 0,00" />
+                        </tr>
+                        <tr>
+                            <th>1</th>
+                            <th scope="row"><kbd>7896396109181</kbd></th>
+                            <td><label>Toalha de geladeira com 3 pçs ref 918</label></td>
+                            <td><input type="number" min="1" value="1"></td>
+                            <td><input required data-currency="currency" placeholder="R$ 0,00" />
+                            <td><input required disabled placeholder="R$ 0,00" />
+                        </tr>
+                        <tr>
+                            <th>1</th>
+                            <th scope="row"><kbd class="pico-background-yellow-100">AVULSO</kbd></th>
+                            <td><label>Jogo de pratos</label></td>
+                            <td><input type="number" min="1" value="1"></td>
+                            <td><input required data-currency="currency" placeholder="R$ 0,00" />
+                            <td><input required disabled placeholder="R$ 0,00" />
+                        </tr>
+                        <tr>
+                            <th>1</th>
+                            <th scope="row"><kbd>7896396109181</kbd></th>
+                            <td><label>Toalha de geladeira com 3 pçs ref 918</label></td>
+                            <td><input type="number" min="1" value="1"></td>
+                            <td><input required data-currency="currency" placeholder="R$ 0,00" />
+                            <td><input required disabled placeholder="R$ 0,00" />
+                        </tr>
+                        <tr>
+                            <th>1</th>
+                            <th scope="row"><kbd class="pico-background-yellow-100">AVULSO</kbd></th>
+                            <td><label>Jogo de pratos</label></td>
+                            <td><input type="number" min="1" value="1"></td>
+                            <td><input required data-currency="currency" placeholder="R$ 0,00" />
+                            <td><input required disabled placeholder="R$ 0,00" />
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+    <footer class="container ">
+        <div class="register">
+            <strong>Valor total: <kbd>R$ 25.00</kbd></strong>
+        </div>
+        <dialog id="modal_payments">
+            <article>
+                <header>
+                    <button aria-label="Close" rel="prev" data-target="modal_payments"
+                        onclick="toggleModal(event)"></button>
+                    <h4>Método de pagamento</h4>
+                </header>
+                <fieldset>
+                    <input type="radio" id="pix" name="payments" checked />
+                    <label htmlFor="pix"><i class="fa-brands fa-pix"></i> PIX</label>
+                    <input type="radio" id="cc" name="payments" />
+                    <label htmlFor="cc"><i class="fa-solid fa-credit-card"></i> Crédito</label>
+                    <input type="radio" id="dc" name="payments" />
+                    <label htmlFor="dc"><i class="fa-regular fa-credit-card"></i> Débito</label>
+                    <input type="radio" id="money" name="payments" />
+                    <label htmlFor="money"><i class="fa-solid fa-brazilian-real-sign"></i> Dinheiro</label>
+                </fieldset>
+                <input required data-currency="currency" placeholder="Valor" />
+                <button data-target="add_item" onclick="addItems(event)"><i class="fa-solid fa-plus"></i> Adicionar
+                    método</button>
+                <footer>
+                    <button role="button" class="pico-background-red-500" data-target="modal_payments"
+                        onclick="toggleModal(event)">
+                        <i class="fa-solid fa-xmark"></i> Cancelar</button>
+                    <button autofocus class="pico-background-jade-500" data-target="modal_payments"
+                        onclick="toggleModal(event)">
+                        <i class="fa-solid fa-check"></i> Confirmar
+                    </button>
+                </footer>
+            </article>
+        </dialog>
+    </footer>
+    <script src="js_modal.js"></script> -->
+</body>
+
+</html>
