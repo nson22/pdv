@@ -28,7 +28,7 @@
                         <button class="btn btn-info btn-lg" type="button"><i class="fa-solid fa-plus"></i></button>
                     </div>
                 </div>
-                <div class="d-grid col-2 mx-auto">
+                <div class="col-2 d-grid mx-auto">
                     <button class="btn btn-success btn-lg" type="button" data-bs-toggle="modal"
                         data-bs-target="#staticBackdrop"><i class="fa-solid fa-cash-register"></i></button>
                 </div>
@@ -70,21 +70,31 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <input type="radio" class="btn-check" name="payment-options" id="pix-outlined"
-                            autocomplete="off" checked>
-                        <label class="btn btn-outline-secondary" for="pix-outlined"><i class="fa-brands fa-pix"></i> PIX</label>
-
-                        <input type="radio" class="btn-check" name="payment-options" id="credit-outlined"
-                            autocomplete="off">
-                        <label class="btn btn-outline-secondary" for="credit-outlined"><i class="fa-solid fa-credit-card"></i> Crédito</label>
-
-                        <input type="radio" class="btn-check" name="payment-options" id="debit-outlined"
-                            autocomplete="off">
-                        <label class="btn btn-outline-secondary" for="debit-outlined"><i class="fa-regular fa-credit-card"></i> Débito</label>
-
-                        <input type="radio" class="btn-check" name="payment-options" id="money-outlined"
-                            autocomplete="off">
-                        <label class="btn btn-outline-secondary" for="money-outlined"><i class="fa-solid fa-brazilian-real-sign"></i> Dinheiro</label>
+                        <div class="row">
+                            <div class="col-3 d-grid mx-auto"> <input type="radio" class="btn-check"
+                                    name="payment-options" id="pix-outlined" autocomplete="off" checked>
+                                <label class="btn btn-outline-success" for="pix-outlined"><i
+                                        class="fa-brands fa-pix"></i><br />PIX</label>
+                            </div>
+                            <div class="col-3 d-grid mx-auto"><input type="radio" class="btn-check"
+                                    name="payment-options" id="credit-outlined" autocomplete="off">
+                                <label class="btn btn-outline-success" for="credit-outlined"><i
+                                        class="fa-solid fa-credit-card"></i><br />Crédito</label>
+                            </div>
+                            <div class="col-3 d-grid mx-auto"> <input type="radio" class="btn-check"
+                                    name="payment-options" id="debit-outlined" autocomplete="off">
+                                <label class="btn btn-outline-success" for="debit-outlined"><i
+                                        class="fa-regular fa-credit-card"></i><br />Débito</label>
+                            </div>
+                            <div class="col-3 d-grid mx-auto"> <input type="radio" class="btn-check"
+                                    name="payment-options" id="money-outlined" autocomplete="off">
+                                <label class="btn btn-outline-success" for="money-outlined"><i
+                                        class="fa-solid fa-brazilian-real-sign"></i><br />Dinheiro</label>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-12 d-grid mx-auto"><input required placeholder="R$ 0,00"></div>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
@@ -101,175 +111,6 @@
             </div>
         </div>
     </footer>
-    <!-- <header class="container">
-        <div class="grid">
-            <fieldset role="group">
-                <input type="text" id="search" placeholder="Procure por código ou nome do produto" list="products">
-                <datalist id="products"></datalist>
-                <option value="7896396109181 - Toalha de geladeira com 3 pçs ref 918"></option>
-                <option value="AVULSO - Jogo de pratos"></option>
-                </datalist>
-                <button data-tooltip="Adicionar produto" data-placement="bottom" data-target="add_item"
-                    onclick="addItems(event)"><i class="fa-solid fa-plus"></i></button>
-            </fieldset>
-            <button data-tooltip="Fechar venda" data-placement="bottom" class="pico-background-jade-500"
-                data-target="modal_payments" onclick="toggleModal(event)"><i class="fa-solid fa-cash-register"></i>
-            </button>
-        </div>
-    </header>
-    <main class="container">
-        <section>
-            <div class="overflow-auto">
-                <table class="striped">
-                    <thead>
-                        <tr>
-                            <th scope="col">Item</th>
-                            <th scope="col">Código</th>
-                            <th scope="col">Descrição</th>
-                            <th scope="col" style="width: 8rem;">Quantidade</th>
-                            <th scope="col" style="width: 8rem;">Valor (unit)</th>
-                            <th scope="col" style="width: 8rem;">Sub Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th>1</th>
-                            <th scope="row"><kbd>7896396109181</kbd></th>
-                            <td><label>Toalha de geladeira com 3 pçs ref 918</label></td>
-                            <td><input type="number" min="1" value="1"></td>
-                            <td><input required data-currency="currency" placeholder="R$ 0,00" />
-                            <td><input required disabled placeholder="R$ 0,00" />
-                        </tr>
-                        <tr>
-                            <th>1</th>
-                            <th scope="row"><kbd class="pico-background-yellow-100">AVULSO</kbd></th>
-                            <td><label>Jogo de pratos</label></td>
-                            <td><input type="number" min="1" value="1"></td>
-                            <td><input required data-currency="currency" placeholder="R$ 0,00" />
-                            <td><input required disabled placeholder="R$ 0,00" />
-                        </tr>
-                        <tr>
-                            <th>1</th>
-                            <th scope="row"><kbd>7896396109181</kbd></th>
-                            <td><label>Toalha de geladeira com 3 pçs ref 918</label></td>
-                            <td><input type="number" min="1" value="1"></td>
-                            <td><input required data-currency="currency" placeholder="R$ 0,00" />
-                            <td><input required disabled placeholder="R$ 0,00" />
-                        </tr>
-                        <tr>
-                            <th>1</th>
-                            <th scope="row"><kbd class="pico-background-yellow-100">AVULSO</kbd></th>
-                            <td><label>Jogo de pratos</label></td>
-                            <td><input type="number" min="1" value="1"></td>
-                            <td><input required data-currency="currency" placeholder="R$ 0,00" />
-                            <td><input required disabled placeholder="R$ 0,00" />
-                        </tr>
-                        <tr>
-                            <th>1</th>
-                            <th scope="row"><kbd>7896396109181</kbd></th>
-                            <td><label>Toalha de geladeira com 3 pçs ref 918</label></td>
-                            <td><input type="number" min="1" value="1"></td>
-                            <td><input required data-currency="currency" placeholder="R$ 0,00" />
-                            <td><input required disabled placeholder="R$ 0,00" />
-                        </tr>
-                        <tr>
-                            <th>1</th>
-                            <th scope="row"><kbd class="pico-background-yellow-100">AVULSO</kbd></th>
-                            <td><label>Jogo de pratos</label></td>
-                            <td><input type="number" min="1" value="1"></td>
-                            <td><input required data-currency="currency" placeholder="R$ 0,00" />
-                            <td><input required disabled placeholder="R$ 0,00" />
-                        </tr>
-                        <tr>
-                            <th>1</th>
-                            <th scope="row"><kbd>7896396109181</kbd></th>
-                            <td><label>Toalha de geladeira com 3 pçs ref 918</label></td>
-                            <td><input type="number" min="1" value="1"></td>
-                            <td><input required data-currency="currency" placeholder="R$ 0,00" />
-                            <td><input required disabled placeholder="R$ 0,00" />
-                        </tr>
-                        <tr>
-                            <th>1</th>
-                            <th scope="row"><kbd class="pico-background-yellow-100">AVULSO</kbd></th>
-                            <td><label>Jogo de pratos</label></td>
-                            <td><input type="number" min="1" value="1"></td>
-                            <td><input required data-currency="currency" placeholder="R$ 0,00" />
-                            <td><input required disabled placeholder="R$ 0,00" />
-                        </tr>
-                        <tr>
-                            <th>1</th>
-                            <th scope="row"><kbd>7896396109181</kbd></th>
-                            <td><label>Toalha de geladeira com 3 pçs ref 918</label></td>
-                            <td><input type="number" min="1" value="1"></td>
-                            <td><input required data-currency="currency" placeholder="R$ 0,00" />
-                            <td><input required disabled placeholder="R$ 0,00" />
-                        </tr>
-                        <tr>
-                            <th>1</th>
-                            <th scope="row"><kbd class="pico-background-yellow-100">AVULSO</kbd></th>
-                            <td><label>Jogo de pratos</label></td>
-                            <td><input type="number" min="1" value="1"></td>
-                            <td><input required data-currency="currency" placeholder="R$ 0,00" />
-                            <td><input required disabled placeholder="R$ 0,00" />
-                        </tr>
-                        <tr>
-                            <th>1</th>
-                            <th scope="row"><kbd>7896396109181</kbd></th>
-                            <td><label>Toalha de geladeira com 3 pçs ref 918</label></td>
-                            <td><input type="number" min="1" value="1"></td>
-                            <td><input required data-currency="currency" placeholder="R$ 0,00" />
-                            <td><input required disabled placeholder="R$ 0,00" />
-                        </tr>
-                        <tr>
-                            <th>1</th>
-                            <th scope="row"><kbd class="pico-background-yellow-100">AVULSO</kbd></th>
-                            <td><label>Jogo de pratos</label></td>
-                            <td><input type="number" min="1" value="1"></td>
-                            <td><input required data-currency="currency" placeholder="R$ 0,00" />
-                            <td><input required disabled placeholder="R$ 0,00" />
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-    </main>
-    <footer class="container ">
-        <div class="register">
-            <strong>Valor total: <kbd>R$ 25.00</kbd></strong>
-        </div>
-        <dialog id="modal_payments">
-            <article>
-                <header>
-                    <button aria-label="Close" rel="prev" data-target="modal_payments"
-                        onclick="toggleModal(event)"></button>
-                    <h4>Método de pagamento</h4>
-                </header>
-                <fieldset>
-                    <input type="radio" id="pix" name="payments" checked />
-                    <label htmlFor="pix"><i class="fa-brands fa-pix"></i> PIX</label>
-                    <input type="radio" id="cc" name="payments" />
-                    <label htmlFor="cc"><i class="fa-solid fa-credit-card"></i> Crédito</label>
-                    <input type="radio" id="dc" name="payments" />
-                    <label htmlFor="dc"><i class="fa-regular fa-credit-card"></i> Débito</label>
-                    <input type="radio" id="money" name="payments" />
-                    <label htmlFor="money"><i class="fa-solid fa-brazilian-real-sign"></i> Dinheiro</label>
-                </fieldset>
-                <input required data-currency="currency" placeholder="Valor" />
-                <button data-target="add_item" onclick="addItems(event)"><i class="fa-solid fa-plus"></i> Adicionar
-                    método</button>
-                <footer>
-                    <button role="button" class="pico-background-red-500" data-target="modal_payments"
-                        onclick="toggleModal(event)">
-                        <i class="fa-solid fa-xmark"></i> Cancelar</button>
-                    <button autofocus class="pico-background-jade-500" data-target="modal_payments"
-                        onclick="toggleModal(event)">
-                        <i class="fa-solid fa-check"></i> Confirmar
-                    </button>
-                </footer>
-            </article>
-        </dialog>
-    </footer>
-    <script src="js_modal.js"></script> -->
 </body>
 
 </html>
