@@ -24,8 +24,11 @@
                 <div class="col-10">
                     <div class="input-group input-group-lg">
                         <input type="text" class="form-control" placeholder="Procure por código ou nome do produto"
-                            list="products">
-                        <button class="btn btn-info btn-lg" type="button"><i class="fa-solid fa-plus"></i></button>
+                            id="search" list="products">
+                        <button class="btn btn-secondary btn-lg" type="button" onclick="add()"><i
+                                class="fa-solid fa-plus"></i></button>
+                        <datalist id="products">
+                        </datalist>
                     </div>
                 </div>
                 <div class="col-2 d-grid mx-auto">
@@ -48,15 +51,8 @@
                         <th scope="col" style="width: 8rem;">Sub Total</th>
                     </tr>
                 </thead>
-                <tbody class="scrollable-body">
-                    <tr>
-                        <th scope="row">1</th>
-                        <th><kbd>7896396109181</kbd></th>
-                        <td><label>Toalha de geladeira com 3 pçs ref 918</label></td>
-                        <td><input type="number" min="1" placeholder="0"></td>
-                        <td><input required data-currency="currency" placeholder="R$ 0,00" />
-                        <td><input required disabled placeholder="R$ 0,00" />
-                    </tr>
+                <tbody class="scrollable-body" id="product-table">
+
                 </tbody>
             </table>
         </div>
@@ -70,7 +66,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <div class="row">
+                        <div class="row" id="payments">
                             <div class="col-3 d-grid mx-auto"> <input type="radio" class="btn-check"
                                     name="payment-options" id="pix-outlined" autocomplete="off" checked>
                                 <label class="btn btn-outline-success" for="pix-outlined"><i
@@ -93,7 +89,9 @@
                             </div>
                         </div>
                         <div class="row mt-3">
-                            <div class="col-12 d-grid mx-auto"><input required placeholder="R$ 0,00"></div>
+                            <div class="input-group input-group-lg">
+                                <input type="text" class="form-control" placeholder="R$" id="payment">
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -107,10 +105,11 @@
     <footer class="bg-dark text-light d-flex align-items-center fixed-bottom" style="height: 100px;">
         <div class="container">
             <div class="row text-center">
-                <h1>Total a pagar: <strong>R$ 25,00</strong></h1>
+                <h1>Total a pagar: <strong id="total">R$ 0,00</strong></h1>
             </div>
         </div>
     </footer>
+    <script src="script.js"></script>
 </body>
 
 </html>
