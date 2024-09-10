@@ -25,7 +25,8 @@ const products = [
     },
 ]
 
-let cart = []
+let cart = JSON.parse(localStorage.getItem("CART")) || []
+
 const searchEl = document.querySelector("[data-testid='inputSearch']")
 const tabletProductsEl = document.querySelector("[data-testid='tabletProducts']")
 const datalistProductsEl = document.querySelector("[data-testid='datalistProducts']")
@@ -46,7 +47,16 @@ function renderProductsToDatalist() {
     })
 }
 
-function renderProductOnTable() {
+window.addEventListener('load', function () {
+    if (cart) {
+        cart.forEach((item) => {
+            renderProductOnTable(item)
+        })
+    }
+    updateTotalToPay()
+})
+
+function addProductOnTable() {
     if (!searchEl.value) {
         alert(`Busque um produto`)
         return
@@ -71,32 +81,36 @@ function renderProductOnTable() {
         return
     }
 
-    tBodyProductsEl.innerHTML += `
-        <tr data-testid='tr-${product.id}'>
-            <td class="col-1 text-center"><code>${product.id}</code></td>
-            <td class="col-2"><code>${product.code}</code></td>
-            <td class="col-3"><label data-testid='name-${product.id}'>${product.name}</label></td>
-            <td class="col-2">
-                <div class="input-group">
-                    <button onclick="updateProductAmount('minus', ${product.id})" class="btn btn-danger" type="button"'><i class="fa-solid fa-minus"></i></button>
-                    <input type="text" data-testid='amount-${product.id}' value="${product.amount}" disabled class="text-center w-50 bg-outline-secondary" >
-                    <button onclick="updateProductAmount('plus', ${product.id})" class="btn btn-success" type="button"><i class="fa-solid fa-plus"></i></button>
-                </div>
-            </td>
-            <td class="col-1"><input required data-testid="price-${product.id}" value="${product.price}" class="w-75" /></td>
-            <td class="col-1"><input required data-testid='subtotal-${product.id}' disabled placeholder="R$" /></td>
-            <td class="col-1 text-center"><button onclick='removeItemFromCart(${product.id})' class="btn btn-outline-danger" type="button" data-testid="btnRemove-${product.id}"><i class="fa-solid fa-trash"></i></button></td>
-        </tr>
-        `
+    renderProductOnTable(product)
+    addProductsToCart(product)
+    updateTotalToPay()
     searchEl.value = ''
 
-    addProductsToCart(product)
+}
 
+function renderProductOnTable(product) {
+    tBodyProductsEl.innerHTML += `
+    <tr data-testid='tr-${product.id}'>
+        <td class="col-1 text-center"><code style='text-transform: uppercase; color: black;'>${product.id}</code></td>
+        <td class="col-2"><code style='text-transform: uppercase; color: black;'>${product.code}</code></td>
+        <td class="col-3"><code style='text-transform: uppercase; color: black;' data-testid='name-${product.id}'>${product.name}</code></td>
+        <td class="col-2">
+            <div class="input-group">
+                <button onclick="updateProductAmount('minus', ${product.id})" class="btn btn-danger" type="button"'><i class="fa-solid fa-minus"></i></button>
+                <input type="text" data-testid='amount-${product.id}' value="${product.amount}" disabled class="text-center w-50 bg-outline-secondary" >
+                <button onclick="updateProductAmount('plus', ${product.id})" class="btn btn-success" type="button"><i class="fa-solid fa-plus"></i></button>
+            </div>
+        </td>
+        <td class="col-1"><input required data-testid="price-${product.id}" value="${product.price}" class="w-75" /></td>
+        <td class="col-1"><input required data-testid='subtotal-${product.id}' disabled placeholder="R$" /></td>
+        <td class="col-1 text-center"><button onclick='removeItemFromCart(${product.id})' class="btn btn-outline-danger" type="button" data-testid="btnRemove-${product.id}"><i class="fa-solid fa-trash"></i></button></td>
+    </tr>
+    `
 }
 
 function addProductsToCart(product) {
     cart.push(product)
-    updateTotalToPay(product.id)
+    localStorage.setItem("CART", JSON.stringify([...cart]))
 }
 
 function updateProductAmount(action, id) {
@@ -117,33 +131,32 @@ function updateProductAmount(action, id) {
         }
     })
 
-    updateTotalToPay(id)
+    updateTotalToPay()
 
 }
 
-function updateTotalToPay(id) {
-    let amountEl = document.querySelector(`[data-testid='amount-${id}']`)
-    let subtotalEl = document.querySelector(`[data-testid='subtotal-${id}']`)
+function updateTotalToPay() {
+    cart.forEach(item => {
+        let amountEl = document.querySelector(`[data-testid='amount-${item.id}']`)
+        let subtotalEl = document.querySelector(`[data-testid='subtotal-${item.id}']`)
 
-    cart.filter((item) => {
-        if (item.id == id) {
-            amountEl.value = item.amount
-            subtotalEl.value = `R$ ${Number(item.amount * item.price).toFixed(2)}`
-        }
+        amountEl.value = item.amount
+        subtotalEl.value = `R$ ${Number(item.amount * item.price).toFixed(2)}`
     })
 
     const total = cart.reduce((acc, curr) => acc + (curr.price * curr.amount), 0);
-    labelTotalEl.textContent = `R$ ${Number(total).toFixed(2)}`
+    labelTotalEl.textContent = `R$ ${Number(total).toFixed(2).replace('.', ',')}`
+
 }
 
 function removeItemFromCart(id) {
-    cart = cart.filter((item) => {
-        item.id !== id
-    })
-
     const rowEl = document.querySelector(`[data-testid='tr-${id}']`)
-    labelTotalEl.textContent = `R$ 0,00`
     rowEl.remove()
+
+    cart = cart.filter((item) => item.id != id);
+
+    localStorage.setItem("CART", JSON.stringify([...cart]));
+
 }
 
 
