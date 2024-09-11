@@ -26,17 +26,17 @@
     <header class="bg-dark text-light d-flex align-items-center fixed-top" style="height: 80px;">
         <div class="container  ">
             <div class="row ">
-                <div class="col-1">
-                    <img src="pj-logo.jpeg" style="width: 64px;">
-                </div>
-                <div class="col-9 d-flex">
+                <div class="col-10 d-flex">
                     <div class="input-group input-group-lg">
+                        <img src="pj-logo.jpeg" style="width: 64px;">
+
                         <input type="text" class="form-control" placeholder="Procure por código ou nome do produto"
                             data-testid="inputSearch" id="search" list="products">
+
                         <button class="btn btn-secondary btn-lg w-25" type="button" data-testid="btnAdd"
                             onclick="addProductOnTable()"><i class="fa-solid fa-plus"></i> Adicionar</button>
                     </div>
-                    <datalist id="products" data-testid="datalistProducts">
+                    <datalist style="width: 100vw;" id="products" data-testid="datalistProducts">
                     </datalist>
                 </div>
                 <div class="col-2 d-grid mx-auto">
@@ -58,9 +58,9 @@
                                 <tr>
                                     <th scope="col" class="text-center">CÓDIGO</th>
                                     <th scope="col">PRODUTO</th>
-                                    <th scope="col">QUANTIDADE</th>
-                                    <th scope="col">VALOR (UNIT)</th>
-                                    <th scope="col">SUBTOTAL</th>
+                                    <th scope="col" class="text-center">QUANTIDADE</th>
+                                    <th scope="col" class="text-center">VALOR (UNIT)</th>
+                                    <th scope="col" class="text-center">SUBTOTAL</th>
                                     <th scope="col" class="text-center">ADICIONAR</th>
                                     <th scope="col" class="text-center">RETIRAR</th>
                                     <th scope="col" class="text-center">REMOVER</th>
@@ -87,7 +87,7 @@
                             <div class="col-3 d-grid mx-auto"> <input type="radio" class="btn-check"
                                     data-testid="radioPix" name="payment-options" id="pix-outlined" autocomplete="off"
                                     checked>
-                                <label class="btn btn-outline-secondary text-success" for="pix-outlined"><i
+                                <label class="btn btn-outline-secondary" for="pix-outlined"><i
                                         class="fa-brands fa-pix"></i><br />PIX</label>
                             </div>
                             <div class="col-3 d-grid mx-auto"><input type="radio" class="btn-check"
@@ -111,15 +111,21 @@
                         </div>
                         <div class="row mt-3">
                             <div class="input-group input-group-lg">
-                                <input type="text" class="form-control" placeholder="R$" id="payment"
-                                    data-testid="inputPayment">
+                                <span class="input-group-text">R$</span>
+                                <input type="text" id="currency" class="form-control" data-testid="inputPayment">
                             </div>
+                        </div>
+                        <div class="input-group input-group-lg mt-3">
+                            <span class="input-group-text">R$</span>
+                            <input type="text" disabled class="form-control" data-testid="restPayment"
+                                placeholder="0,00">
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
                             data-testid="modalBtnCancel">Cancelar</button>
-                        <button type="button" class="btn btn-success" data-testid="modalBtnConfirm">Confirmar</button>
+                        <button type="button" class="btn btn-success" data-testid="modalBtnConfirm"
+                            onclick="handlePayment()">Confirmar</button>
                     </div>
                 </div>
             </div>
@@ -132,7 +138,7 @@
                     <h1>Total a pagar: <strong id="total" data-testid="labelTotal">R$ 0,00</strong></h1>
                 </div>
                 <div class="col-6">
-                    <h1>Total pago: <strong id="total" data-testid="labelPay">R$ 0,00</strong></h1>
+                    <h1>Total pago: <strong id="total" data-testid="labelPayment">R$ 0,00</strong></h1>
                 </div>
             </div>
         </div>

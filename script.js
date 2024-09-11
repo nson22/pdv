@@ -1,27 +1,24 @@
+
 const products = [
     {
         code: "7896396109181",
         name: "Toalha de geladeira com 3 pçs ref 918",
         price: "5.50",
-        stock: 2
     },
     {
         code: "7896396106159",
         name: "CORTINA DE BOX POLIETILENO ESTAMPADA",
         price: "8.50",
-        stock: 5
     },
     {
         code: "7896396106158",
         name: "Acendedor fogão",
         price: "9",
-        stock: 3
     },
     {
         code: "",
         name: "Fervedor Polido 1,7L  LonguiLar",
         price: "16.62",
-        stock: 1
     },
 ]
 
@@ -32,44 +29,59 @@ const tabletProductsEl = document.querySelector("[data-testid='tabletProducts']"
 const datalistProductsEl = document.querySelector("[data-testid='datalistProducts']")
 const tBodyProductsEl = document.querySelector("[data-testid='tBodyProducts']")
 const btnRegisterEl = document.querySelector("[data-testid='btnRegister']")
+const btnAddEl = document.querySelector("[data-testid='btnAdd']")
 const labelTotalEl = document.querySelector(`[data-testid='labelTotal']`)
+const inputPaymentEl = document.querySelector(`[data-testid='inputPayment']`)
+const labelPaymentEl = document.querySelector(`[data-testid='labelPayment']`)
+const restPaymentEl = document.querySelector(`[data-testid='restPayment']`)
 
+window.addEventListener('load', function () {
+    if (cart.length > 0) {
+        cart.forEach((item) => {
+            renderProductOnTable(item)
+        })
+        updateTotalToPay()
+    }else {
+        btnAddEl.setAttribute('disabled', true)
+        btnRegisterEl.setAttribute('disabled', true)
+    }
+})
+
+inputPaymentEl.addEventListener('input', function (e) {
+    let value = e.target.value;
+    value = value.replace(/\D/g, '');
+    value = (value / 100).toFixed(2) // Add decimal places
+        .replace('.', ',')           // Replace decimal point with comma
+        .replace(/\B(?=(\d{3})+(?!\d))/g, '.'); // Add thousands separator
+
+    e.target.value = value ? `${value}` : '';
+});
+
+searchEl.addEventListener('input', function (e) {
+    btnAddEl.removeAttribute('disabled')
+});
 
 function renderProductsToDatalist() {
     products.forEach((product) => {
         if (!product.code) {
-            product.code = `AVULSO (${Date.now()})`
+            product.code = `AVULSO`
         }
 
         datalistProductsEl.innerHTML += `
-            <option class="text-uppercase" value="${product.code} - ${product.name} - ${product.price} - ${product.stock}"></option>
+            <option class="text-uppercase" value="${product.code} - ${product.name} - ${product.price}"></option>
         `
     })
 }
 
-window.addEventListener('load', function () {
-    if (cart) {
-        cart.forEach((item) => {
-            renderProductOnTable(item)
-        })
-    }
-    updateTotalToPay()
-})
-
 function addProductOnTable() {
-    if (!searchEl.value) {
-        alert(`Busque um produto`)
-        return
-    }
-
-    const [code, name, price, stock] = searchEl.value.split(" - ")
+    let id = `${Date.now()}`
+    let [code, name, price] = searchEl.value.split(" - ")
 
     const product = {
-        id: `${Date.now()}`,
+        id,
         code,
         name,
         price,
-        stock,
         amount: 1
     }
 
@@ -80,20 +92,21 @@ function addProductOnTable() {
         searchEl.value = ''
         return
     }
-    renderProductOnTable(product)
+
     addProductsToCart(product)
+    renderProductOnTable(product)
     updateTotalToPay()
     searchEl.value = ''
-
+    btnAddEl.setAttribute('disabled', true)
 }
 
 function renderProductOnTable(product) {
     tBodyProductsEl.innerHTML += `
     <tr data-testid='tr-${product.id}'>
-        <th scope="row" class="text-center"><kbd style="font-size: 1rem;">${product.code}</kbd></th>
+        <th scope="row" class="text-center"><kbd style="font-size: 1rem; padding: 0.25rem 1rem 0.25rem 1rem">${product.code}</kbd></th>
         <td class="text-uppercase">${product.name}</td>
         <td class="text-center" data-testid="amount-${product.id}">${product.amount}</td>
-        <td class="text-center">R$ ${Number(product.price).toFixed(2)}</td>
+        <td class="text-center">${numberToBrazilianReal(1 * product.price)}</td>
         <td data-testid="subtotal-${product.id}"></td>
         <td>
             <div class="text-success text-center" role="button"
@@ -127,21 +140,19 @@ function updateProductAmount(action, id) {
         let amount = item.amount
 
         if (item.id == id) {
-            if (action === 'minus' && amount > 1) {
+            if (action == "minus" && amount > 1) {
                 amount--
-            } else if (action === 'plus' && amount < item.stock) {
+            } else if (action === "plus") {
                 amount++
             }
         }
 
         return {
             ...item,
-            amount
+            amount,
         }
     })
-
     updateTotalToPay()
-
 }
 
 function updateTotalToPay() {
@@ -150,11 +161,18 @@ function updateTotalToPay() {
         let subtotalEl = document.querySelector(`[data-testid='subtotal-${item.id}']`)
 
         amountEl.textContent = item.amount
-        subtotalEl.textContent = `R$ ${Number(item.amount * item.price).toFixed(2)}`
+        subtotalEl.textContent = numberToBrazilianReal(item.amount * item.price)
     })
 
     const total = cart.reduce((acc, curr) => acc + (curr.price * curr.amount), 0);
-    labelTotalEl.textContent = `R$ ${Number(total).toFixed(2).replace('.', ',')}`
+
+    let totalToPay = Number(total).toFixed(2)
+
+    labelTotalEl.textContent = `${totalToPay.replace('.', ',')}`
+
+    inputPaymentEl.value = labelTotalEl.textContent
+    localStorage.setItem("CART", JSON.stringify([...cart]));
+    openAndCloseRegister()
 
 }
 
@@ -163,9 +181,47 @@ function removeItemFromCart(id) {
     rowEl.remove()
 
     cart = cart.filter((item) => item.id != id);
-
+    updateTotalToPay()
     localStorage.setItem("CART", JSON.stringify([...cart]));
+    openAndCloseRegister()
+}
 
+function brazilianCurrencyToNumber(currency) {
+    let cleanValue = currency.replace('R$', '').trim();
+    cleanValue = cleanValue.replace(/\./g, '');
+    cleanValue = cleanValue.replace(',', '.');
+    return parseFloat(cleanValue);
+}
+
+function numberToBrazilianReal(number) {
+    return number.toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+    });
+}
+
+function handlePayment() {
+    let totalToPay = cart.reduce((acc, curr) => acc + (curr.price * curr.amount), 0);
+    let amountPayed = brazilianCurrencyToNumber(inputPaymentEl.value)
+    const paymentsMethods = []
+
+    if (totalToPay === amountPayed) {
+        labelPaymentEl.textContent = numberToBrazilianReal(amountPayed)
+        inputPaymentEl.value = numberToBrazilianReal(0)
+        restPaymentEl.value = numberToBrazilianReal(amountPayed)
+        // Add payment method to the array
+        // Close the modal and set disabled to Fechar btn
+    } else {
+
+    }
+}
+
+function openAndCloseRegister() {
+    if (cart.length > 0) {
+        btnRegisterEl.removeAttribute('disabled')
+    }else{
+        btnRegisterEl.setAttribute('disabled', true)
+    }
 }
 
 
