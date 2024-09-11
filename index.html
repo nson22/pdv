@@ -76,7 +76,7 @@
         <!-- Modal -->
         <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
             aria-labelledby="staticBackdropLabel" aria-hidden="true">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="staticBackdropLabel">Metodos de pagamentos</h5>
@@ -126,6 +126,24 @@
                             data-testid="modalBtnCancel">Cancelar</button>
                         <button type="button" class="btn btn-success" data-testid="modalBtnConfirm"
                             onclick="handlePayment()">Confirmar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="modalInfo" data-testid="modalInfo" data-bs-backdrop="static"
+            data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalInfoLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalInfoLabel">Aviso</h5>
+                    </div>
+                    <div class="modal-body">
+                        <h4 class="fw-3 text-secondary" data-testid="modalInfoBody"></h4>
+                        <label class="fw-1">Já adicionado ao carrinho.</label>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                     </div>
                 </div>
             </div>

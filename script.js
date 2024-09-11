@@ -34,6 +34,10 @@ const labelTotalEl = document.querySelector(`[data-testid='labelTotal']`)
 const inputPaymentEl = document.querySelector(`[data-testid='inputPayment']`)
 const labelPaymentEl = document.querySelector(`[data-testid='labelPayment']`)
 const restPaymentEl = document.querySelector(`[data-testid='restPayment']`)
+const modalInfoBodyEl = document.querySelector(`[data-testid='modalInfoBody']`)
+
+var modalInfo = new bootstrap.Modal(document.getElementById('modalInfo'), {
+})
 
 window.addEventListener('load', function () {
     if (cart.length > 0) {
@@ -41,7 +45,7 @@ window.addEventListener('load', function () {
             renderProductOnTable(item)
         })
         updateTotalToPay()
-    }else {
+    } else {
         btnAddEl.setAttribute('disabled', true)
         btnRegisterEl.setAttribute('disabled', true)
     }
@@ -88,7 +92,9 @@ function addProductOnTable() {
     const alreadyInCart = cart.some((item) => { return item.code === product.code })
 
     if (alreadyInCart) {
-        alert(`${product.name} já adicionado carrinho`)
+        modalInfoBodyEl.textContent = `${product.name}`
+        modalInfo.show()
+        btnAddEl.setAttribute('disabled', true)
         searchEl.value = ''
         return
     }
@@ -219,7 +225,7 @@ function handlePayment() {
 function openAndCloseRegister() {
     if (cart.length > 0) {
         btnRegisterEl.removeAttribute('disabled')
-    }else{
+    } else {
         btnRegisterEl.setAttribute('disabled', true)
     }
 }
