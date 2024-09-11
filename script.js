@@ -42,7 +42,7 @@ function renderProductsToDatalist() {
         }
 
         datalistProductsEl.innerHTML += `
-            <option value="${product.code} - ${product.name} - ${product.price} - ${product.stock}"></option>
+            <option class="text-uppercase" value="${product.code} - ${product.name} - ${product.price} - ${product.stock}"></option>
         `
     })
 }
@@ -80,7 +80,6 @@ function addProductOnTable() {
         searchEl.value = ''
         return
     }
-
     renderProductOnTable(product)
     addProductsToCart(product)
     updateTotalToPay()
@@ -91,19 +90,29 @@ function addProductOnTable() {
 function renderProductOnTable(product) {
     tBodyProductsEl.innerHTML += `
     <tr data-testid='tr-${product.id}'>
-        <td class="col-1 text-center"><code style='text-transform: uppercase; color: black;'>${product.id}</code></td>
-        <td class="col-2"><code style='text-transform: uppercase; color: black;'>${product.code}</code></td>
-        <td class="col-3"><code style='text-transform: uppercase; color: black;' data-testid='name-${product.id}'>${product.name}</code></td>
-        <td class="col-2">
-            <div class="input-group">
-                <button onclick="updateProductAmount('minus', ${product.id})" class="btn btn-danger" type="button"'><i class="fa-solid fa-minus"></i></button>
-                <input type="text" data-testid='amount-${product.id}' value="${product.amount}" disabled class="text-center w-50 bg-outline-secondary" >
-                <button onclick="updateProductAmount('plus', ${product.id})" class="btn btn-success" type="button"><i class="fa-solid fa-plus"></i></button>
+        <th scope="row" class="text-center"><kbd style="font-size: 1rem;">${product.code}</kbd></th>
+        <td class="text-uppercase">${product.name}</td>
+        <td class="text-center" data-testid="amount-${product.id}">${product.amount}</td>
+        <td class="text-center">R$ ${Number(product.price).toFixed(2)}</td>
+        <td data-testid="subtotal-${product.id}"></td>
+        <td>
+            <div class="text-success text-center" role="button"
+                onclick="updateProductAmount('plus', ${product.id})">
+                <i class="fa-solid fa-plus"></i>
             </div>
         </td>
-        <td class="col-1"><input required data-testid="price-${product.id}" value="${product.price}" class="w-75" /></td>
-        <td class="col-1"><input required data-testid='subtotal-${product.id}' disabled placeholder="R$" /></td>
-        <td class="col-1 text-center"><button onclick='removeItemFromCart(${product.id})' class="btn btn-outline-danger" type="button" data-testid="btnRemove-${product.id}"><i class="fa-solid fa-trash"></i></button></td>
+        <td>
+            <div class="text-danger text-center" role="button"
+                onclick="updateProductAmount('minus', ${product.id})">
+                <i class="fa-solid fa-minus"></i>
+            </div>
+        </td>
+        <td>
+            <div class="text-danger text-center" role="button"
+                onclick="removeItemFromCart(${product.id})">
+                <i class="fa-solid fa-trash"></i>
+            </div>
+        </td>
     </tr>
     `
 }
@@ -140,8 +149,8 @@ function updateTotalToPay() {
         let amountEl = document.querySelector(`[data-testid='amount-${item.id}']`)
         let subtotalEl = document.querySelector(`[data-testid='subtotal-${item.id}']`)
 
-        amountEl.value = item.amount
-        subtotalEl.value = `R$ ${Number(item.amount * item.price).toFixed(2)}`
+        amountEl.textContent = item.amount
+        subtotalEl.textContent = `R$ ${Number(item.amount * item.price).toFixed(2)}`
     })
 
     const total = cart.reduce((acc, curr) => acc + (curr.price * curr.amount), 0);
