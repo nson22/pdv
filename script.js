@@ -35,9 +35,11 @@ const inputPaymentEl = document.querySelector(`[data-testid='inputPayment']`)
 const labelPaymentEl = document.querySelector(`[data-testid='labelPayment']`)
 const restPaymentEl = document.querySelector(`[data-testid='restPayment']`)
 const modalInfoBodyEl = document.querySelector(`[data-testid='modalInfoBody']`)
+const centerContentEl = document.querySelector(`[data-testid='centerContent']`)
 
-var modalInfo = new bootstrap.Modal(document.getElementById('modalInfo'), {
-})
+const modalPayment = new bootstrap.Modal(document.querySelector('#staticBackdrop'))
+const modalInfo = new bootstrap.Modal(document.querySelector('#modalInfo'))
+const modalLoading = new bootstrap.Modal(document.querySelector('#modalLoading'))
 
 window.addEventListener('load', function () {
     if (cart.length > 0) {
@@ -49,6 +51,7 @@ window.addEventListener('load', function () {
         btnAddEl.setAttribute('disabled', true)
         btnRegisterEl.setAttribute('disabled', true)
     }
+
 })
 
 inputPaymentEl.addEventListener('input', function (e) {
@@ -192,6 +195,19 @@ function removeItemFromCart(id) {
     openAndCloseRegister()
 }
 
+function removeAllItemFromCart() {
+    cart.forEach((item) => {
+        let rowEl = document.querySelector(`[data-testid='tr-${item.id}']`)
+        rowEl.remove()
+
+    })
+
+    cart = []
+    updateTotalToPay()
+    localStorage.setItem("CART", JSON.stringify([...cart]));
+    openAndCloseRegister()
+}
+
 function brazilianCurrencyToNumber(currency) {
     let cleanValue = currency.replace('R$', '').trim();
     cleanValue = cleanValue.replace(/\./g, '');
@@ -211,15 +227,28 @@ function handlePayment() {
     let amountPayed = brazilianCurrencyToNumber(inputPaymentEl.value)
     const paymentsMethods = []
 
-    if (totalToPay === amountPayed) {
+    if (totalToPay.toFixed(2) == amountPayed) {
         labelPaymentEl.textContent = numberToBrazilianReal(amountPayed)
         inputPaymentEl.value = numberToBrazilianReal(0)
         restPaymentEl.value = numberToBrazilianReal(amountPayed)
         // Add payment method to the array
-        // Close the modal and set disabled to Fechar btn
-    } else {
+        let radios = document.querySelectorAll('[data-testid*="radio"]')
 
+        radios.forEach((radio) => {
+            if (radio.checked) {
+                paymentsMethods.push(radio.dataset.payment)
+            }
+        })
+
+        // Close the modal and set disabled to Fechar btn
+        modalPayment.hide()
+        modalLoading.show()
+        
+    } else {
+        
     }
+    
+    removeAllItemFromCart()
 }
 
 function openAndCloseRegister() {
