@@ -24,26 +24,30 @@
 </head>
 
 <body>
-    <header class="bg-dark text-light d-flex align-items-center fixed-top" style="height: 80px;">
+    <header class="bg-dark text-light d-flex align-items-center fixed-top p-5" style="height: 20px;">
         <div class="container  ">
             <div class="row">
-                <div class="col-10 d-flex">
-                    <div class="input-group input-group-lg">
-                        <img src="pj-logo.jpeg" style="width: 64px;">
-
-                        <input type="text" class="form-control" placeholder="Procure por código ou nome do produto"
-                            data-testid="inputSearch" id="search" list="products">
-
-                        <button class="btn btn-secondary btn-lg w-25" type="button" data-testid="btnAdd"
-                            onclick="addProductOnTable()"><i class="fa-solid fa-plus"></i> Adicionar</button>
-                    </div>
-                    <datalist style="width: 100vw;" id="products" data-testid="datalistProducts">
-                    </datalist>
+                <div class="col-1 d-flex">
+                    <img src="pj-logo.jpeg" style="width: 72px;">
                 </div>
-                <div class="col-2 d-grid mx-auto">
-                    <button class="btn btn-success btn-lg" type="button" data-bs-toggle="modal"
-                        data-testid="btnRegister" data-bs-target="#staticBackdrop"><i
-                            class="fa-solid fa-cash-register"></i> Fechar</button>
+                <div class="col-8 d-flex">
+                    <input class="form-control form-control-lg" type="text" data-testid="inputSearch"
+                        placeholder="Código">
+                </div>
+                <div class="col-1 d-grid">
+                    <button class="btn btn-secondary " data-testid="btnSearch" onclick="searchProducts()"
+                        type="button"><i class="fa-solid fa-table fs-2"></i></button>
+                </div>
+                <div class="col-2 d-grid">
+                    <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-testid="btnRegister"
+                        data-bs-target="#staticBackdrop">
+                        <div class="position-relative">
+                            <span
+                                class="position-absolute top-0 start-50 translate-middle-y badge rounded bg-danger p-2 ms-2"><span
+                                    data-testid="badgeCartTotal"></span></span>
+                        </div>
+                        <i class="fa-solid fa-cart-shopping fs-1"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -157,16 +161,38 @@
             </div>
         </div>
         <!-- Modal -->
-        <div class="modal fade" id="modalInfo" data-testid="modalInfo" data-bs-backdrop="static"
-            data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalInfoLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
+        <div class="modal fade" id="stock" data-testid="stock" data-bs-backdrop="static"
+            data-bs-keyboard="false" tabindex="-1" aria-labelledby="stockLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="modalInfoLabel">Aviso</h5>
+                        <h5 class="modal-title" id="modalInfoLabel">Estoque</h5>
                     </div>
                     <div class="modal-body">
-                        <h4 class="fw-3 text-secondary" data-testid="modalInfoBody"></h4>
-                        <label class="fw-1">Já adicionado ao carrinho.</label>
+                        <div class="table-responsive">
+                            <table class="table table-responsive table-borderless">
+
+                                <thead>
+                                    <tr class="bg-light">
+                                        <!-- <th scope="col" width="5%"><input class="form-check-input" type="checkbox"></th> -->
+                                        <th scope="col" class="text-center">CÓDIGO</th>
+                                        <th scope="col">PRODUTO</th>
+                                        <th scope="col" class="text-center">VALOR (UNIT)</th>
+                                        <th scope="col" class="text-center">ADICIONAR</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <!-- <th scope="row"><input class="form-check-input" type="checkbox"></th> -->
+                                        <td>12</td>
+                                        <td>1 Oct, 21</td>
+                                        <td>1 Oct, 21</td>
+                                        <td>1 Oct, 21</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>

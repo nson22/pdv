@@ -36,9 +36,11 @@ const labelPaymentEl = document.querySelector(`[data-testid='labelPayment']`)
 const restPaymentEl = document.querySelector(`[data-testid='restPayment']`)
 const modalInfoBodyEl = document.querySelector(`[data-testid='modalInfoBody']`)
 const centerContentEl = document.querySelector(`[data-testid='centerContent']`)
+const badgeCartTotalEl = document.querySelector(`[data-testid='badgeCartTotal']`)
+const btnSearchEl = document.querySelector(`[data-testid='btnSearch']`)
 
 const modalPayment = new bootstrap.Modal(document.querySelector('#staticBackdrop'))
-const modalInfo = new bootstrap.Modal(document.querySelector('#modalInfo'))
+const modalStock = new bootstrap.Modal(document.querySelector('#stock'))
 const modalLoading = new bootstrap.Modal(document.querySelector('#modalLoading'))
 
 window.addEventListener('load', function () {
@@ -46,12 +48,13 @@ window.addEventListener('load', function () {
         cart.forEach((item) => {
             renderProductOnTable(item)
         })
+        badgeCartTotalEl.textContent = cart.length
         updateTotalToPay()
     } else {
-        btnAddEl.setAttribute('disabled', true)
+        // btnAddEl.setAttribute('disabled', true)
         btnRegisterEl.setAttribute('disabled', true)
+        badgeCartTotalEl.textContent = 0
     }
-
 })
 
 inputPaymentEl.addEventListener('input', function (e) {
@@ -68,15 +71,19 @@ searchEl.addEventListener('input', function (e) {
     btnAddEl.removeAttribute('disabled')
 });
 
+function searchProducts(){
+    modalStock.show()
+}
+
 function renderProductsToDatalist() {
     products.forEach((product) => {
         if (!product.code) {
             product.code = `AVULSO`
         }
 
-        datalistProductsEl.innerHTML += `
-            <option class="text-uppercase" value="${product.code} - ${product.name} - ${product.price}"></option>
-        `
+        // datalistProductsEl.innerHTML += `
+        //     <option class="text-uppercase" value="${product.code} - ${product.name} - ${product.price}"></option>
+        // `
     })
 }
 
