@@ -31,15 +31,15 @@
                     <img src="pj-logo.jpeg" style="width: 72px;">
                 </div>
                 <div class="col-8 d-flex">
-                    <input class="form-control form-control-lg" type="text" data-testid="inputSearch"
-                        placeholder="Código">
+                    <input class="form-control form-control-lg" id="search" type="text" inputmode="numeric"
+                        data-testid="inputSearch" placeholder="Código" autofocus>
                 </div>
                 <div class="col-1 d-grid">
-                    <button class="btn btn-secondary " data-testid="btnSearch" onclick="searchProducts()"
+                    <button class="btn btn-secondary" data-testid="btnSearch" onclick="searchProducts()"
                         type="button"><i class="fa-solid fa-table fs-2"></i></button>
                 </div>
                 <div class="col-2 d-grid">
-                    <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-testid="btnRegister"
+                    <button class="btn btn-secondary" type="button" data-bs-toggle="modal" data-testid="btnRegister"
                         data-bs-target="#staticBackdrop">
                         <div class="position-relative">
                             <span
@@ -119,12 +119,13 @@
                         <div class="row mt-3">
                             <div class="input-group input-group-lg">
                                 <span class="input-group-text">R$</span>
-                                <input type="text" id="currency" class="form-control" data-testid="inputPayment">
+                                <input type="text" id="currency" class="form-control" id="payment"
+                                    data-testid="inputPayment">
                             </div>
                         </div>
                         <div class="input-group input-group-lg mt-3">
                             <span class="input-group-text">R$</span>
-                            <input type="text" disabled class="form-control" data-testid="restPayment"
+                            <input type="text" disabled class="form-control" id="restPayment" data-testid="restPayment"
                                 placeholder="0,00">
                         </div>
                     </div>
@@ -161,41 +162,42 @@
             </div>
         </div>
         <!-- Modal -->
-        <div class="modal fade" id="stock" data-testid="stock" data-bs-backdrop="static"
-            data-bs-keyboard="false" tabindex="-1" aria-labelledby="stockLabel" aria-hidden="true">
-            <div class="modal-dialog modal-xl">
+        <div class="modal fade " id="inventory" data-testid="stock" data-bs-backdrop="static" data-bs-keyboard="false"
+            tabindex="-1" aria-labelledby="stockLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-scrollable">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="modalInfoLabel">Estoque</h5>
+                        <input class="form-control form-control-lg" id="searchProduct" type="text"
+                            data-testid="inputSearchProduct" placeholder="Informe o nome do produto" autofocus>
+
+                        <button type="button" class="btn-close ms-3 me-2" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+
                     </div>
                     <div class="modal-body">
-                        <div class="table-responsive">
+                        <div class="table-responsive" style="overflow: auto;">
                             <table class="table table-responsive table-borderless">
-
                                 <thead>
-                                    <tr class="bg-light">
-                                        <!-- <th scope="col" width="5%"><input class="form-check-input" type="checkbox"></th> -->
+                                    <tr class="bg-secondary text-white">
                                         <th scope="col" class="text-center">CÓDIGO</th>
                                         <th scope="col">PRODUTO</th>
                                         <th scope="col" class="text-center">VALOR (UNIT)</th>
                                         <th scope="col" class="text-center">ADICIONAR</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr>
-                                        <!-- <th scope="row"><input class="form-check-input" type="checkbox"></th> -->
-                                        <td>12</td>
-                                        <td>1 Oct, 21</td>
-                                        <td>1 Oct, 21</td>
-                                        <td>1 Oct, 21</td>
-                                    </tr>
+                                <tbody data-testid="modalBodyProduct">
+                                    <!-- <tr>
+                                        <th scope="row" class="text-center"><kbd>7896396109181</kbd></th>
+                                        <td class="text-uppercase">Toalha de geladeira com 3 pçs ref 918</td>
+                                        <td class="text-center">R$ 5,00</td>
+                                        <td class="text-center">
+                                            <button type="button" class="btn btn-outline-success btn-sm"><i
+                                                    class="fa-solid fa-plus"></i></button>
+                                        </td>
+                                    </tr> -->
                                 </tbody>
                             </table>
-
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                     </div>
                 </div>
             </div>

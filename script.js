@@ -1,61 +1,66 @@
-
-const products = [
-    {
-        code: "7896396109181",
-        name: "Toalha de geladeira com 3 pçs ref 918",
-        price: "5.50",
-    },
-    {
-        code: "7896396106159",
-        name: "CORTINA DE BOX POLIETILENO ESTAMPADA",
-        price: "8.50",
-    },
-    {
-        code: "7896396106158",
-        name: "Acendedor fogão",
-        price: "9",
-    },
-    {
-        code: "",
-        name: "Fervedor Polido 1,7L  LonguiLar",
-        price: "16.62",
-    },
-]
-
 let cart = JSON.parse(localStorage.getItem("CART")) || []
 
-const searchEl = document.querySelector("[data-testid='inputSearch']")
-const tabletProductsEl = document.querySelector("[data-testid='tabletProducts']")
-const datalistProductsEl = document.querySelector("[data-testid='datalistProducts']")
-const tBodyProductsEl = document.querySelector("[data-testid='tBodyProducts']")
-const btnRegisterEl = document.querySelector("[data-testid='btnRegister']")
-const btnAddEl = document.querySelector("[data-testid='btnAdd']")
-const labelTotalEl = document.querySelector(`[data-testid='labelTotal']`)
+const inputSearchCodeEl = document.querySelector("[data-testid='inputSearch']")
+const inputSearchProductEl = document.querySelector(`[data-testid='inputSearchProduct']`)
 const inputPaymentEl = document.querySelector(`[data-testid='inputPayment']`)
-const labelPaymentEl = document.querySelector(`[data-testid='labelPayment']`)
-const restPaymentEl = document.querySelector(`[data-testid='restPayment']`)
-const modalInfoBodyEl = document.querySelector(`[data-testid='modalInfoBody']`)
-const centerContentEl = document.querySelector(`[data-testid='centerContent']`)
-const badgeCartTotalEl = document.querySelector(`[data-testid='badgeCartTotal']`)
+const inputRestPaymentEl = document.querySelector(`[data-testid='restPayment']`)
+
+const tabletProductsEl = document.querySelector("[data-testid='tabletProducts']")
+const tBodyProductsEl = document.querySelector("[data-testid='tBodyProducts']")
+
+const btnRegisterEl = document.querySelector("[data-testid='btnRegister']")
 const btnSearchEl = document.querySelector(`[data-testid='btnSearch']`)
 
-const modalPayment = new bootstrap.Modal(document.querySelector('#staticBackdrop'))
-const modalStock = new bootstrap.Modal(document.querySelector('#stock'))
+const labelTotalEl = document.querySelector(`[data-testid='labelTotal']`)
+const labelPaymentEl = document.querySelector(`[data-testid='labelPayment']`)
+
+const centerContentEl = document.querySelector(`[data-testid='centerContent']`)
+const badgeCartTotalEl = document.querySelector(`[data-testid='badgeCartTotal']`)
+
+const modalInfoBodyEl = document.querySelector(`[data-testid='modalInfoBody']`)
+const modalBodyProductEl = document.querySelector(`[data-testid='modalBodyProduct']`)
+
+const modalPayment = new bootstrap.Modal(document.querySelector('#staticBackdrop'), { keyboard: true })
+const modalInventory = new bootstrap.Modal(document.querySelector('#inventory'), { keyboard: true })
 const modalLoading = new bootstrap.Modal(document.querySelector('#modalLoading'))
+
+var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl)
+})
 
 window.addEventListener('load', function () {
     if (cart.length > 0) {
         cart.forEach((item) => {
             renderProductOnTable(item)
         })
-        badgeCartTotalEl.textContent = cart.length
+        badgeCartTotalEl.textContent = getTotalItems(cart)
         updateTotalToPay()
     } else {
-        // btnAddEl.setAttribute('disabled', true)
         btnRegisterEl.setAttribute('disabled', true)
         badgeCartTotalEl.textContent = 0
     }
 })
+
+document.onkeydown = function (e) {
+    e.preventDefault()
+
+    if (e.altKey && e.code === "KeyL") {
+        modalInventory.show()
+        inputSearchProductEl.focus()
+        return
+    }
+
+    if (e.altKey && e.code === "KeyC") {
+        inputSearchCodeEl.focus()
+        return
+    }
+
+    if (e.altKey && e.code === "KeyV") {
+        btnRegisterEl.click()
+        return
+    }
+}
 
 inputPaymentEl.addEventListener('input', function (e) {
     let value = e.target.value;
@@ -67,29 +72,41 @@ inputPaymentEl.addEventListener('input', function (e) {
     e.target.value = value ? `${value}` : '';
 });
 
-searchEl.addEventListener('input', function (e) {
-    btnAddEl.removeAttribute('disabled')
+inputSearchCodeEl.addEventListener('keyup', function (e) {
+    var key = e.which || e.keyCode;
+    if (key == 13) { // codigo da tecla enter
+        let query = Number(e.target.value)
+
+        let isValidCode = Number.isInteger(query)
+
+        if (!isValidCode) {
+            inputSearchCodeEl.value = ''
+        } else {
+            if (query === 0) {
+                console.log('Venda AVULSA', query);
+                //[TODO] Open modal with input to get the product name
+                //[TODO] Add the value to the tablet
+
+            } else {
+                console.log('Buscar por produto: ', query);
+                //[TODO] Get the product from the inventory
+                //[TODO] Add the value to the tablet
+
+            }
+        }
+        inputSearchCodeEl.value = ''
+    }
 });
 
-function searchProducts(){
-    modalStock.show()
+function searchProducts() {
+    modalInventory.show()
 }
 
-function renderProductsToDatalist() {
-    products.forEach((product) => {
-        if (!product.code) {
-            product.code = `AVULSO`
-        }
-
-        // datalistProductsEl.innerHTML += `
-        //     <option class="text-uppercase" value="${product.code} - ${product.name} - ${product.price}"></option>
-        // `
-    })
+function renderProductsToSearchProductTable() {
 }
 
 function addProductOnTable() {
     let id = `${Date.now()}`
-    let [code, name, price] = searchEl.value.split(" - ")
 
     const product = {
         id,
@@ -104,51 +121,57 @@ function addProductOnTable() {
     if (alreadyInCart) {
         modalInfoBodyEl.textContent = `${product.name}`
         modalInfo.show()
-        btnAddEl.setAttribute('disabled', true)
-        searchEl.value = ''
+        inputSearchCodeEl.value = ''
         return
     }
+
+    inputSearchCodeEl.value = ''
 
     addProductsToCart(product)
     renderProductOnTable(product)
     updateTotalToPay()
-    searchEl.value = ''
-    btnAddEl.setAttribute('disabled', true)
 }
 
 function renderProductOnTable(product) {
     tBodyProductsEl.innerHTML += `
-    <tr data-testid='tr-${product.id}'>
-        <th scope="row" class="text-center"><kbd style="font-size: 1rem; padding: 0.25rem 1rem 0.25rem 1rem">${product.code}</kbd></th>
-        <td class="text-uppercase">${product.name}</td>
-        <td class="text-center" data-testid="amount-${product.id}">${product.amount}</td>
-        <td class="text-center">${numberToBrazilianReal(1 * product.price)}</td>
-        <td data-testid="subtotal-${product.id}"></td>
-        <td>
-            <div class="text-success text-center" role="button"
-                onclick="updateProductAmount('plus', ${product.id})">
-                <i class="fa-solid fa-plus"></i>
-            </div>
-        </td>
-        <td>
-            <div class="text-danger text-center" role="button"
-                onclick="updateProductAmount('minus', ${product.id})">
-                <i class="fa-solid fa-minus"></i>
-            </div>
-        </td>
-        <td>
-            <div class="text-danger text-center" role="button"
-                onclick="removeItemFromCart(${product.id})">
-                <i class="fa-solid fa-trash"></i>
-            </div>
-        </td>
-    </tr>
+        <tr data-testid='tr-${product.id}'>
+            <th scope="row" class="text-center"><kbd>${product.code}</kbd></th>
+            <td class="text-uppercase">${product.name}</td>
+            <td class="text-center" data-testid="amount-${product.id}">${product.amount}</td>
+            <td class="text-center">${numberToBrazilianReal(1 * product.price)}</td>
+            <td data-testid="subtotal-${product.id}"></td>
+            <td class="text-center">
+                <button type="button" class="btn btn-outline-success btn-sm" onclick="updateProductAmount('plus', ${product.id})"><i class="fa-solid fa-plus"></i></button>
+            </td>
+            <td class="text-center">
+                <button type="button" class="btn btn-outline-danger btn-sm" onclick="updateProductAmount('minus', ${product.id})"><i class="fa-solid fa-minus"></i></button>
+            </td>
+            <td class="text-center">
+                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="removeItemFromCart(${product.id})"><i class="fa-solid fa-trash"></i></button>
+            </td>
+        </tr>
     `
 }
+
+function renderProductsOnModalTable() {
+    modalBodyProductEl.innerHTML += `
+        <tr>
+            <th scope="row" class="text-center"><kbd>7896396109181</kbd></th>
+            <td class="text-uppercase">Toalha de geladeira com 3 pçs ref 918</td>
+            <td class="text-center">R$ 5,00</td>
+            <td class="text-center">
+                <button type="button" class="btn btn-outline-success btn-sm"><i
+                        class="fa-solid fa-plus"></i></button>
+            </td>
+        </tr>
+    `
+}
+
 
 function addProductsToCart(product) {
     cart.push(product)
     localStorage.setItem("CART", JSON.stringify([...cart]))
+    badgeCartTotalEl.textContent = getTotalItems(cart)
 }
 
 function updateProductAmount(action, id) {
@@ -168,6 +191,7 @@ function updateProductAmount(action, id) {
             amount,
         }
     })
+
     updateTotalToPay()
 }
 
@@ -188,6 +212,7 @@ function updateTotalToPay() {
 
     inputPaymentEl.value = labelTotalEl.textContent
     localStorage.setItem("CART", JSON.stringify([...cart]));
+
     openAndCloseRegister()
 
 }
@@ -197,8 +222,10 @@ function removeItemFromCart(id) {
     rowEl.remove()
 
     cart = cart.filter((item) => item.id != id);
-    updateTotalToPay()
+    badgeCartTotalEl.textContent = getTotalItems(cart)
     localStorage.setItem("CART", JSON.stringify([...cart]));
+
+    updateTotalToPay()
     openAndCloseRegister()
 }
 
@@ -210,8 +237,10 @@ function removeAllItemFromCart() {
     })
 
     cart = []
-    updateTotalToPay()
+    badgeCartTotalEl.textContent = getTotalItems(cart)
     localStorage.setItem("CART", JSON.stringify([...cart]));
+
+    updateTotalToPay()
     openAndCloseRegister()
 }
 
@@ -229,18 +258,21 @@ function numberToBrazilianReal(number) {
     });
 }
 
+
 function handlePayment() {
     let totalToPay = cart.reduce((acc, curr) => acc + (curr.price * curr.amount), 0);
     let amountPayed = brazilianCurrencyToNumber(inputPaymentEl.value)
     const paymentsMethods = []
 
+
     if (totalToPay.toFixed(2) == amountPayed) {
         labelPaymentEl.textContent = numberToBrazilianReal(amountPayed)
-        inputPaymentEl.value = numberToBrazilianReal(0)
-        restPaymentEl.value = numberToBrazilianReal(amountPayed)
+        inputRestPaymentEl.value = numberToBrazilianReal(amountPayed)
+
         // Add payment method to the array
         let radios = document.querySelectorAll('[data-testid*="radio"]')
 
+        inputPaymentEl.value = numberToBrazilianReal(0)
         radios.forEach((radio) => {
             if (radio.checked) {
                 paymentsMethods.push(radio.dataset.payment)
@@ -250,11 +282,11 @@ function handlePayment() {
         // Close the modal and set disabled to Fechar btn
         modalPayment.hide()
         modalLoading.show()
-        
+
     } else {
-        
+
     }
-    
+
     removeAllItemFromCart()
 }
 
@@ -266,5 +298,6 @@ function openAndCloseRegister() {
     }
 }
 
-
-renderProductsToDatalist()
+function getTotalItems(cart) {
+    return cart.reduce((total, item) => total + item.amount, 0);
+}
