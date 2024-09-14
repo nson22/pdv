@@ -43,8 +43,6 @@ window.addEventListener('load', function () {
 })
 
 document.onkeydown = function (e) {
-    e.preventDefault()
-
     if (e.altKey && e.code === "KeyL") {
         modalInventory.show()
         inputSearchProductEl.focus()

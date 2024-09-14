@@ -17,43 +17,27 @@
 </head>
 
 <body style="font-family: 'Montserrat', sans-serif !important;">
-    <nav class="navbar navbar-expand-lg bg-dark fixed-top" data-bs-theme="dark">
-        <div class="container align-items-center d-flex">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
             <!-- Brand -->
-            <span class="navbar-brand h2 text-danger fw-bold">PJ
-                <span class="text-secondary fw-semibold text-uppercase text-warning">Variedades</span>
-            </span>
-
+            <a class="navbar-brand" href="#">Brand</a>
 
             <!-- Navbar toggler for mobile layout -->
-            <button class="navbar-toggler visually-hidden" id="toggleCollapse" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
-                aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
             <!-- Navbar collapse -->
-            <div class="collapse navbar-collapse mt-3" id="navbarNav">
-                <div class="container d-flex justify-content-between align-items-center">
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="container-fluid d-flex justify-content-between align-items-center">
                     <!-- Input field -->
-                    <input class="form-control form-control-lg w-100 w-md-25" id="search" data-testid='inputSearchCode'
-                        type="search" autofocus inputmode="numeric" placeholder="Código do produto" aria-label="Search">
-
+                    <input class="form-control w-50" type="text" placeholder="Search">
 
                     <!-- Buttons -->
-                    <div class="ms-2 d-flex">
-                        <button class="btn btn-outline-secondary btn-lg me-2" data-testid="btnSearch"
-                            onclick="searchProducts()" type="button"><i
-                                class="fa-solid fa-table text-warning"></i></button>
-                        <button class="btn btn-outline-secondary btn-lg" type="button" data-bs-toggle="modal"
-                            data-testid="btnCart" id='cart' disabled data-bs-target="#staticBackdrop">
-                            <div class="position-relative">
-                                <span
-                                    class="position-absolute top-0 start-50 translate-middle-y badge rounded bg-danger ms-2"><span
-                                        data-testid="badgeCartTotal" id="badge"></span></span>
-                            </div>
-                            <i class="fa-solid fa-cart-shopping text-warning"></i>
-                        </button>
+                    <div>
+                        <button class="btn btn-primary me-2">Button 1</button>
+                        <button class="btn btn-secondary">Button 2</button>
                     </div>
                 </div>
             </div>
@@ -110,11 +94,9 @@
         const badgeCartTotalEl = document.querySelector("#badge")
         const inputSearchCodeEL = document.querySelector("#search")
         const totalEl = document.querySelector("#total")
-        const toggleCollapseEl = document.querySelector("#toggleCollapse")
         const modalInventorySearchEl = document.querySelector("#modalInventorySearch")
         const modalInventoryBodyEl = document.querySelector("#modalInventoryBody")
         const btnCartEl = document.querySelector("[data-testid='btnCart']")
-
 
         var modalInventoryEl = new bootstrap.Modal(document.querySelector('#modalInventory'), { keyboard: true })
 
@@ -130,10 +112,6 @@
                 btnCartEl.setAttribute('disabled', true)
             }
         })
-
-        if (window.innerWidth <= 768 || window.innerWidth <= 992) {
-            toggleCollapseEl.click()
-        }
 
         document.onkeydown = function (e) {
             if (e.altKey && e.code === "KeyL") {
@@ -175,7 +153,6 @@
                         }, 2_000)
                         testHandleAddProductToCart()
                         testRenderProductOnTable()
-                        handleUpdateCart()
                         openAndCloseRegister() //deve mudar depois que adicionar produto no carro
                         // new Promise(() => {
                         //     modalLoading.show()
@@ -356,46 +333,7 @@
                 price: 9.99
             }
 
-            if(cart.length === 1){
-                let table = `
-                <div class="table-responsive" data-mdb-perfect-scrollbar="true">
-                        <table class="table align-middle">
-                            <thead class="bg-secondary text-light">
-                                <tr>
-                                    <th scope="col" class="text-center">CÓDIGO</th>
-                                    <th scope="col">PRODUTO</th>
-                                    <th scope="col" class="text-center">QUANTIDADE</th>
-                                    <th scope="col" class="text-center">VALOR (UNIT)</th>
-                                    <th scope="col" class="text-center">SUBTOTAL</th>
-                                    <th scope="col" class="text-center">ADICIONAR</th>
-                                    <th scope="col" class="text-center">RETIRAR</th>
-                                    <th scope="col" class="text-center">REMOVER</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr data-testid='tr-${product.id}'>
-                                    <th scope="row" class="text-center"><kbd>${product.code}</kbd></th>
-                                    <td class="text-uppercase">${product.name}</td>
-                                    <td class="text-center" data-testid="amount-${product.id}">${product.amount}</td>
-                                    <td class="text-center">${numberToBrazilianReal(1 * product.price)}</td>
-                                    <td class="text-center" data-testid="subtotal-${product.id}">${numberToBrazilianReal(product.amount * product.price)}</td>
-                                    <td class="text-center">
-                                        <button type="button" class="btn btn-outline-success btn-sm" onclick="handleUpdateProductAmount('plus', ${product.id})"><i class="fa-solid fa-plus"></i></button>
-                                    </td>
-                                    <td class="text-center">
-                                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="handleUpdateProductAmount('minus', ${product.id})"><i class="fa-solid fa-minus"></i></button>
-                                    </td>
-                                    <td class="text-center">
-                                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="removeItemFromCart(${product.id})"><i class="fa-solid fa-trash"></i></button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                `
-            }
-
-            Array.from({ length: qty }, () => {
+            Array.from({ length: qty }, (v, k) => {
                 mainEl.innerHTML += `
                     <div class="table-responsive" data-mdb-perfect-scrollbar="true">
                         <table class="table align-middle">
@@ -445,7 +383,6 @@
             }
 
             cart.push(product)
-            badgeCartTotalEl.textContent = cart.length
         }
 
     </script>
