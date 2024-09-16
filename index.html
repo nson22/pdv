@@ -18,20 +18,20 @@
 </head>
 
 <body style="font-family: 'Montserrat', sans-serif !important;">
-    <header class="bg-dark d-flex align-items-center fixed-top py-2" data-bs-theme="dark">
+    <header class="bg-dark d-flex fixed-top py-2 " data-bs-theme="dark">
         <div class="container">
-            <div class="row p-1 text-center align-items-center">
-                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-2 col-xl-2 col-xxl-2">
-                    <span class="navbar-brand text-danger fw-bold fs-4">PJ
-                        <span class="text-secondary fw-semibold text-uppercase text-warning">Variedades</span>
-                    </span>
-                </div>
-                <div class="col-9 col-sm-10 col-md-11 col-lg-9 col-xl-9 col-xxl-9">
-                    <input class="form-control form-control-lg border border-warning" id="search"
+            <div class='col-12'>
+                <div class=" d-flex justify-content-between align-items-center flex-wrap mx-auto" style="width: 100%;">
+                    <div class="d-flex">
+                        <span class="navbar-brand text-danger fw-bold fs-4">
+                            PJ
+                            <span
+                                class="text-secondary fw-semibold text-uppercase text-warning d-none d-lg-inline">Variedades</span>
+                        </span>
+                    </div>
+                    <input class="form-control form-control-lg border border-warning w-100" id="search"
                         data-testid='inputSearchCode' type="search" autofocus inputmode="numeric"
                         placeholder="Procurar produto" aria-label="Search">
-                </div>
-                <div class="col-3 col-sm-1 col-md-1 col-lg-1 col-xl-1 col-xxl-1">
                     <button class="btn btn-outline-secondary btn-lg border border-0" type="button"
                         data-bs-toggle="modal" data-testid="btnCart" id='cart' onclick="handlePayment()">
                         <div class="position-relative">
@@ -44,30 +44,124 @@
                     </button>
                 </div>
             </div>
+
+            <!-- <div class="row">
+                <div class="col-2 col-lg-2">
+                    <span class="navbar-brand text-danger fw-bold fs-4">
+                        PJ
+                        <span
+                            class="text-secondary fw-semibold text-uppercase text-warning d-none d-lg-inline">Variedades</span>
+                    </span>
+                </div>
+
+                <div class="col-8 col-lg-9">
+                    <input class="form-control form-control-lg border border-warning w-100" id="search"
+                        data-testid='inputSearchCode' type="search" autofocus inputmode="numeric"
+                        placeholder="Procurar produto" aria-label="Search">
+                </div>
+
+                <div class="col-2 col-lg-1">
+                    <button class="btn btn-outline-secondary btn-lg border border-0" type="button"
+                        data-bs-toggle="modal" data-testid="btnCart" id='cart' onclick="handlePayment()">
+                        <div class="position-relative">
+                            <span
+                                class="position-absolute top-0 start-50 translate-middle-y badge rounded bg-danger ms-2">
+                                <small data-testid="badgeCartTotal" id="badge"></small>
+                            </span>
+                        </div>
+                        <i class="fa-solid fa-cart-shopping text-warning"></i>
+                    </button>
+                </div>
+            </div> -->
         </div>
     </header>
 
-    <div class="container mt-5 mb-5 py-5" id="main">
-        <div class="table-responsive" data-mdb-perfect-scrollbar="true">
-            <table class="table align-middle">
-                <thead class="bg-secondary text-light">
-                    <tr>
-                        <th scope="col" class="text-center text-truncate">CÓDIGO</th>
-                        <th scope="col" class="text-truncate">PRODUTO</th>
-                        <th scope="col" class="text-center text-truncate">QUANTIDADE</th>
-                        <th scope="col" class="text-center text-truncate">R$ (UNIT)</th>
-                        <th scope="col" class="text-center text-truncate">R$ (SUBTOTAL)</th>
-                        <th scope="col" class="text-center text-truncate">ADICIONAR</th>
-                        <th scope="col" class="text-center text-truncate">RETIRAR</th>
-                        <th scope="col" class="text-center text-truncate">REMOVER</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody">
 
-                </tbody>
-            </table>
+    <main class="mt-4 pt-5 mb-4 pb-5 container" style="min-height: calc(100vh - 160px);">
+        <!-- <div class="container d-none d-md-flex justify-content-center" id="main">
+            <div class="table-responsive  d-none d-md-table" data-mdb-perfect-scrollbar="true">
+                <table class="table align-middle">
+                    <thead class="bg-secondary text-light">
+                        <tr>
+                            <th scope="col" class="text-center text-truncate">CÓDIGO</th>
+                            <th scope="col" class="text-truncate">PRODUTO</th>
+                            <th scope="col" class="text-center text-truncate">QUANTIDADE</th>
+                            <th scope="col" class="text-center text-truncate">R$ (UNIT)</th>
+                            <th scope="col" class="text-center text-truncate">R$ (SUBTOTAL)</th>
+                            <th scope="col" class="text-center text-truncate">ADICIONAR</th>
+                            <th scope="col" class="text-center text-truncate">RETIRAR</th>
+                            <th scope="col" class="text-center text-truncate">REMOVER</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+
+                    </tbody>
+                </table>
+            </div>
+        </div> -->
+
+        <div class='row' data-testid='tr-${product.id}'>
+            <div class='col-12'>
+                <div class="card mb-3 mx-auto" style="width: 100%;">
+                    <!-- Cabeçalho do Card -->
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div class="d-flex">
+                            <span class="fw-bold">Código</span>
+                            <kbd class="ms-2 bg-warning text-danger">76991261220</kbd>
+                        </div>
+                        <button type="button" class="btn btn-outline-danger btn-sm"
+                            onclick="handleRemoveItemFromCart(${product.id})">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                    <!-- Corpo do Card em linha -->
+                    <div class="card-body d-flex justify-content-between align-items-center flex-wrap">
+                        <!-- Nome do Produto -->
+                        <div class="d-flex align-items-center">
+                            <span class="fw-bold">Nome do produto</span>
+                        </div>
+
+                        <!-- Quantidade -->
+                        <div class="d-flex align-items-center">
+                            <p class="mb-0 me-2">QTD:</p>
+                            <span class="fw-bold">1</span>
+                        </div>
+
+                        <!-- Preço Unitário -->
+                        <div class="d-flex align-items-center">
+                            <p class="mb-0 me-2">R$ (UNIT):</p>
+                            <span class="fw-bold">1,99</span>
+                        </div>
+
+                        <!-- Subtotal -->
+                        <div class="d-flex align-items-center">
+                            <p class="mb-0 me-2">R$ (Subtotal):</p>
+                            <span class="fw-bold">1,99</span>
+                        </div>
+                    </div>
+                    <!-- Rodapé do Card -->
+                    <div class="card-footer d-flex justify-content-end">
+                        <!-- Botão de Remover Quantidade -->
+                        <button type="button" class="btn btn-danger btn-sm me-2"
+                            onclick="handleUpdateProductAmount('minus', ${product.id})">
+                            Retirar
+                        </button>
+                        <!-- Botão de Adicionar Quantidade -->
+                        <button type="button" class="btn btn-success btn-sm"
+                            onclick="handleUpdateProductAmount('plus', ${product.id})">
+                            Adicionar
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
+
+        <!-- Card (visível apenas em dispositivos móveis) -->
+        <div class="container d-block text-uppercase mt-3">
+            <div class="justify-content-center" id="cardMobile">
+            </div>
+
+    </main>
 
     <footer class="bg-dark d-flex align-items-center fixed-bottom py-2" data-bs-theme="dark">
         <div class="container text-center">
@@ -209,8 +303,6 @@
             </div>
         </div>
 
-        <!-- Modal Payment-->
-
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
             </script>
@@ -225,6 +317,7 @@
             const singleSaleProductEl = document.querySelector("#singleSaleProduct")
             const singleSalePriceEl = document.querySelector("#singleSalePrice")
             const cartEl = document.querySelector("#cart")
+            const cardMobileEl = document.querySelector("#cardMobile")
             const resultEl = document.querySelector("#result")
             const paymentTotalEl = document.querySelector("#paymentTotal")
             const paymentAmoutPayedEl = document.querySelector("#paymentAmoutPayed")
@@ -242,10 +335,10 @@
             window.addEventListener('load', function () {
                 if (cart.length > 0) {
                     cart.forEach((item) => {
-                        renderProductOnTable(item)
+                        // renderProductOnTable(item)
                     })
                     badgeCartTotalEl.textContent = cart.length
-                    handleUpdateCart()
+                    updateCart()
                 } else {
                     badgeCartTotalEl.textContent = 0
                 }
@@ -272,7 +365,7 @@
                     let query = e.target.value
 
                     if (query == '1') {
-                        testRenderProductOnTable(3)
+                        testRenderProductOnTable(10)
                         return
                     }
 
@@ -298,19 +391,13 @@
                 })
             })
 
-            function searchProduct(query) {
-                new Promise(() => {
-                    google.script.run.withSuccessHandler(function (product) {
-                        if (product.length === 1) {
-                            let [code, name, price] = product[0]
-                            handleAddProductToCart(code, name, price)
-                        } else {
-                            handleAddProductToCartByModal(product)
-                        }
-                    }).getProductByQueryGS(query)
-                })
-            }
-
+            //Handles Fn
+            /**
+             * Handles a single product sale.
+             *
+             * Gets the product name and price from the input fields, validates them,
+             * and adds the product to the cart.
+             */
             function handleSingleSale() {
                 let name = singleSaleProductEl.value
                 let price = singleSalePriceEl.value
@@ -329,11 +416,14 @@
                 modalSingleSale.hide()
             }
 
-            function handleAddProductToCart(code, name, price) {
-                if (code === '') {
-                    code = 'AVULSA'
-                }
-
+            /**
+             * Adds a product to the shopping cart.
+             *
+             * @param {string} code The product code. Defaults to 'AVULSA' if empty.
+             * @param {string} name The product name. Will be sanitized before adding.
+             * @param {number} price The product price.
+             */
+            function handleAddProductToCart(code = 'AVULSA', name, price) {
                 let sanitizedName = sanitize(name)
 
                 let product = {
@@ -353,50 +443,17 @@
                     localStorage.setItem("CART", JSON.stringify([...cart]))
                     badgeCartTotalEl.textContent = cart.length
                     renderProductOnTable(product)
-                    handleUpdateCart()
+                    updateCart()
                 }
 
             }
 
-            function handleAddProductToCartByModal(products) {
-                modalInventoryTableBodyEl.innerHTML = ''
-
-                products.forEach(product => {
-                    let [code, name, price] = product
-
-                    modalInventoryTableBodyEl.innerHTML += `
-                <tr>
-                  <td class="text-uppercase text-truncate">${name}</td>
-                  <td class="text-center text-truncate">${numberToBrazilianReal(1 * price)}</td>
-                  <td class="text-center">
-                      <button type="button" class="btn btn-outline-success btn-sm" onclick="handleAddProductToCart('${code}', '${name}', ${price})"><i class="fa-solid fa-plus"></i></button>
-                  </td>
-                </tr>
-                `
-                })
-            }
-
-            function renderProductOnTable(product) {
-                tabletBodyEl.innerHTML += `
-                <tr data-testid='tr-${product.id}'>
-                    <th scope="row" class="text-center text-truncate"><kbd class="text-dark bg-warning p-2">${product.code}</kbd></th>
-                    <td class="text-uppercase text-truncate">${product.name}</td>
-                    <td class="text-center text-truncate" data-testid="amount-${product.id}">${product.amount}</td>
-                    <td class="text-center text-truncate">${numberToBrazilianReal(1 * product.price)}</td>
-                    <td class="text-center text-truncate" data-testid="subtotal-${product.id}">${numberToBrazilianReal(product.amount * product.price)}</td>
-                    <td class="text-center">
-                        <button type="button" class="btn btn-outline-success btn-sm" onclick="handleUpdateProductAmount('plus', ${product.id})"><i class="fa-solid fa-plus"></i></button>
-                    </td>
-                    <td class="text-center">
-                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="handleUpdateProductAmount('minus', ${product.id})"><i class="fa-solid fa-minus"></i></button>
-                    </td>
-                    <td class="text-center">
-                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="handleRemoveItemFromCart(${product.id})"><i class="fa-solid fa-trash"></i></button>
-                    </td>
-                </tr>
-            `
-            }
-
+            /**
+             * Updates the amount of a product in the cart based on the provided action ("minus" or "plus") and product ID.
+             *
+             * @param {string} action The action to perform ("minus" to decrease, "plus" to increase).
+             * @param {number} id The ID of the product to update.
+             */
             function handleUpdateProductAmount(action, id) {
                 cart = cart.map((item) => {
                     let amount = item.amount
@@ -415,26 +472,14 @@
                     }
                 })
 
-                handleUpdateCart()
+                updateCart()
             }
 
-            function handleUpdateCart() {
-                cart.forEach(item => {
-                    let amountEl = document.querySelector(`[data-testid='amount-${item.id}']`)
-                    let subtotalEl = document.querySelector(`[data-testid='subtotal-${item.id}']`)
-
-                    amountEl.textContent = item.amount
-                    subtotalEl.textContent = numberToBrazilianReal(item.amount * item.price)
-                })
-
-                const total = cart.reduce((acc, curr) => acc + (curr.price * curr.amount), 0);
-
-                totalEl.textContent = numberToBrazilianReal(total)
-
-                paymentTotalEl.value = numberToBrazilianReal(total)
-                localStorage.setItem("CART", JSON.stringify([...cart]));
-            }
-
+            /**
+             * Removes an item from the cart based on its ID.
+             *
+             * @param {number} id The ID of the product to remove.
+             */
             function handleRemoveItemFromCart(id) {
                 const rowEl = document.querySelector(`[data-testid='tr-${id}']`)
                 rowEl.remove()
@@ -443,90 +488,10 @@
                 badgeCartTotalEl.textContent = cart.length
                 localStorage.setItem("CART", JSON.stringify([...cart]));
 
-                handleUpdateCart()
+                updateCart()
             }
 
             function handlePayment() {
-                if (cart.length === 0) {
-                    // paymentAlertMessage('Não há itens no carrinho.')
-                    console.log('Não há itens no carrinho.');
-                    return
-                }
-
-                // modalPayment.show()
-            }
-
-            //Helpers Fn
-            function numberToBrazilianReal(number) {
-                return number.toLocaleString('pt-BR', {
-                    style: 'currency',
-                    currency: 'BRL',
-                });
-            }
-
-            function brazilianCurrencyToNumber(currency) {
-                if (!currency.includes("R$")) {
-                    currency = `R$ ${currency}`
-                }
-                let cleanValue = currency.replace('R$', '').trim();
-                cleanValue = cleanValue.replace(/\./g, '');
-                cleanValue = cleanValue.replace(',', '.');
-                return parseFloat(cleanValue);
-            }
-
-            function sanitize(inputText) {
-                return inputText
-                    .trim()
-                    .replace(/\s+/g, ' ');
-            }
-
-            function openCart() {
-                modalPayment.show()
-            }
-
-            function formatToBrazilianRealCurrencyy(e) {
-                let value = e.target.value;
-                value = value.replace(/\D/g, '');
-                value = (value / 100).toFixed(2) // Add decimal places
-                    .replace('.', ',')           // Replace decimal point with comma
-                    .replace(/\B(?=(\d{3})+(?!\d))/g, '.'); // Add thousands separator
-                e.target.value = value ? `R$ ${value}` : '';
-            }
-
-            function removeAllItemFromCart() {
-                cart.forEach((item) => {
-                    let rowEl = document.querySelector(`[data-testid='tr-${item.id}']`)
-                    rowEl.remove()
-
-                })
-
-                cart = []
-                badgeCartTotalEl.textContent = cart.length
-                localStorage.setItem("CART", JSON.stringify([...cart]));
-
-                handleUpdateCart()
-            }
-
-            function paymentAlertMessage(message) {
-                paymentAlertEl.innerHTML += `
-                       <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <strong>Aviso!</strong> ${message}.
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    `
-                paymentAmoutPayed.value = paymentTotalEl.value
-
-            }
-
-            function addPaymentMethod() {
-                let paymentoMethods = document.querySelectorAll('[data-testid*="radio"]');
-
-                let checkedRadio = Array.from(paymentoMethods).find(radio => radio.checked);
-
-                return checkedRadio ? checkedRadio.dataset.payment : null;
-            }
-
-            function handlePayments() {
                 let id = Date.now()
 
                 const payment = {
@@ -551,7 +516,6 @@
                     payment.total = totalInCart
 
                 } else {
-                    debugger
                     while (totalInCart > 0) {
                         if (totalInCart < amountPayed) {
                             paymentAlertMessage('Os valores foram ajustados')
@@ -574,8 +538,238 @@
                 //Enviar pagamento para a planilha
             }
 
-            //Loading
-            function tableProductsSchimmer(qty = 10) {
+            //Helpers Fn
+            /**
+             * Updates the cart summary with product quantities, subtotals, and total amount.
+             */
+            function updateCart() {
+                cart.forEach(item => {
+                    let amountEl = document.querySelector(`[data-testid='amount-${item.id}']`)
+                    let subtotalEl = document.querySelector(`[data-testid='subtotal-${item.id}']`)
+
+                    // amountEl.textContent = item.amount
+                    // subtotalEl.textContent = numberToBrazilianReal(item.amount * item.price)
+                })
+
+                const total = cart.reduce((acc, curr) => acc + (curr.price * curr.amount), 0);
+
+                totalEl.textContent = numberToBrazilianReal(total)
+
+                paymentTotalEl.value = numberToBrazilianReal(total)
+                localStorage.setItem("CART", JSON.stringify([...cart]));
+            }
+
+            /**
+             * Searches for a product using Google Apps Script based on a query string.
+             *
+             * @param {string} query The search query for the product.
+             */
+            function searchProduct(query) {
+                new Promise(() => {
+                    google.script.run.withSuccessHandler(function (product) {
+                        if (product.length === 1) {
+                            let [code, name, price] = product[0]
+                            handleAddProductToCart(code, name, price)
+                        } else {
+                            addProductToCartByModal(product)
+                        }
+                    }).getProductByQueryGS(query)
+                })
+            }
+
+            /**
+             * Adds a list of products to a modal table for selection.
+
+            * @param {array} products An array of product data, each item containing code, name, and price.
+            */
+            function addProductToCartByModal(products) {
+                modalInventoryTableBodyEl.innerHTML = ''
+
+                products.forEach(product => {
+                    let [code, name, price] = product
+
+                    modalInventoryTableBodyEl.innerHTML += `
+                <tr>
+                  <td class="text-uppercase text-truncate">${name}</td>
+                  <td class="text-center text-truncate">${numberToBrazilianReal(1 * price)}</td>
+                  <td class="text-center">
+                      <button type="button" class="btn btn-outline-success btn-sm" onclick="handleAddProductToCart('${code}', '${name}', ${price})"><i class="fa-solid fa-plus"></i></button>
+                  </td>
+                </tr>
+                `
+                })
+            }
+
+            /**
+             * Renders a product row in the cart table.
+             *
+             * @param {object} product The product data object containing properties like code, name, amount, and price.
+             */
+            function renderProductOnTable(product) {
+                tabletBodyEl.innerHTML += `
+                <tr data-testid='tr-${product.id}'>
+                    <th scope="row" class="text-center text-truncate"><kbd class="text-dark bg-warning p-2">${product.code}</kbd></th>
+                    <td class="text-uppercase text-truncate">${product.name}</td>
+                    <td class="text-center text-truncate" data-testid="amount-${product.id}">${product.amount}</td>
+                    <td class="text-center text-truncate">${numberToBrazilianReal(1 * product.price)}</td>
+                    <td class="text-center text-truncate" data-testid="subtotal-${product.id}">${numberToBrazilianReal(product.amount * product.price)}</td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-outline-success btn-sm" onclick="handleUpdateProductAmount('plus', ${product.id})"><i class="fa-solid fa-plus"></i></button>
+                    </td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="handleUpdateProductAmount('minus', ${product.id})"><i class="fa-solid fa-minus"></i></button>
+                    </td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="handleRemoveItemFromCart(${product.id})"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>
+            `
+            }
+
+            function renderProductOnCard(product) {
+                cardMobileEl.innerHTML += `
+                 <div class="card mb-3 " style="max-width: 500px; width: 100%;">
+                    <div class="card-header d-flex justify-content-between align-items-center bg-dark">
+                        <div class="d-flex text-light"><span class="fw-bold">Código</span><kbd class="ms-2 bg-warning">12345</kbd></div>
+                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="handleRemoveItemFromCart('${product.id}')"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex mb-2"><span class="fw-bold ">Produto</span></div>
+                        <div class="row mb-2">
+                            <div class="col-4">
+                                <p class="mb-0">Quantidade</p>
+                                <span class="fw-bold">2</span>
+                            </div>
+                            <div class="col-4">
+                                <p class="mb-0">R$ (UNIT)</p>
+                                <span class="fw-bold">R$ 50,00</span>
+                            </div>
+                            <div class="col-4">
+                                <p class="mb-0">R$ (Subtotal)</p>
+                                <span class="fw-bold">R$ 100,00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer d-flex justify-content-between ">
+                        <div class="col-6">
+                            <button type="button" class="btn btn-outline-danger btn-sm w-100 me-2" onclick="handleUpdateProductAmount('minus', '${product.id}')"><i class="fa-solid fa-minus"></i> Remover</button>
+                        </div>
+                        <div class="col-6">
+                            <button type="button" class="btn btn-outline-success btn-sm w-100 ms-2" onclick="handleUpdateProductAmount('plus', '${product.id}')"><i class="fa-solid fa-plus"></i> Adicionar</button>
+                        </div>
+                    </div>
+                </div>`
+            }
+
+            /**
+             * Formats a number as a Brazilian Real currency string.
+             *
+             * @param {number} number The number to format.
+             * @returns {string} The formatted number as a Brazilian Real currency string.
+             */
+            function numberToBrazilianReal(number) {
+                return number.toLocaleString('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL',
+                });
+            }
+            /**
+             * Converts a Brazilian Real currency string to a number.
+             *
+             * @param {string} currency The currency string to convert.
+             * @returns {number} The converted number.
+             */
+            function brazilianCurrencyToNumber(currency) {
+                if (!currency.includes("R$")) {
+                    currency = `R$ ${currency}`
+                }
+                let cleanValue = currency.replace('R$', '').trim();
+                cleanValue = cleanValue.replace(/\./g, '');
+                cleanValue = cleanValue.replace(',', '.');
+                return parseFloat(cleanValue);
+            }
+
+            /**
+             * Sanitizes input text by trimming and removing extra whitespace.
+
+            * @param {string} inputText The input text to sanitize.
+            * @returns {string} The sanitized input text.
+            */
+            function sanitize(inputText) {
+                return inputText
+                    .trim()
+                    .replace(/\s+/g, ' ');
+            }
+
+            /**
+             * Formats an input field value as a Brazilian Real currency string.
+             *
+             * @param {Event} e The input event object.
+             * @returns {void} (modifies the value of the target input element)
+             */
+            function formatToBrazilianRealCurrencyy(e) {
+                let value = e.target.value;
+                value = value.replace(/\D/g, '');
+                value = (value / 100).toFixed(2) // Add decimal places
+                    .replace('.', ',')           // Replace decimal point with comma
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, '.'); // Add thousands separator
+                e.target.value = value ? `R$ ${value}` : '';
+            }
+
+            /**
+             * Removes all items from the cart.
+             *
+             * @returns {void} (modifies cart state and DOM elements)
+             */
+            function removeAllItemFromCart() {
+                cart.forEach((item) => {
+                    let rowEl = document.querySelector(`[data-testid='tr-${item.id}']`)
+                    rowEl.remove()
+
+                })
+
+                cart = []
+                badgeCartTotalEl.textContent = cart.length
+                localStorage.setItem("CART", JSON.stringify([...cart]));
+
+                updateCart()
+            }
+
+            /**
+             * Displays an alert message related to payment.
+             *
+             * @param {string} message The message to display in the alert.
+             */
+            function paymentAlertMessage(message) {
+                paymentAlertEl.innerHTML += `
+                       <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <strong>Aviso!</strong> ${message}.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `
+                paymentAmoutPayed.value = paymentTotalEl.value
+
+            }
+
+            /**
+             * Retrieves the selected payment method from the radio buttons.
+
+            * @returns {string|null} The selected payment method code or null if none is selected.
+            */
+            function addPaymentMethod() {
+                let paymentoMethods = document.querySelectorAll('[data-testid*="radio"]');
+
+                let checkedRadio = Array.from(paymentoMethods).find(radio => radio.checked);
+
+                return checkedRadio ? checkedRadio.dataset.payment : null;
+            }
+
+            /**
+             * Creates a placeholder loading spinner for a table row.
+
+            * @param {number} qty The number of rows to generate.
+            */
+            function tableProductsSchimmer(qty = 3) {
                 Array.from({ qty }, () => {
                     modalInventoryTableBodyEl.innerHTML += `
                   <tr>
@@ -611,29 +805,89 @@
 
                     cart.push(product)
 
-                    tabletBodyEl.innerHTML += `
-                        <tr data-testid='tr-${product.id}'>
-                            <th scope="row" class="text-center text-truncate"><kbd class="text-dark bg-warning p-2">${product.code}</kbd></th>
-                            <td class="text-uppercase">${product.name}</td>
-                            <td class="text-center text-truncate" data-testid="amount-${product.id}">${product.amount}</td>
-                            <td class="text-center text-truncate">${numberToBrazilianReal(1 * product.price)}</td>
-                            <td class="text-center text-truncate" data-testid="subtotal-${product.id}">${numberToBrazilianReal(product.amount * product.price)}</td>
-                            <td class="text-center">
-                                <button type="button" class="btn btn-outline-success btn-sm" onclick="handleUpdateProductAmount('plus', ${product.id})"><i class="fa-solid fa-plus"></i></button>
-                            </td>
-                            <td class="text-center">
-                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="handleUpdateProductAmount('minus', ${product.id})"><i class="fa-solid fa-minus"></i></button>
-                            </td>
-                            <td class="text-center">
-                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="removeItemFromCart(${product.id})"><i class="fa-solid fa-trash"></i></button>
-                            </td>
-                        </tr>
-                    `
+                    // tabletBodyEl.innerHTML += `
+                    //     <tr data-testid='tr-${product.id}'>
+                    //         <th scope="row" class="text-center text-truncate"><kbd class="text-dark bg-warning p-2">${product.code}</kbd></th>
+                    //         <td class="text-uppercase">${product.name}</td>
+                    //         <td class="text-center text-truncate" data-testid="amount-${product.id}">${product.amount}</td>
+                    //         <td class="text-center text-truncate">${numberToBrazilianReal(1 * product.price)}</td>
+                    //         <td class="text-center text-truncate" data-testid="subtotal-${product.id}">${numberToBrazilianReal(product.amount * product.price)}</td>
+                    //         <td class="text-center">
+                    //             <button type="button" class="btn btn-outline-success btn-sm" onclick="handleUpdateProductAmount('plus', ${product.id})"><i class="fa-solid fa-plus"></i></button>
+                    //         </td>
+                    //         <td class="text-center">
+                    //             <button type="button" class="btn btn-outline-danger btn-sm" onclick="handleUpdateProductAmount('minus', ${product.id})"><i class="fa-solid fa-minus"></i></button>
+                    //         </td>
+                    //         <td class="text-center">
+                    //             <button type="button" class="btn btn-outline-secondary btn-sm" onclick="removeItemFromCart(${product.id})"><i class="fa-solid fa-trash"></i></button>
+                    //         </td>
+                    //     </tr>
+                    // `
+                    testRenderProductOnCard(product)
                 })
 
-                handleUpdateCart()
+                updateCart()
+                badgeCartTotalEl.textContent = cart.length
+            }
 
+            function testRenderProductOnCard(product) {
+                cardMobileEl.innerHTML += `
+                   <div class='row' data-testid='tr-${product.id}'>
+                        <div class='col-12'>
+                            <div class="card mb-3 mx-auto" style="width: 100%;">
+                                <!-- Cabeçalho do Card -->
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <div class="d-flex">
+                                        <span class="fw-bold">Código</span>
+                                        <kbd class="ms-2 bg-warning text-danger">${product.code}</kbd>
+                                    </div>
+                                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="handleRemoveItemFromCart(${product.id})">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </div>
+                                <!-- Corpo do Card em linha -->
+                                <div class="card-body d-flex justify-content-between align-items-center flex-wrap">
+                                    <!-- Nome do Produto -->
+                                    <div class="d-flex align-items-center">
+                                        <span class="fw-bold">${product.name}</span>
+                                    </div>
+                                    
+                                    <!-- Quantidade -->
+                                    <div class="d-flex align-items-center">
+                                        <p class="mb-0 me-2">Quantidade:</p>
+                                        <span class="fw-bold">${product.amount}</span>
+                                    </div>
+                                    
+                                    <!-- Preço Unitário -->
+                                    <div class="d-flex align-items-center">
+                                        <p class="mb-0 me-2">R$ (UNIT):</p>
+                                        <span class="fw-bold">${numberToBrazilianReal(1 * product.price)}</span>
+                                    </div>
 
+                                    <!-- Subtotal -->
+                                    <div class="d-flex align-items-center">
+                                        <p class="mb-0 me-2">R$ (Subtotal):</p>
+                                        <span class="fw-bold">${numberToBrazilianReal(product.amount * product.price)}</span>
+                                    </div>
+                                </div>
+                                <!-- Rodapé do Card -->
+                                <div class="card-footer d-flex justify-content-end">
+                                    <!-- Botão de Remover Quantidade -->
+                                    <button type="button" class="btn btn-outline-danger btn-sm me-2" onclick="handleUpdateProductAmount('minus', ${product.id})">
+                                        <i class="fa-solid fa-minus"></i> Retirar
+                                    </button>
+                                    <!-- Botão de Adicionar Quantidade -->
+                                    <button type="button" class="btn btn-outline-success btn-sm" onclick="handleUpdateProductAmount('plus', ${product.id})">
+                                        <i class="fa-solid fa-plus"></i> Adicionar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                `
+
+                updateCart()
                 badgeCartTotalEl.textContent = cart.length
             }
 
