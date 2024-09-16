@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
         integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
+
 </head>
 
 <body style="font-family: 'Montserrat', sans-serif !important;">
@@ -26,16 +27,18 @@
                     </span>
                 </div>
                 <div class="col-9 col-sm-10 col-md-11 col-lg-9 col-xl-9 col-xxl-9">
-                    <input class="form-control form-control-lg" id="search" data-testid='inputSearchCode' type="search"
-                        autofocus inputmode="numeric" placeholder="Procurar produto" aria-label="Search">
+                    <input class="form-control form-control-lg border border-warning" id="search"
+                        data-testid='inputSearchCode' type="search" autofocus inputmode="numeric"
+                        placeholder="Procurar produto" aria-label="Search">
                 </div>
                 <div class="col-3 col-sm-1 col-md-1 col-lg-1 col-xl-1 col-xxl-1">
                     <button class="btn btn-outline-secondary btn-lg border border-0" type="button"
-                        data-bs-toggle="modal" data-testid="btnCart" id='cart' data-bs-target="#staticBackdrop">
+                        data-bs-toggle="modal" data-testid="btnCart" id='cart' onclick="handlePayment()">
                         <div class="position-relative">
                             <span
-                                class="position-absolute top-0 start-50 translate-middle-y badge rounded bg-danger ms-2"><span
-                                    data-testid="badgeCartTotal" id="badge"></span></span>
+                                class="position-absolute top-0 start-50 translate-middle-y badge rounded bg-danger ms-2">
+                                <small data-testid="badgeCartTotal" id="badge"></small>
+                            </span>
                         </div>
                         <i class="fa-solid fa-cart-shopping text-warning"></i>
                     </button>
@@ -52,8 +55,8 @@
                         <th scope="col" class="text-center text-truncate">CÓDIGO</th>
                         <th scope="col" class="text-truncate">PRODUTO</th>
                         <th scope="col" class="text-center text-truncate">QUANTIDADE</th>
-                        <th scope="col" class="text-center text-truncate">VALOR (UNIT)</th>
-                        <th scope="col" class="text-center text-truncate">SUBTOTAL</th>
+                        <th scope="col" class="text-center text-truncate">R$ (UNIT)</th>
+                        <th scope="col" class="text-center text-truncate">R$ (SUBTOTAL)</th>
                         <th scope="col" class="text-center text-truncate">ADICIONAR</th>
                         <th scope="col" class="text-center text-truncate">RETIRAR</th>
                         <th scope="col" class="text-center text-truncate">REMOVER</th>
@@ -73,132 +76,308 @@
         </div>
     </footer>
 
-    <!-- Modal Inventory -->
-    <div class="modal fade" id="modalInventory" tabindex="-1" aria-labelledby="modalInventorySearch" aria-hidden="true">
-        <div class="modal-dialog modal-fullscreen">
+    <!-- Modal Payment -->
+    <div class="modal fade" id="modalPayment" tabindex="-1" aria-labelledby="modalPaymentSearch" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header bg-dark">
-                    <input class="form-control form-control-lg" type="search" id="modalInventorySearch"
-                        placeholder="Nome do produto" autofocus />
-                    <button type="button" class="btn-close text-danger ms-3 me-1" data-bs-dismiss="modal"
+                    <h1 class="modal-title text-warning fs-5 text-uppercase" id="modalPaymentSearchLabel">Métodos de
+                        pagamento
+                    </h1>
+                    <button type="button" class="btn-close text-bg-danger me-2" data-bs-dismiss="modal"
                         aria-label="Close"></button>
                 </div>
-                <div class="modal-body" id="modalInventoryBody">
-                    <form>
-                        <div class="mb-3">
-                            <label for="recipient-name" class="col-form-label">Recipient:</label>
-                            <input type="text" class="form-control" id="recipient-name">
+                <div class="modal-body" id="modalPaymentBody">
+                    <div class="row" id="payments">
+                        <div class="col-3 d-grid mx-auto"> <input type="radio" class="btn-check" data-payment="PIX"
+                                data-testid="radioPix" name="payment-options" id="pix-outlined" autocomplete="off"
+                                checked>
+                            <label class="btn btn-outline-secondary text-warning" for="pix-outlined"><i
+                                    class="fa-brands fa-pix"></i><br />PIX</label>
                         </div>
-                        <div class="mb-3">
-                            <label for="message-text" class="col-form-label">Message:</label>
-                            <textarea class="form-control" id="message-text"></textarea>
+                        <div class="col-3 d-grid mx-auto"><input type="radio" class="btn-check" data-payment="CREDITO"
+                                data-testid="radioCredit" name="payment-options" id="credit-outlined"
+                                autocomplete="off">
+                            <label class="btn btn-outline-secondary text-warning" for="credit-outlined"><i
+                                    class="fa-solid fa-credit-card"></i><br />Crédito</label>
                         </div>
-                    </form>
+                        <div class="col-3 d-grid mx-auto"> <input type="radio" class="btn-check" data-payment="DEBITO"
+                                data-testid="radioDebit" name="payment-options" id="debit-outlined" autocomplete="off">
+                            <label class="btn btn-outline-secondary text-warning" for="debit-outlined"><i
+                                    class="fa-regular fa-credit-card"></i><br />Débito</label>
+                        </div>
+                        <div class="col-3 d-grid mx-auto"> <input type="radio" class="btn-check" data-payment="DINHEIRO"
+                                data-testid="radioMoney" name="payment-options" id="money-outlined" autocomplete="off">
+                            <label class="btn btn-outline-secondary text-warning" for="money-outlined"><i
+                                    class="fa-solid fa-brazilian-real-sign"></i><br />Dinheiro</label>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="input-group input-group-lg">
+                            <div class="input-group input-group-lg mt-3">
+                                <span class="input-group-text border-warning bg-warning"><strong>Total</strong></span>
+                                <input type="text" class="form-control border-warning" id="paymentTotal" data-currency
+                                    placeholder="R$ 0,00" disabled>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-1">
+                        <div class="input-group input-group-lg">
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text border-warning bg-warning"><strong>Pago</strong></span>
+                                <input type="text" class="form-control border-warning" id="paymentAmoutPayed"
+                                    data-currency placeholder="R$ 0,00">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div id="paymentAlert">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" onclick="handlePayment()">Confirmar</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
+    <!-- Modal Inventory -->
+    <div class="modal fade" id="modalInventory" tabindex="-1" aria-labelledby="modalInventorySearch" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header bg-dark">
+                    <h1 class="modal-title text-warning fs-5 text-uppercase" id="modalInventorySearchLabel">Resultado(s)
+                        para:
+                        <span id='result' class="text-danger"></span>
+                    </h1>
+                    <button type="button" class="btn-close text-bg-danger me-2" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modalInventoryBody">
+                    <div class="container" id="main">
+                        <div class="table-responsive" data-mdb-perfect-scrollbar="true">
+                            <table class="table align-middle">
+                                <thead class="bg-secondary text-light">
+                                    <tr>
+                                        <th scope="col" class="text-truncate">PRODUTO</th>
+                                        <th scope="col" class="text-center text-truncate">R$ (UNIT)</th>
+                                        <th scope="col" class="text-center text-truncate">ADICIONAR</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="modalInventoryTableBody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <script>
-        let cart = JSON.parse(localStorage.getItem("CART")) || []
+    <!-- Modal Single Sale-->
+    <div class="modal fade" id="modalSingleSale" tabindex="-1" aria-labelledby="modalSingleSaleLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-dark">
+                    <h1 class="modal-title text-warning fs-5 text-uppercase" id="modalSingleSaleLabel">Venda avulsa</h1>
+                    <button type="button" class="btn-close text-bg-danger me-1" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-12">
+                                <input class="form-control-lg w-100 border-warning" type="text" name="venda avulsa"
+                                    id="singleSaleProduct" placeholder="Nome do produto">
+                            </div>
+                            <div class="input-group input-group-lg mt-3">
+                                <span class="input-group-text border-warning bg-warning"><strong>Preço</strong></span>
+                                <input type="text" class="form-control border-warning" id="singleSalePrice"
+                                    data-currency placeholder="R$ 0,00">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" onclick="handleSingleSale()">Confirmar</button>
+                </div>
+            </div>
+        </div>
 
-        const tabletBodyEl = document.querySelector("#tableBody")
-        const badgeCartTotalEl = document.querySelector("#badge")
-        const inputSearchCodeEL = document.querySelector("#search")
-        const totalEl = document.querySelector("#total")
-        const toggleCollapseEl = document.querySelector("#toggleCollapse")
-        const modalInventorySearchEl = document.querySelector("#modalInventorySearch")
-        const modalInventoryBodyEl = document.querySelector("#modalInventoryBody")
-        const btnCartEl = document.querySelector("[data-testid='btnCart']")
+        <!-- Modal Payment-->
 
-        var modalInventoryEl = new bootstrap.Modal(document.querySelector('#modalInventory'), { keyboard: true })
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
+            </script>
 
-        window.addEventListener('load', function () {
-            if (cart.length > 0) {
-                cart.forEach((item) => {
-                    renderProductOnTable(item)
-                })
-                badgeCartTotalEl.textContent = cart.length
-                handleUpdateCart()
-            } else {
-                badgeCartTotalEl.textContent = 0
-            }
-        })
+        <script>
+            let cart = JSON.parse(localStorage.getItem("CART")) || []
 
-        document.onkeydown = function (e) {
-            if (e.altKey && e.code === "KeyL") {
-                return
-            }
+            const tabletBodyEl = document.querySelector("#tableBody")
+            const badgeCartTotalEl = document.querySelector("#badge")
+            const searchCodeEl = document.querySelector("#search")
+            const totalEl = document.querySelector("#total")
+            const singleSaleProductEl = document.querySelector("#singleSaleProduct")
+            const singleSalePriceEl = document.querySelector("#singleSalePrice")
+            const cartEl = document.querySelector("#cart")
+            const resultEl = document.querySelector("#result")
+            const paymentTotalEl = document.querySelector("#paymentTotal")
+            const paymentAmoutPayedEl = document.querySelector("#paymentAmoutPayed")
+            const paymentAlertEl = document.querySelector("#paymentAlert")
 
-            if (e.altKey && e.code === "KeyC") {
-                inputSearchCodeEl.focus()
-                return
-            }
+            const modalInventorySearchEl = document.querySelector("#modalInventorySearch")
+            const modalInventoryTableBodyEl = document.querySelector("#modalInventoryTableBody")
 
-            if (e.altKey && e.code === "KeyV") {
-                // btnRegisterEl.click()
-                return
-            }
+            const dataCurrency = document.querySelectorAll('[data-currency]')
 
-            if (e.altKey && e.code === "KeyA") {
-                // modalSingleSale.show()
-                return
-            }
-        }
+            var modalPayment = new bootstrap.Modal('#modalPayment')
+            var modalInventory = new bootstrap.Modal('#modalInventory')
+            var modalSingleSale = new bootstrap.Modal('#modalSingleSale')
 
-        inputSearchCodeEL.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                let query = e.target.value
-
-                if (query === 0) {
-                    modalSingleSale.show()
-
-                } if (Number.isInteger(Number(query))) {
-                    // Buscar no banco item com o codigo e adicionar no carrinho direto
-                    searchProduct()
-                } else {
-                    // Buscar no banco pelo nome e adicionar no carrinho, caso haja mais de um item exibir o modal
-                    testHandleAddProductToCart()
-                    testRenderProductOnTable()
+            window.addEventListener('load', function () {
+                if (cart.length > 0) {
+                    cart.forEach((item) => {
+                        renderProductOnTable(item)
+                    })
+                    badgeCartTotalEl.textContent = cart.length
                     handleUpdateCart()
-
+                } else {
+                    badgeCartTotalEl.textContent = 0
                 }
-                e.target.value = ''
-            }
-        })
-
-        function searchProduct() {
-            new Promise(() => {
-                modalLoading.show()
-                google.script.run.withSuccessHandler(function (product) {
-                    let [code, name, price] = product[0]
-                    handleAddProductToCart(code, name, price)
-                }).getProductByQueryGS(query)
             })
-        }
 
-        function handleAddProductToCart(code, name, price) {
-            code = code ? (code === '' || code === 1) : 'AVULSA'
+            document.onkeydown = function (e) {
+                if (e.altKey && e.code === "KeyL") {
+                    return
+                }
 
-            let product = {
-                id: Date.now(),
-                code,
-                name,
-                amount: 1,
-                price
+                if (e.altKey && e.code === "KeyC") {
+                    searchCodeEl.focus()
+                    return
+                }
+
+                if (e.altKey && e.code === "KeyA") {
+                    modalSingleSale.show()
+                    return
+                }
             }
 
-            cart.push(product)
-            localStorage.setItem("CART", JSON.stringify([...cart]))
-            badgeCartTotalEl.textContent = cart.length
-        }
+            searchCodeEl.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    let query = e.target.value
 
-        function renderProductOnTable(product) {
-            tabletBodyEl.innerHTML += `
+                    if (query == '1') {
+                        testRenderProductOnTable(3)
+                        return
+                    }
+
+                    if (query === "") {
+                        modalSingleSale.show()
+                    } if (Number.isInteger(Number(query))) {
+                        tableProductsSchimmer(1)
+                        searchProduct(query)
+                    } else {
+                        resultEl.textContent = query
+                        tableProductsSchimmer()
+                        modalInventory.show()
+                        searchProduct(query)
+                        modalInventory.hide()
+                    }
+                    e.target.value = ''
+                }
+            })
+
+            dataCurrency.forEach((input) => {
+                input.addEventListener('input', function (e) {
+                    formatToBrazilianRealCurrencyy(e)
+                })
+            })
+
+            function searchProduct(query) {
+                new Promise(() => {
+                    google.script.run.withSuccessHandler(function (product) {
+                        if (product.length === 1) {
+                            let [code, name, price] = product[0]
+                            handleAddProductToCart(code, name, price)
+                        } else {
+                            handleAddProductToCartByModal(product)
+                        }
+                    }).getProductByQueryGS(query)
+                })
+            }
+
+            function handleSingleSale() {
+                let name = singleSaleProductEl.value
+                let price = singleSalePriceEl.value
+
+                if (name === '') {
+                    singleSaleProductEl.focus()
+                    return
+                }
+
+                if (price === '') {
+                    singleSalePriceEl.focus()
+                    return
+                }
+
+                handleAddProductToCart(1, name, brazilianCurrencyToNumber(price))
+                modalSingleSale.hide()
+            }
+
+            function handleAddProductToCart(code, name, price) {
+                if (code === '') {
+                    code = 'AVULSA'
+                }
+
+                let sanitizedName = sanitize(name)
+
+                let product = {
+                    id: Date.now(),
+                    code,
+                    name: sanitizedName,
+                    amount: 1,
+                    price
+                }
+
+                let alreadyInCart = cart.some(product => {
+                    return product.name === sanitizedName
+                })
+
+                if (!alreadyInCart) {
+                    cart.push(product)
+                    localStorage.setItem("CART", JSON.stringify([...cart]))
+                    badgeCartTotalEl.textContent = cart.length
+                    renderProductOnTable(product)
+                    handleUpdateCart()
+                }
+
+            }
+
+            function handleAddProductToCartByModal(products) {
+                modalInventoryTableBodyEl.innerHTML = ''
+
+                products.forEach(product => {
+                    let [code, name, price] = product
+
+                    modalInventoryTableBodyEl.innerHTML += `
+                <tr>
+                  <td class="text-uppercase text-truncate">${name}</td>
+                  <td class="text-center text-truncate">${numberToBrazilianReal(1 * price)}</td>
+                  <td class="text-center">
+                      <button type="button" class="btn btn-outline-success btn-sm" onclick="handleAddProductToCart('${code}', '${name}', ${price})"><i class="fa-solid fa-plus"></i></button>
+                  </td>
+                </tr>
+                `
+                })
+            }
+
+            function renderProductOnTable(product) {
+                tabletBodyEl.innerHTML += `
                 <tr data-testid='tr-${product.id}'>
                     <th scope="row" class="text-center text-truncate"><kbd class="text-dark bg-warning p-2">${product.code}</kbd></th>
                     <td class="text-uppercase text-truncate">${product.name}</td>
@@ -212,160 +391,253 @@
                         <button type="button" class="btn btn-outline-danger btn-sm" onclick="handleUpdateProductAmount('minus', ${product.id})"><i class="fa-solid fa-minus"></i></button>
                     </td>
                     <td class="text-center">
-                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="removeItemFromCart(${product.id})"><i class="fa-solid fa-trash"></i></button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="handleRemoveItemFromCart(${product.id})"><i class="fa-solid fa-trash"></i></button>
                     </td>
                 </tr>
             `
-        }
+            }
 
-        function handleUpdateProductAmount(action, id) {
-            cart = cart.map((item) => {
-                let amount = item.amount
+            function handleUpdateProductAmount(action, id) {
+                cart = cart.map((item) => {
+                    let amount = item.amount
 
-                if (item.id === id) {
-                    if (action == "minus" && amount > 1) {
-                        amount--
-                    } else if (action === "plus") {
-                        amount++
+                    if (item.id === id) {
+                        if (action == "minus" && amount > 1) {
+                            amount--
+                        } else if (action === "plus") {
+                            amount++
+                        }
+                    }
+
+                    return {
+                        ...item,
+                        amount,
+                    }
+                })
+
+                handleUpdateCart()
+            }
+
+            function handleUpdateCart() {
+                cart.forEach(item => {
+                    let amountEl = document.querySelector(`[data-testid='amount-${item.id}']`)
+                    let subtotalEl = document.querySelector(`[data-testid='subtotal-${item.id}']`)
+
+                    amountEl.textContent = item.amount
+                    subtotalEl.textContent = numberToBrazilianReal(item.amount * item.price)
+                })
+
+                const total = cart.reduce((acc, curr) => acc + (curr.price * curr.amount), 0);
+
+                totalEl.textContent = numberToBrazilianReal(total)
+
+                paymentTotalEl.value = numberToBrazilianReal(total)
+                localStorage.setItem("CART", JSON.stringify([...cart]));
+            }
+
+            function handleRemoveItemFromCart(id) {
+                const rowEl = document.querySelector(`[data-testid='tr-${id}']`)
+                rowEl.remove()
+
+                cart = cart.filter((item) => item.id != id);
+                badgeCartTotalEl.textContent = cart.length
+                localStorage.setItem("CART", JSON.stringify([...cart]));
+
+                handleUpdateCart()
+            }
+
+            function handlePayment() {
+                if (cart.length === 0) {
+                    // paymentAlertMessage('Não há itens no carrinho.')
+                    console.log('Não há itens no carrinho.');
+                    return
+                }
+
+                // modalPayment.show()
+            }
+
+            //Helpers Fn
+            function numberToBrazilianReal(number) {
+                return number.toLocaleString('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL',
+                });
+            }
+
+            function brazilianCurrencyToNumber(currency) {
+                if (!currency.includes("R$")) {
+                    currency = `R$ ${currency}`
+                }
+                let cleanValue = currency.replace('R$', '').trim();
+                cleanValue = cleanValue.replace(/\./g, '');
+                cleanValue = cleanValue.replace(',', '.');
+                return parseFloat(cleanValue);
+            }
+
+            function sanitize(inputText) {
+                return inputText
+                    .trim()
+                    .replace(/\s+/g, ' ');
+            }
+
+            function openCart() {
+                modalPayment.show()
+            }
+
+            function formatToBrazilianRealCurrencyy(e) {
+                let value = e.target.value;
+                value = value.replace(/\D/g, '');
+                value = (value / 100).toFixed(2) // Add decimal places
+                    .replace('.', ',')           // Replace decimal point with comma
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, '.'); // Add thousands separator
+                e.target.value = value ? `R$ ${value}` : '';
+            }
+
+            function removeAllItemFromCart() {
+                cart.forEach((item) => {
+                    let rowEl = document.querySelector(`[data-testid='tr-${item.id}']`)
+                    rowEl.remove()
+
+                })
+
+                cart = []
+                badgeCartTotalEl.textContent = cart.length
+                localStorage.setItem("CART", JSON.stringify([...cart]));
+
+                handleUpdateCart()
+            }
+
+            function paymentAlertMessage(message) {
+                paymentAlertEl.innerHTML += `
+                       <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <strong>Aviso!</strong> ${message}.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `
+                paymentAmoutPayed.value = paymentTotalEl.value
+
+            }
+
+            function addPaymentMethod() {
+                let paymentoMethods = document.querySelectorAll('[data-testid*="radio"]');
+
+                let checkedRadio = Array.from(paymentoMethods).find(radio => radio.checked);
+
+                return checkedRadio ? checkedRadio.dataset.payment : null;
+            }
+
+            function handlePayments() {
+                let id = Date.now()
+
+                const payment = {
+                    id,
+                    paymentsMethods: [],
+                    total: 0
+                }
+
+                let totalInCart = cart.reduce((acc, curr) => acc + (curr.price * curr.amount), 0); //Total da venda
+                let amountPayed = brazilianCurrencyToNumber(paymentAmoutPayed.value) // Total pago
+
+                if (totalInCart < amountPayed) {
+                    paymentAlertMessage('Os valores foram ajustados')
+                    return
+                }
+
+                if (totalInCart === amountPayed) {
+                    let paymentType = addPaymentMethod()
+
+                    payment.paymentsMethods.push({ id, paymentType })
+
+                    payment.total = totalInCart
+
+                } else {
+                    debugger
+                    while (totalInCart > 0) {
+                        if (totalInCart < amountPayed) {
+                            paymentAlertMessage('Os valores foram ajustados')
+                            return
+                        }
+
+                        totalInCart = totalInCart - amountPayed
+
+                        // exibir o formulario para novo pagamento
+
+                        // paymentsMethods.push(radio.dataset.payment)
+
                     }
                 }
 
-                return {
-                    ...item,
-                    amount,
-                }
-            })
-
-            handleUpdateCart()
-        }
-
-        function handleUpdateCart() {
-            cart.forEach(item => {
-                let amountEl = document.querySelector(`[data-testid='amount-${item.id}']`)
-                let subtotalEl = document.querySelector(`[data-testid='subtotal-${item.id}']`)
-
-                amountEl.textContent = item.amount
-                subtotalEl.textContent = numberToBrazilianReal(item.amount * item.price)
-            })
-
-            const total = cart.reduce((acc, curr) => acc + (curr.price * curr.amount), 0);
-
-            totalEl.textContent = numberToBrazilianReal(total)
-
-            // inputPaymentEl.value = labelTotalEl.textContent
-            // localStorage.setItem("CART", JSON.stringify([...cart]));
-
-
-        }
-
-        function numberToBrazilianReal(number) {
-            return number.toLocaleString('pt-BR', {
-                style: 'currency',
-                currency: 'BRL',
-            });
-        }
-
-        function brazilianCurrencyToNumber(currency) {
-            let cleanValue = currency.replace('R$', '').trim();
-            cleanValue = cleanValue.replace(/\./g, '');
-            cleanValue = cleanValue.replace(',', '.');
-            return parseFloat(cleanValue);
-        }
-
-        //Test Functions
-        function tableProductsSchimmer(qty = 21) {
-            Array.from({ length: qty }, () => {
-                tabletBodyEl.innerHTML += `
-                    <tr>
-                        <th scope="row">
-                            <div class="progress" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-secondary" style="width: 100%"></div>
-                            </div>
-                        </th>
-                        <td>
-                            <div class="progress" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-secondary" style="width: 100%"></div>
-                            </div></td>
-                        <td>
-                            <div class="progress" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-secondary" style="width: 100%"></div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="progress" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-secondary" style="width: 100%"></div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="progress" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-secondary" style="width: 100%"></div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="progress" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-secondary" style="width: 100%"></div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="progress" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-secondary" style="width: 100%"></div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="progress" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-secondary" style="width: 100%"></div>
-                            </div>
-                        </td>
-                    </tr>
-                `
-            })
-        }
-
-        function testRenderProductOnTable(qty = 1) {
-            let product = {
-                id: Date.now(),
-                code: Date.now(),
-                name: "Product for testing purpose only Ref 22081983",
-                amount: 1,
-                price: 9.99
-            }
-            console.log(tabletBodyEl)
-            Array.from({ length: qty }, () => {
-                tabletBodyEl.innerHTML += `
-                    <tr data-testid='tr-${product.id}'>
-                        <th scope="row" class="text-center text-truncate"><kbd class="text-dark bg-warning p-2">${product.code}</kbd></th>
-                        <td class="text-uppercase">${product.name}</td>
-                        <td class="text-center text-truncate" data-testid="amount-${product.id}">${product.amount}</td>
-                        <td class="text-center text-truncate">${numberToBrazilianReal(1 * product.price)}</td>
-                        <td class="text-center text-truncate" data-testid="subtotal-${product.id}">${numberToBrazilianReal(product.amount * product.price)}</td>
-                        <td class="text-center">
-                            <button type="button" class="btn btn-outline-success btn-sm" onclick="handleUpdateProductAmount('plus', ${product.id})"><i class="fa-solid fa-plus"></i></button>
-                        </td>
-                        <td class="text-center">
-                            <button type="button" class="btn btn-outline-danger btn-sm" onclick="handleUpdateProductAmount('minus', ${product.id})"><i class="fa-solid fa-minus"></i></button>
-                        </td>
-                        <td class="text-center">
-                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="removeItemFromCart(${product.id})"><i class="fa-solid fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `
-            })
-        }
-
-        function testHandleAddProductToCart() {
-            let product = {
-                id: Date.now(),
-                code: Date.now(),
-                name: "Product",
-                amount: 1,
-                price: 9.99
+                paymentTotalEl.value = ''
+                paymentAmoutPayed.value = ''
+                removeAllItemFromCart()
+                modalPayment.hide()
+                //Enviar pagamento para a planilha
             }
 
-            cart.push(product)
-            badgeCartTotalEl.textContent = cart.length
-        }
+            //Loading
+            function tableProductsSchimmer(qty = 10) {
+                Array.from({ qty }, () => {
+                    modalInventoryTableBodyEl.innerHTML += `
+                  <tr>
+                    <td>
+                      <div class="progress" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+                      <div class="progress-bar progress-bar-striped progress-bar-animated bg-secondary" style="width: 100%"></div>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="progress" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-secondary" style="width: 100%"></div>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="progress" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-secondary" style="width: 100%"></div>
+                      </div>
+                    </td>
+                  </tr>`
+                })
+            }
 
-    </script>
+            //Test Functions
+            function testRenderProductOnTable(qty = 1) {
+                Array.from({ length: qty }, (_, idx) => {
+                    let product = {
+                        id: Date.now(),
+                        code: Date.now(),
+                        name: `Product ${idx}`,
+                        amount: 1,
+                        price: 9.99
+                    }
+
+                    cart.push(product)
+
+                    tabletBodyEl.innerHTML += `
+                        <tr data-testid='tr-${product.id}'>
+                            <th scope="row" class="text-center text-truncate"><kbd class="text-dark bg-warning p-2">${product.code}</kbd></th>
+                            <td class="text-uppercase">${product.name}</td>
+                            <td class="text-center text-truncate" data-testid="amount-${product.id}">${product.amount}</td>
+                            <td class="text-center text-truncate">${numberToBrazilianReal(1 * product.price)}</td>
+                            <td class="text-center text-truncate" data-testid="subtotal-${product.id}">${numberToBrazilianReal(product.amount * product.price)}</td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-outline-success btn-sm" onclick="handleUpdateProductAmount('plus', ${product.id})"><i class="fa-solid fa-plus"></i></button>
+                            </td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="handleUpdateProductAmount('minus', ${product.id})"><i class="fa-solid fa-minus"></i></button>
+                            </td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="removeItemFromCart(${product.id})"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `
+                })
+
+                handleUpdateCart()
+
+
+                badgeCartTotalEl.textContent = cart.length
+            }
+
+        </script>
 </body>
 
 </html>
