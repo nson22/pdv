@@ -18,148 +18,39 @@
 </head>
 
 <body style="font-family: 'Montserrat', sans-serif !important;">
-    <header class="bg-dark d-flex fixed-top py-2 " data-bs-theme="dark">
+    <header class="bg-dark py-3 fixed-top">
         <div class="container">
-            <div class='col-12'>
-                <div class=" d-flex justify-content-between align-items-center flex-wrap mx-auto" style="width: 100%;">
-                    <div class="d-flex">
-                        <span class="navbar-brand text-danger fw-bold fs-4">
+            <div class='row'>
+                <div class='col-12'>
+                    <div class="d-flex flex-column flex-md-row align-items-center justify-content-between mb-0 mx-auto"
+                        style="width: 100%;">
+                        <span class="navbar-brand text-danger fw-bold fs-4 d-block d-md-inline">
                             PJ
                             <span
-                                class="text-secondary fw-semibold text-uppercase text-warning d-none d-lg-inline">Variedades</span>
+                                class="text-secondary fw-semibold text-uppercase text-warning d-md-inline">Variedades</span>
                         </span>
-                    </div>
-                    <input class="form-control form-control-lg border border-warning w-100" id="search"
-                        data-testid='inputSearchCode' type="search" autofocus inputmode="numeric"
-                        placeholder="Procurar produto" aria-label="Search">
-                    <button class="btn btn-outline-secondary btn-lg border border-0" type="button"
-                        data-bs-toggle="modal" data-testid="btnCart" id='cart' onclick="handlePayment()">
-                        <div class="position-relative">
-                            <span
-                                class="position-absolute top-0 start-50 translate-middle-y badge rounded bg-danger ms-2">
-                                <small data-testid="badgeCartTotal" id="badge"></small>
-                            </span>
+                        <div class="d-flex align-items-center flex-grow-1 mx-md-3 my-2 my-md-0">
+                            <input class="form-control form-control-lg border border-warning w-100" id="search"
+                                data-testid='inputSearchCode' type="search" autofocus inputmode="numeric"
+                                placeholder="Procurar produto" aria-label="Search">
+                            <button class="btn btn-outline-secondary btn-lg border border-0 ms-2" type="button"
+                                data-bs-toggle="modal" data-testid="btnCart" id='cart' onclick="handlePayment()">
+                                <div class="position-relative">
+                                    <span
+                                        class="position-absolute top-0 start-50 translate-middle-y badge rounded bg-danger ms-0">
+                                        <small data-testid="badgeCartTotal" id="badge"></small>
+                                    </span>
+                                    <i class="fa-solid fa-cart-shopping text-warning"></i>
+                                </div>
+                            </button>
                         </div>
-                        <i class="fa-solid fa-cart-shopping text-warning"></i>
-                    </button>
+                    </div>
                 </div>
             </div>
-
-            <!-- <div class="row">
-                <div class="col-2 col-lg-2">
-                    <span class="navbar-brand text-danger fw-bold fs-4">
-                        PJ
-                        <span
-                            class="text-secondary fw-semibold text-uppercase text-warning d-none d-lg-inline">Variedades</span>
-                    </span>
-                </div>
-
-                <div class="col-8 col-lg-9">
-                    <input class="form-control form-control-lg border border-warning w-100" id="search"
-                        data-testid='inputSearchCode' type="search" autofocus inputmode="numeric"
-                        placeholder="Procurar produto" aria-label="Search">
-                </div>
-
-                <div class="col-2 col-lg-1">
-                    <button class="btn btn-outline-secondary btn-lg border border-0" type="button"
-                        data-bs-toggle="modal" data-testid="btnCart" id='cart' onclick="handlePayment()">
-                        <div class="position-relative">
-                            <span
-                                class="position-absolute top-0 start-50 translate-middle-y badge rounded bg-danger ms-2">
-                                <small data-testid="badgeCartTotal" id="badge"></small>
-                            </span>
-                        </div>
-                        <i class="fa-solid fa-cart-shopping text-warning"></i>
-                    </button>
-                </div>
-            </div> -->
         </div>
     </header>
 
-
-    <main class="mt-4 pt-5 mb-4 pb-5 container" style="min-height: calc(100vh - 160px);">
-        <!-- <div class="container d-none d-md-flex justify-content-center" id="main">
-            <div class="table-responsive  d-none d-md-table" data-mdb-perfect-scrollbar="true">
-                <table class="table align-middle">
-                    <thead class="bg-secondary text-light">
-                        <tr>
-                            <th scope="col" class="text-center text-truncate">CÓDIGO</th>
-                            <th scope="col" class="text-truncate">PRODUTO</th>
-                            <th scope="col" class="text-center text-truncate">QUANTIDADE</th>
-                            <th scope="col" class="text-center text-truncate">R$ (UNIT)</th>
-                            <th scope="col" class="text-center text-truncate">R$ (SUBTOTAL)</th>
-                            <th scope="col" class="text-center text-truncate">ADICIONAR</th>
-                            <th scope="col" class="text-center text-truncate">RETIRAR</th>
-                            <th scope="col" class="text-center text-truncate">REMOVER</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody">
-
-                    </tbody>
-                </table>
-            </div>
-        </div> -->
-
-        <div class='row' data-testid='tr-${product.id}'>
-            <div class='col-12'>
-                <div class="card mb-3 mx-auto" style="width: 100%;">
-                    <!-- Cabeçalho do Card -->
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <div class="d-flex">
-                            <span class="fw-bold">Código</span>
-                            <kbd class="ms-2 bg-warning text-danger">76991261220</kbd>
-                        </div>
-                        <button type="button" class="btn btn-outline-danger btn-sm"
-                            onclick="handleRemoveItemFromCart(${product.id})">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </div>
-                    <!-- Corpo do Card em linha -->
-                    <div class="card-body d-flex justify-content-between align-items-center flex-wrap">
-                        <!-- Nome do Produto -->
-                        <div class="d-flex align-items-center">
-                            <span class="fw-bold">Nome do produto</span>
-                        </div>
-
-                        <!-- Quantidade -->
-                        <div class="d-flex align-items-center">
-                            <p class="mb-0 me-2">QTD:</p>
-                            <span class="fw-bold">1</span>
-                        </div>
-
-                        <!-- Preço Unitário -->
-                        <div class="d-flex align-items-center">
-                            <p class="mb-0 me-2">R$ (UNIT):</p>
-                            <span class="fw-bold">1,99</span>
-                        </div>
-
-                        <!-- Subtotal -->
-                        <div class="d-flex align-items-center">
-                            <p class="mb-0 me-2">R$ (Subtotal):</p>
-                            <span class="fw-bold">1,99</span>
-                        </div>
-                    </div>
-                    <!-- Rodapé do Card -->
-                    <div class="card-footer d-flex justify-content-end">
-                        <!-- Botão de Remover Quantidade -->
-                        <button type="button" class="btn btn-danger btn-sm me-2"
-                            onclick="handleUpdateProductAmount('minus', ${product.id})">
-                            Retirar
-                        </button>
-                        <!-- Botão de Adicionar Quantidade -->
-                        <button type="button" class="btn btn-success btn-sm"
-                            onclick="handleUpdateProductAmount('plus', ${product.id})">
-                            Adicionar
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Card (visível apenas em dispositivos móveis) -->
-        <div class="container d-block text-uppercase mt-3">
-            <div class="justify-content-center" id="cardMobile">
-            </div>
+    <main class="mt-5 pt-5 mb-5 pb-2 container" id="cardMobile" style="min-height: calc(100vh - 160px);">
 
     </main>
 
@@ -303,77 +194,58 @@
             </div>
         </div>
 
+        <!-- Toast -->
+        <div class="position-fixed mb-5 bottom-0 start-50 translate-middle-x p-3" style="z-index: 99">
+            <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header bg-danger text-warning">
+                    <strong class="me-auto">Notificação</strong>
+                    <button type="button" class="btn-close text-warning" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    
+                </div>
+            </div>
+        </div>
+
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
             </script>
 
         <script>
             let cart = JSON.parse(localStorage.getItem("CART")) || []
-
-            const tabletBodyEl = document.querySelector("#tableBody")
-            const badgeCartTotalEl = document.querySelector("#badge")
+            const badgeCartTotalEl = document.querySelector("#badge");
+            const totalEl = document.querySelector("#total");
+            const cardMobileEl = document.querySelector("#cardMobile");
             const searchCodeEl = document.querySelector("#search")
-            const totalEl = document.querySelector("#total")
-            const singleSaleProductEl = document.querySelector("#singleSaleProduct")
-            const singleSalePriceEl = document.querySelector("#singleSalePrice")
-            const cartEl = document.querySelector("#cart")
-            const cardMobileEl = document.querySelector("#cardMobile")
-            const resultEl = document.querySelector("#result")
-            const paymentTotalEl = document.querySelector("#paymentTotal")
-            const paymentAmoutPayedEl = document.querySelector("#paymentAmoutPayed")
-            const paymentAlertEl = document.querySelector("#paymentAlert")
 
             const modalInventorySearchEl = document.querySelector("#modalInventorySearch")
             const modalInventoryTableBodyEl = document.querySelector("#modalInventoryTableBody")
 
             const dataCurrency = document.querySelectorAll('[data-currency]')
 
-            var modalPayment = new bootstrap.Modal('#modalPayment')
-            var modalInventory = new bootstrap.Modal('#modalInventory')
-            var modalSingleSale = new bootstrap.Modal('#modalSingleSale')
+            const modalPayment = new bootstrap.Modal('#modalPayment')
+            const modalInventory = new bootstrap.Modal('#modalInventory')
+            const modalSingleSale = new bootstrap.Modal('#modalSingleSale')
 
-            window.addEventListener('load', function () {
-                if (cart.length > 0) {
-                    cart.forEach((item) => {
-                        // renderProductOnTable(item)
-                    })
-                    badgeCartTotalEl.textContent = cart.length
-                    updateCart()
-                } else {
-                    badgeCartTotalEl.textContent = 0
+            window.addEventListener('load', updateCartFromLocalStorage);
+
+            cardMobileEl.addEventListener('change', function(event) {
+                if (event.target.matches('input[type="number"]')) {
+                    const productId = parseInt(event.target.dataset.testid.split('-')[1]);
+                    const newAmount = event.target.value;
+                    updateProductAmount(productId, newAmount);
                 }
-            })
+            });
 
-            document.onkeydown = function (e) {
-                if (e.altKey && e.code === "KeyL") {
-                    return
-                }
-
-                if (e.altKey && e.code === "KeyC") {
-                    searchCodeEl.focus()
-                    return
-                }
-
-                if (e.altKey && e.code === "KeyA") {
-                    modalSingleSale.show()
-                    return
-                }
-            }
-
+            
             searchCodeEl.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
                     let query = e.target.value
 
-                    if (query == '1') {
-                        testRenderProductOnTable(10)
-                        return
-                    }
-
                     if (query === "") {
                         modalSingleSale.show()
                     } if (Number.isInteger(Number(query))) {
-                        tableProductsSchimmer(1)
-                        searchProduct(query)
+                        searchProduct(query, true)
                     } else {
                         resultEl.textContent = query
                         tableProductsSchimmer()
@@ -385,44 +257,73 @@
                 }
             })
 
-            dataCurrency.forEach((input) => {
-                input.addEventListener('input', function (e) {
-                    formatToBrazilianRealCurrencyy(e)
-                })
-            })
+            function updateCartFromLocalStorage() {
+                const storedCart = JSON.parse(localStorage.getItem("CART"));
 
-            //Handles Fn
-            /**
-             * Handles a single product sale.
-             *
-             * Gets the product name and price from the input fields, validates them,
-             * and adds the product to the cart.
-             */
-            function handleSingleSale() {
-                let name = singleSaleProductEl.value
-                let price = singleSalePriceEl.value
+                if (storedCart && storedCart.length > 0) {
+                    cart = storedCart;
+                    badgeCartTotalEl.textContent = cart.length;
+                    
+                    const total = cart.reduce((sum, item) => sum + (item.price * item.amount), 0);
+                    totalEl.textContent = numberToBrazilianReal(total)
 
-                if (name === '') {
-                    singleSaleProductEl.focus()
-                    return
+                    cardMobileEl.innerHTML = ''; // Clear existing content
+
+                    cart.forEach(product => {
+                        renderProductOnCard(product);
+                    });
                 }
-
-                if (price === '') {
-                    singleSalePriceEl.focus()
-                    return
-                }
-
-                handleAddProductToCart(1, name, brazilianCurrencyToNumber(price))
-                modalSingleSale.hide()
             }
 
-            /**
-             * Adds a product to the shopping cart.
+            function updateProductAmount(productId, newAmount) {
+                const product = cart.find(item => item.id === productId);
+                if (product) {
+                    product.amount = parseInt(newAmount);
+                    updateCart();
+                }
+            }
+
+            function updateCart() {
+                cart.forEach(item => {
+                    let amountEl = document.querySelector(`[data-testid="amount-${item.id}"]`);
+                    let subtotalEl = document.querySelector(`[data-testid="subtotal-${item.id}"]`);
+                    
+                    if (amountEl) amountEl.value = item.amount;
+                    if (subtotalEl) subtotalEl.textContent = numberToBrazilianReal(item.amount * item.price);
+                });
+
+                const total = cart.reduce((acc, curr) => acc + (curr.price * curr.amount), 0);
+                totalEl.textContent = numberToBrazilianReal(total);
+                
+                badgeCartTotalEl.textContent = cart.length;
+                localStorage.setItem("CART", JSON.stringify(cart));
+            }
+
+                 /**
+             * Searches for a product using Google Apps Script based on a query string.
              *
-             * @param {string} code The product code. Defaults to 'AVULSA' if empty.
-             * @param {string} name The product name. Will be sanitized before adding.
-             * @param {number} price The product price.
+             * @param {string} query The search query for the product.
              */
+            function searchProduct(query, test = false) {
+                if (test) {
+                    const product = getInventory(query)
+                    handleAddProductToCart(product.code, product.name, product.price)
+                    return
+                }
+
+
+                new Promise(() => {
+                    google.script.run.withSuccessHandler(function (product) {
+                        if (product.length === 1) {
+                            let [code, name, price] = product[0]
+                            handleAddProductToCart(code, name, price)
+                        } else {
+                            addProductToCartByModal(product)
+                        }
+                    }).getProductByQueryGS(query)
+                })
+            }
+
             function handleAddProductToCart(code = 'AVULSA', name, price) {
                 let sanitizedName = sanitize(name)
 
@@ -440,40 +341,203 @@
 
                 if (!alreadyInCart) {
                     cart.push(product)
-                    localStorage.setItem("CART", JSON.stringify([...cart]))
                     badgeCartTotalEl.textContent = cart.length
-                    renderProductOnTable(product)
+                    localStorage.setItem("CART", JSON.stringify([...cart]))
+                    renderProductOnCard(product)
                     updateCart()
+                } else {
+                    // Display toast for product already in cart
+                    const toastLiveExample = document.querySelector('#liveToast')
+                    const toast = new bootstrap.Toast(toastLiveExample)
+
+                    document.querySelector('.toast-body').innerHTML = `<strong class="text-danger">${sanitizedName}</strong><p>Já está no carrinho.</p>`
+                    toast.show()
+
+                    // Update quantity of existing product
+                    cart = cart.map(item => {
+                        if (item.name === sanitizedName) {
+                            return { ...item, amount: item.amount + 1 }
+                        }
+                        return item
+                    })
+
+                    updateCart()
+
                 }
 
             }
 
-            /**
-             * Updates the amount of a product in the cart based on the provided action ("minus" or "plus") and product ID.
-             *
-             * @param {string} action The action to perform ("minus" to decrease, "plus" to increase).
-             * @param {number} id The ID of the product to update.
-             */
-            function handleUpdateProductAmount(action, id) {
-                cart = cart.map((item) => {
-                    let amount = item.amount
+            
+            function renderProductOnCard(product) {
+                cardMobileEl.innerHTML += `
+                 <div class='row mt-5 mt-md-0 mt-lg-0' data-testid='cardId-${product.id}'>
+                        <div class='col-12'>
+                            <div class="card mb-0 mb-md-0 mb-lg-3 mx-auto" style="width: 100%;">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <div class="d-flex">
+                                        <span class="fw-bold">Código</span>
+                                        <kbd class="ms-2" data-testid='${product.id}'>${product.code}</kbd>
+                                    </div>
+                                    <button type="button" class="btn btn-outline-danger btn-sm"
+                                        onclick="handleRemoveItemFromCart(${product.id})">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </div>
+                                <div class="card-body d-flex flex-column flex-md-row align-items-start">
+                                    <div class="container">
+                                        <div class="row mb-2">
+                                            <div class="col-12 col-md-12 col-lg-9 mb-3">
+                                                <span class="fw-bold text-truncate d-block" data-testid='${product.name}'
+                                                    style="overflow: hidden; white-space: nowrap;">${product.name}</span>
+                                            </div>
+                                            <div class="col-12 col-md-12 col-lg-3">
+                                                <div class="d-flex flex-column flex-md-row align-items-start" style="flex: 20%;">
+                                                    <div class="input-group w-100">
+                                                        <label class="input-group-text border-warning bg-warning fw-bold" for="inputProductAmout">QTD</label>
+                                                        <input class="form-control border-warning" type="number" value=${product.amount} min="1" data-testid="amount-${product.id}">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="container text-center">
+                                        <div class="row">
+                                            <div class="col m-2">
+                                                <span >Preço (UNIT):</span>
+                                                <span class="fw-bold" data-testid='priceUnit-${product.id}'>${numberToBrazilianReal(product.price)}</span>
+                                            </div>
+                                            <div class="col m-2">
+                                                <span >Subtotal:</span>
+                                                <span class="fw-bold" data-testid='subtotal-${product.id}'>${numberToBrazilianReal(product.price * product.amount)}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`
 
-                    if (item.id === id) {
-                        if (action == "minus" && amount > 1) {
-                            amount--
-                        } else if (action === "plus") {
-                            amount++
-                        }
-                    }
-
-                    return {
-                        ...item,
-                        amount,
-                    }
-                })
-
-                updateCart()
             }
+
+
+        //     const tabletBodyEl = document.querySelector("#tableBody")
+        //     const badgeCartTotalEl = document.querySelector("#badge")
+        //     const totalEl = document.querySelector("#total")
+        //     const singleSaleProductEl = document.querySelector("#singleSaleProduct")
+        //     const singleSalePriceEl = document.querySelector("#singleSalePrice")
+        //     const cartEl = document.querySelector("#cart")
+        //     const cardMobileEl = document.querySelector("#cardMobile")
+        //     const resultEl = document.querySelector("#result")
+        //     const paymentTotalEl = document.querySelector("#paymentTotal")
+        //     const paymentAmoutPayedEl = document.querySelector("#paymentAmoutPayed")
+        //     const paymentAlertEl = document.querySelector("#paymentAlert")
+
+        //     const modalInventorySearchEl = document.querySelector("#modalInventorySearch")
+        //     const modalInventoryTableBodyEl = document.querySelector("#modalInventoryTableBody")
+
+        //     const dataCurrency = document.querySelectorAll('[data-currency]')
+
+        //     var modalPayment = new bootstrap.Modal('#modalPayment')
+        //     var modalInventory = new bootstrap.Modal('#modalInventory')
+        //     var modalSingleSale = new bootstrap.Modal('#modalSingleSale')
+
+        //     window.addEventListener('load', function () {
+        //         if (cart.length > 0) {
+        //             cart.forEach((item) => {
+        //                 renderProductOnCard(item)
+        //                 badgeCartTotalEl.textContent = cart.length
+        //                 updateCart()
+        //             })
+        //         } else {
+        //             badgeCartTotalEl.textContent = 0
+        //         }
+        //     })
+
+        //     document.onkeydown = function (e) {
+        //         if (e.altKey && e.code === "KeyL") {
+        //             return
+        //         }
+
+        //         if (e.altKey && e.code === "KeyC") {
+        //             searchCodeEl.focus()
+        //             return
+        //         }
+
+        //         if (e.altKey && e.code === "KeyA") {
+        //             modalSingleSale.show()
+        //             return
+        //         }
+        //     }
+
+
+        //     dataCurrency.forEach((input) => {
+        //         input.addEventListener('input', function (e) {
+        //             formatToBrazilianRealCurrencyy(e)
+        //         })
+        //     })
+
+        //     //Handles Fn
+        //     /**
+        //      * Handles a single product sale.
+        //      *
+        //      * Gets the product name and price from the input fields, validates them,
+        //      * and adds the product to the cart.
+        //      */
+        //     function handleSingleSale() {
+        //         let name = singleSaleProductEl.value
+        //         let price = singleSalePriceEl.value
+
+        //         if (name === '') {
+        //             singleSaleProductEl.focus()
+        //             return
+        //         }
+
+        //         if (price === '') {
+        //             singleSalePriceEl.focus()
+        //             return
+        //         }
+
+        //         handleAddProductToCart(1, name, brazilianCurrencyToNumber(price))
+        //         modalSingleSale.hide()
+        //     }
+
+        //     /**
+        //      * Adds a product to the shopping cart.
+        //      *
+        //      * @param {string} code The product code. Defaults to 'AVULSA' if empty.
+        //      * @param {string} name The product name. Will be sanitized before adding.
+        //      * @param {number} price The product price.
+        //      */
+        //     
+
+        //     /**
+        //      * Updates the amount of a product in the cart based on the provided action ("minus" or "plus") and product ID.
+        //      *
+        //      * @param {string} action The action to perform ("minus" to decrease, "plus" to increase).
+        //      * @param {number} id The ID of the product to update.
+        //      */
+        //     function handleUpdateProductAmount(action, id) {
+        //         cart = cart.map((item) => {
+        //             let amount = item.amount
+
+        //             if (item.id === id) {
+        //                 if (action == "minus" && amount > 1) {
+        //                     amount--
+        //                 } else if (action === "plus") {
+        //                     amount++
+        //                 }
+        //             }
+
+        //             return {
+        //                 ...item,
+        //                 amount,
+        //             }
+        //         })
+
+        //         updateCart()
+        //     }
 
             /**
              * Removes an item from the cart based on its ID.
@@ -481,185 +545,137 @@
              * @param {number} id The ID of the product to remove.
              */
             function handleRemoveItemFromCart(id) {
-                const rowEl = document.querySelector(`[data-testid='tr-${id}']`)
+                const rowEl = document.querySelector(`[data-testid='cardId-${id}']`)
                 rowEl.remove()
 
                 cart = cart.filter((item) => item.id != id);
                 badgeCartTotalEl.textContent = cart.length
                 localStorage.setItem("CART", JSON.stringify([...cart]));
-
                 updateCart()
             }
 
-            function handlePayment() {
-                let id = Date.now()
+        //     function handlePayment() {
+        //         let id = Date.now()
 
-                const payment = {
-                    id,
-                    paymentsMethods: [],
-                    total: 0
-                }
+        //         const payment = {
+        //             id,
+        //             paymentsMethods: [],
+        //             total: 0
+        //         }
 
-                let totalInCart = cart.reduce((acc, curr) => acc + (curr.price * curr.amount), 0); //Total da venda
-                let amountPayed = brazilianCurrencyToNumber(paymentAmoutPayed.value) // Total pago
+        //         let totalInCart = cart.reduce((acc, curr) => acc + (curr.price * curr.amount), 0); //Total da venda
+        //         let amountPayed = brazilianCurrencyToNumber(paymentAmoutPayed.value) // Total pago
 
-                if (totalInCart < amountPayed) {
-                    paymentAlertMessage('Os valores foram ajustados')
-                    return
-                }
+        //         if (totalInCart < amountPayed) {
+        //             paymentAlertMessage('Os valores foram ajustados')
+        //             return
+        //         }
 
-                if (totalInCart === amountPayed) {
-                    let paymentType = addPaymentMethod()
+        //         if (totalInCart === amountPayed) {
+        //             let paymentType = addPaymentMethod()
 
-                    payment.paymentsMethods.push({ id, paymentType })
+        //             payment.paymentsMethods.push({ id, paymentType })
 
-                    payment.total = totalInCart
+        //             payment.total = totalInCart
 
-                } else {
-                    while (totalInCart > 0) {
-                        if (totalInCart < amountPayed) {
-                            paymentAlertMessage('Os valores foram ajustados')
-                            return
-                        }
+        //         } else {
+        //             while (totalInCart > 0) {
+        //                 if (totalInCart < amountPayed) {
+        //                     paymentAlertMessage('Os valores foram ajustados')
+        //                     return
+        //                 }
 
-                        totalInCart = totalInCart - amountPayed
+        //                 totalInCart = totalInCart - amountPayed
 
-                        // exibir o formulario para novo pagamento
+        //                 // exibir o formulario para novo pagamento
 
-                        // paymentsMethods.push(radio.dataset.payment)
+        //                 // paymentsMethods.push(radio.dataset.payment)
 
-                    }
-                }
+        //             }
+        //         }
 
-                paymentTotalEl.value = ''
-                paymentAmoutPayed.value = ''
-                removeAllItemFromCart()
-                modalPayment.hide()
-                //Enviar pagamento para a planilha
-            }
+        //         paymentTotalEl.value = ''
+        //         paymentAmoutPayed.value = ''
+        //         removeAllItemFromCart()
+        //         modalPayment.hide()
+        //         //Enviar pagamento para a planilha
+        //     }
 
-            //Helpers Fn
-            /**
-             * Updates the cart summary with product quantities, subtotals, and total amount.
-             */
-            function updateCart() {
-                cart.forEach(item => {
-                    let amountEl = document.querySelector(`[data-testid='amount-${item.id}']`)
-                    let subtotalEl = document.querySelector(`[data-testid='subtotal-${item.id}']`)
+        //     //Helpers Fn
+        //     /**
+        //      * Updates the cart summary with product quantities, subtotals, and total amount.
+        //      */
+        //     function updateCart() {
+        //         cart.forEach(item => {
+        //             let amountEl = document.querySelector(`[data-testid="amount-${item.id}"]`)
+        //             let subtotalEl = document.querySelector(`[data-testid="subtotal-${item.id}"]`)
 
-                    // amountEl.textContent = item.amount
-                    // subtotalEl.textContent = numberToBrazilianReal(item.amount * item.price)
-                })
+        //             amountEl.value = item.amount
+        //             subtotalEl.textContent = numberToBrazilianReal(item.amount * item.price)
+        //         })
 
-                const total = cart.reduce((acc, curr) => acc + (curr.price * curr.amount), 0);
+        //         const total = cart.reduce((acc, curr) => acc + (curr.price * curr.amount), 0);
 
-                totalEl.textContent = numberToBrazilianReal(total)
+        //         totalEl.textContent = numberToBrazilianReal(total)
 
-                paymentTotalEl.value = numberToBrazilianReal(total)
-                localStorage.setItem("CART", JSON.stringify([...cart]));
-            }
+        //         paymentTotalEl.value = numberToBrazilianReal(total)
+        //         localStorage.setItem("CART", JSON.stringify([...cart]));
+        //     }
 
-            /**
-             * Searches for a product using Google Apps Script based on a query string.
-             *
-             * @param {string} query The search query for the product.
-             */
-            function searchProduct(query) {
-                new Promise(() => {
-                    google.script.run.withSuccessHandler(function (product) {
-                        if (product.length === 1) {
-                            let [code, name, price] = product[0]
-                            handleAddProductToCart(code, name, price)
-                        } else {
-                            addProductToCartByModal(product)
-                        }
-                    }).getProductByQueryGS(query)
-                })
-            }
+        //     /**
+        //      * Searches for a product using Google Apps Script based on a query string.
+        //      *
+        //      * @param {string} query The search query for the product.
+        //      */
+        //     function searchProduct(query, test = false) {
+        //         if (test) {
+        //             const product = getInventory(query)
+        //             handleAddProductToCart(product.code, product.name, product.price)
+        //             return
+        //         }
 
-            /**
-             * Adds a list of products to a modal table for selection.
 
-            * @param {array} products An array of product data, each item containing code, name, and price.
-            */
-            function addProductToCartByModal(products) {
-                modalInventoryTableBodyEl.innerHTML = ''
+        //         new Promise(() => {
+        //             google.script.run.withSuccessHandler(function (product) {
+        //                 if (product.length === 1) {
+        //                     let [code, name, price] = product[0]
+        //                     handleAddProductToCart(code, name, price)
+        //                 } else {
+        //                     addProductToCartByModal(product)
+        //                 }
+        //             }).getProductByQueryGS(query)
+        //         })
+        //     }
 
-                products.forEach(product => {
-                    let [code, name, price] = product
+        //     /**
+        //      * Adds a list of products to a modal table for selection.
+    
+        //     * @param {array} products An array of product data, each item containing code, name, and price.
+        //     */
+        //     function addProductToCartByModal(products) {
+        //         modalInventoryTableBodyEl.innerHTML = ''
 
-                    modalInventoryTableBodyEl.innerHTML += `
-                <tr>
-                  <td class="text-uppercase text-truncate">${name}</td>
-                  <td class="text-center text-truncate">${numberToBrazilianReal(1 * price)}</td>
-                  <td class="text-center">
-                      <button type="button" class="btn btn-outline-success btn-sm" onclick="handleAddProductToCart('${code}', '${name}', ${price})"><i class="fa-solid fa-plus"></i></button>
-                  </td>
-                </tr>
-                `
-                })
-            }
+        //         products.forEach(product => {
+        //             let [code, name, price] = product
 
-            /**
-             * Renders a product row in the cart table.
-             *
-             * @param {object} product The product data object containing properties like code, name, amount, and price.
-             */
-            function renderProductOnTable(product) {
-                tabletBodyEl.innerHTML += `
-                <tr data-testid='tr-${product.id}'>
-                    <th scope="row" class="text-center text-truncate"><kbd class="text-dark bg-warning p-2">${product.code}</kbd></th>
-                    <td class="text-uppercase text-truncate">${product.name}</td>
-                    <td class="text-center text-truncate" data-testid="amount-${product.id}">${product.amount}</td>
-                    <td class="text-center text-truncate">${numberToBrazilianReal(1 * product.price)}</td>
-                    <td class="text-center text-truncate" data-testid="subtotal-${product.id}">${numberToBrazilianReal(product.amount * product.price)}</td>
-                    <td class="text-center">
-                        <button type="button" class="btn btn-outline-success btn-sm" onclick="handleUpdateProductAmount('plus', ${product.id})"><i class="fa-solid fa-plus"></i></button>
-                    </td>
-                    <td class="text-center">
-                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="handleUpdateProductAmount('minus', ${product.id})"><i class="fa-solid fa-minus"></i></button>
-                    </td>
-                    <td class="text-center">
-                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="handleRemoveItemFromCart(${product.id})"><i class="fa-solid fa-trash"></i></button>
-                    </td>
-                </tr>
-            `
-            }
+        //             modalInventoryTableBodyEl.innerHTML += `
+        //         <tr>
+        //           <td class="text-uppercase text-truncate">${name}</td>
+        //           <td class="text-center text-truncate">${numberToBrazilianReal(1 * price)}</td>
+        //           <td class="text-center">
+        //               <button type="button" class="btn btn-outline-success btn-sm" onclick="handleAddProductToCart('${code}', '${name}', ${price})"><i class="fa-solid fa-plus"></i></button>
+        //           </td>
+        //         </tr>
+        //         `
+        //         })
+        //     }
 
-            function renderProductOnCard(product) {
-                cardMobileEl.innerHTML += `
-                 <div class="card mb-3 " style="max-width: 500px; width: 100%;">
-                    <div class="card-header d-flex justify-content-between align-items-center bg-dark">
-                        <div class="d-flex text-light"><span class="fw-bold">Código</span><kbd class="ms-2 bg-warning">12345</kbd></div>
-                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="handleRemoveItemFromCart('${product.id}')"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-flex mb-2"><span class="fw-bold ">Produto</span></div>
-                        <div class="row mb-2">
-                            <div class="col-4">
-                                <p class="mb-0">Quantidade</p>
-                                <span class="fw-bold">2</span>
-                            </div>
-                            <div class="col-4">
-                                <p class="mb-0">R$ (UNIT)</p>
-                                <span class="fw-bold">R$ 50,00</span>
-                            </div>
-                            <div class="col-4">
-                                <p class="mb-0">R$ (Subtotal)</p>
-                                <span class="fw-bold">R$ 100,00</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-footer d-flex justify-content-between ">
-                        <div class="col-6">
-                            <button type="button" class="btn btn-outline-danger btn-sm w-100 me-2" onclick="handleUpdateProductAmount('minus', '${product.id}')"><i class="fa-solid fa-minus"></i> Remover</button>
-                        </div>
-                        <div class="col-6">
-                            <button type="button" class="btn btn-outline-success btn-sm w-100 ms-2" onclick="handleUpdateProductAmount('plus', '${product.id}')"><i class="fa-solid fa-plus"></i> Adicionar</button>
-                        </div>
-                    </div>
-                </div>`
-            }
+        //     /**
+        //      * Renders a product card.
+        //      *
+        //      * @param {object} product The product data object containing properties like code, name, amount, and price.
+        //      */
+        
 
             /**
              * Formats a number as a Brazilian Real currency string.
@@ -673,225 +689,217 @@
                     currency: 'BRL',
                 });
             }
-            /**
-             * Converts a Brazilian Real currency string to a number.
-             *
-             * @param {string} currency The currency string to convert.
-             * @returns {number} The converted number.
-             */
-            function brazilianCurrencyToNumber(currency) {
-                if (!currency.includes("R$")) {
-                    currency = `R$ ${currency}`
-                }
-                let cleanValue = currency.replace('R$', '').trim();
-                cleanValue = cleanValue.replace(/\./g, '');
-                cleanValue = cleanValue.replace(',', '.');
-                return parseFloat(cleanValue);
-            }
+        //     /**
+        //      * Converts a Brazilian Real currency string to a number.
+        //      *
+        //      * @param {string} currency The currency string to convert.
+        //      * @returns {number} The converted number.
+        //      */
+        //     function brazilianCurrencyToNumber(currency) {
+        //         if (!currency.includes("R$")) {
+        //             currency = `R$ ${currency}`
+        //         }
+        //         let cleanValue = currency.replace('R$', '').trim();
+        //         cleanValue = cleanValue.replace(/\./g, '');
+        //         cleanValue = cleanValue.replace(',', '.');
+        //         return parseFloat(cleanValue);
+        //     }
 
-            /**
-             * Sanitizes input text by trimming and removing extra whitespace.
-
-            * @param {string} inputText The input text to sanitize.
-            * @returns {string} The sanitized input text.
-            */
+        //     /**
+        //      * Sanitizes input text by trimming and removing extra whitespace.
+    
+        //     * @param {string} inputText The input text to sanitize.
+        //     * @returns {string} The sanitized input text.
+        //     */
             function sanitize(inputText) {
                 return inputText
                     .trim()
                     .replace(/\s+/g, ' ');
             }
 
-            /**
-             * Formats an input field value as a Brazilian Real currency string.
-             *
-             * @param {Event} e The input event object.
-             * @returns {void} (modifies the value of the target input element)
-             */
-            function formatToBrazilianRealCurrencyy(e) {
-                let value = e.target.value;
-                value = value.replace(/\D/g, '');
-                value = (value / 100).toFixed(2) // Add decimal places
-                    .replace('.', ',')           // Replace decimal point with comma
-                    .replace(/\B(?=(\d{3})+(?!\d))/g, '.'); // Add thousands separator
-                e.target.value = value ? `R$ ${value}` : '';
+        //     /**
+        //      * Formats an input field value as a Brazilian Real currency string.
+        //      *
+        //      * @param {Event} e The input event object.
+        //      * @returns {void} (modifies the value of the target input element)
+        //      */
+        //     function formatToBrazilianRealCurrencyy(e) {
+        //         let value = e.target.value;
+        //         value = value.replace(/\D/g, '');
+        //         value = (value / 100).toFixed(2) // Add decimal places
+        //             .replace('.', ',')           // Replace decimal point with comma
+        //             .replace(/\B(?=(\d{3})+(?!\d))/g, '.'); // Add thousands separator
+        //         e.target.value = value ? `R$ ${value}` : '';
+        //     }
+
+        //     /**
+        //      * Removes all items from the cart.
+        //      *
+        //      * @returns {void} (modifies cart state and DOM elements)
+        //      */
+        //     function removeAllItemFromCart() {
+        //         cart.forEach((item) => {
+        //             let rowEl = document.querySelector(`[data-testid='tr-${item.id}']`)
+        //             rowEl.remove()
+
+        //         })
+
+        //         cart = []
+        //         badgeCartTotalEl.textContent = cart.length
+        //         localStorage.setItem("CART", JSON.stringify([...cart]));
+
+        //         updateCart()
+        //     }
+
+        //     /**
+        //      * Displays an alert message related to payment.
+        //      *
+        //      * @param {string} message The message to display in the alert.
+        //      */
+        //     function paymentAlertMessage(message) {
+        //         paymentAlertEl.innerHTML += `
+        //                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        //                     <strong>Aviso!</strong> ${message}.
+        //                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        //                 </div>
+        //             `
+        //         paymentAmoutPayed.value = paymentTotalEl.value
+
+        //     }
+
+        //     /**
+        //      * Retrieves the selected payment method from the radio buttons.
+    
+        //     * @returns {string|null} The selected payment method code or null if none is selected.
+        //     */
+        //     function addPaymentMethod() {
+        //         let paymentoMethods = document.querySelectorAll('[data-testid*="radio"]');
+
+        //         let checkedRadio = Array.from(paymentoMethods).find(radio => radio.checked);
+
+        //         return checkedRadio ? checkedRadio.dataset.payment : null;
+        //     }
+
+        //     /**
+        //      * Creates a placeholder loading spinner for a table row.
+    
+        //     * @param {number} qty The number of rows to generate.
+        //     */
+        //     function tableProductsSchimmer(qty = 3) {
+        //         Array.from({ qty }, () => {
+        //             modalInventoryTableBodyEl.innerHTML += `
+        //           <tr>
+        //             <td>
+        //               <div class="progress" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+        //               <div class="progress-bar progress-bar-striped progress-bar-animated bg-secondary" style="width: 100%"></div>
+        //               </div>
+        //             </td>
+        //             <td>
+        //               <div class="progress" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+        //                 <div class="progress-bar progress-bar-striped progress-bar-animated bg-secondary" style="width: 100%"></div>
+        //               </div>
+        //             </td>
+        //             <td>
+        //               <div class="progress" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+        //                 <div class="progress-bar progress-bar-striped progress-bar-animated bg-secondary" style="width: 100%"></div>
+        //               </div>
+        //             </td>
+        //           </tr>`
+        //         })
+        //     }
+
+        //     //Test Functions
+            function getInventory(query) {
+                const inventory = [
+                    { id: Date.now(), code: '7896396109181', name: 'TOALHA DE GELADEIRA COM 3 PÇS REF 918', price: 5.00 },
+                    { id: Date.now(), code: '7896396106159', name: 'CORTINA DE BOX POLIETILENO ESTAMPADA', price: 8.00 },
+                    { id: Date.now(), code: '7896873192866', name: 'CORTINA PARA BOX PEVA (MODELO SOERTIDO)', price: 33.00 },
+                    { id: Date.now(), code: '7896873192675', name: 'CORTINA PARA BOX POLIESTER', price: 54.00 },
+                    { id: Date.now(), code: '7890785764487', name: 'CORTINA DE BANO', price: 20.00 },
+                    { id: Date.now(), code: '7899653780178', name: 'ESPAYULA RETA 5" 24,5 CM ORIGINAL', price: 20.00 },
+                    { id: Date.now(), code: '7891112123991', name: 'RALADOR TRAMONTINA', price: 17.00 },
+                    { id: Date.now(), code: '7899653781212', name: 'ACENDEDOR FOGÃO', price: 9.00 },
+                    { id: Date.now(), code: '7898505874737', name: 'CONJUNTO PARA COZINHA SET 3PÇS', price: 18.00 },
+                    { id: Date.now(), code: '7899631629185', name: 'FORMA DE SILICONE PARA GELO - FRUTAS', price: 16.90 },
+                    { id: Date.now(), code: '7899206167500', name: 'FURADOR DE COCO 10CMX 13CM BESTFER', price: 13.00 },
+                    { id: Date.now(), code: '7899653780987', name: 'FURADOR DE COCO AÇO INOX 13CM ORIGINAL', price: 13.00 }
+                ];
+
+                return inventory.find(item => item.code.includes(query) || item.name.toLowerCase().includes(query.toLowerCase()));
             }
 
-            /**
-             * Removes all items from the cart.
-             *
-             * @returns {void} (modifies cart state and DOM elements)
-             */
-            function removeAllItemFromCart() {
-                cart.forEach((item) => {
-                    let rowEl = document.querySelector(`[data-testid='tr-${item.id}']`)
-                    rowEl.remove()
+        //     function testRenderProductOnCard(qty = 1) {
 
-                })
+        //         Array.from({ length: qty }, (_, idx) => {
+        //             let product = {
+        //                 id: Date.now(),
+        //                 code: Date.now(),
+        //                 name: `Product ${idx}`,
+        //                 amount: 1,
+        //                 price: 9.99
+        //             }
 
-                cart = []
-                badgeCartTotalEl.textContent = cart.length
-                localStorage.setItem("CART", JSON.stringify([...cart]));
+        //             cart.push(product)
 
-                updateCart()
-            }
+        //             cardMobileEl.innerHTML += `
+        //             <div class='row mt-5 mt-md-0 mt-lg-0' data-testid='cardId-${product.id}'>
+        //                 <div class='col-12'>
+        //                     <div class="card mb-3 mx-auto" style="width: 100%;">
+        //                         <div class="card-header d-flex justify-content-between align-items-center">
+        //                             <div class="d-flex">
+        //                                 <span class="fw-bold">Código</span>
+        //                                 <kbd class="ms-2" data-testid='${product.code}'>76991261220</kbd>
+        //                             </div>
+        //                             <button type="button" class="btn btn-outline-danger btn-sm"
+        //                                 onclick="handleRemoveItemFromCart(${product.id})">
+        //                                 <i class="fa-solid fa-trash"></i>
+        //                             </button>
+        //                         </div>
+        //                         <div class="card-body d-flex flex-column flex-md-row align-items-start">
+        //                             <div class="container">
+        //                                 <div class="row mb-2">
+        //                                     <div class="col col-lg-9 mb-3">
+        //                                         <span class="fw-bold text-truncate d-block" data-testid='${product.name}'
+        //                                             style="overflow: hidden; white-space: nowrap;">${product.name}</span>
 
-            /**
-             * Displays an alert message related to payment.
-             *
-             * @param {string} message The message to display in the alert.
-             */
-            function paymentAlertMessage(message) {
-                paymentAlertEl.innerHTML += `
-                       <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <strong>Aviso!</strong> ${message}.
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    `
-                paymentAmoutPayed.value = paymentTotalEl.value
+        //                                     </div>
+        //                                     <div class="col col-lg-3">
+        //                                         <div class="d-flex flex-column flex-md-row align-items-start" style="flex: 20%;">
+        //                                             <div class="input-group w-100">
+        //                                                 <label class="input-group-text border-warning bg-warning fw-bold" for="inputProductAmout">QTD</label>
+        //                                                 <input class="form-control border-warning" type="number" min="1" id="inputProductAmout-${product.id}"
+        //                                                    >
+        //                                             </div>
+        //                                         </div>
+        //                                     </div>
+        //                                 </div>
+        //                             </div>
+        //                         </div>
+        //                         <div class="card-footer">
+        //                             <div class="container text-center">
+        //                                 <div class="row">
+        //                                     <div class="col m-2">
+        //                                         <span >Preço (UNIT):</span>
+        //                                         <span class="fw-bold" id='priceUnit-${product.id}'>${numberToBrazilianReal(product.price)}</span>
+        //                                     </div>
+        //                                     <div class="col m-2">
+        //                                         <span >Subtotal:</span>
+        //                                         <span class="fw-bold" id='subtotal-${product.id}'>${numberToBrazilianReal(product.price)}</span>
+        //                                     </div>
+        //                                 </div>
+        //                             </div>
+        //                         </div>
+        //                     </div>
+        //                 </div>
+        //             </div>
+        //             `
 
-            }
+        //             updateCart()
+        //             badgeCartTotalEl.textContent = cart.length
+        //         })
+        //     }
 
-            /**
-             * Retrieves the selected payment method from the radio buttons.
-
-            * @returns {string|null} The selected payment method code or null if none is selected.
-            */
-            function addPaymentMethod() {
-                let paymentoMethods = document.querySelectorAll('[data-testid*="radio"]');
-
-                let checkedRadio = Array.from(paymentoMethods).find(radio => radio.checked);
-
-                return checkedRadio ? checkedRadio.dataset.payment : null;
-            }
-
-            /**
-             * Creates a placeholder loading spinner for a table row.
-
-            * @param {number} qty The number of rows to generate.
-            */
-            function tableProductsSchimmer(qty = 3) {
-                Array.from({ qty }, () => {
-                    modalInventoryTableBodyEl.innerHTML += `
-                  <tr>
-                    <td>
-                      <div class="progress" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
-                      <div class="progress-bar progress-bar-striped progress-bar-animated bg-secondary" style="width: 100%"></div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="progress" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
-                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-secondary" style="width: 100%"></div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="progress" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
-                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-secondary" style="width: 100%"></div>
-                      </div>
-                    </td>
-                  </tr>`
-                })
-            }
-
-            //Test Functions
-            function testRenderProductOnTable(qty = 1) {
-                Array.from({ length: qty }, (_, idx) => {
-                    let product = {
-                        id: Date.now(),
-                        code: Date.now(),
-                        name: `Product ${idx}`,
-                        amount: 1,
-                        price: 9.99
-                    }
-
-                    cart.push(product)
-
-                    // tabletBodyEl.innerHTML += `
-                    //     <tr data-testid='tr-${product.id}'>
-                    //         <th scope="row" class="text-center text-truncate"><kbd class="text-dark bg-warning p-2">${product.code}</kbd></th>
-                    //         <td class="text-uppercase">${product.name}</td>
-                    //         <td class="text-center text-truncate" data-testid="amount-${product.id}">${product.amount}</td>
-                    //         <td class="text-center text-truncate">${numberToBrazilianReal(1 * product.price)}</td>
-                    //         <td class="text-center text-truncate" data-testid="subtotal-${product.id}">${numberToBrazilianReal(product.amount * product.price)}</td>
-                    //         <td class="text-center">
-                    //             <button type="button" class="btn btn-outline-success btn-sm" onclick="handleUpdateProductAmount('plus', ${product.id})"><i class="fa-solid fa-plus"></i></button>
-                    //         </td>
-                    //         <td class="text-center">
-                    //             <button type="button" class="btn btn-outline-danger btn-sm" onclick="handleUpdateProductAmount('minus', ${product.id})"><i class="fa-solid fa-minus"></i></button>
-                    //         </td>
-                    //         <td class="text-center">
-                    //             <button type="button" class="btn btn-outline-secondary btn-sm" onclick="removeItemFromCart(${product.id})"><i class="fa-solid fa-trash"></i></button>
-                    //         </td>
-                    //     </tr>
-                    // `
-                    testRenderProductOnCard(product)
-                })
-
-                updateCart()
-                badgeCartTotalEl.textContent = cart.length
-            }
-
-            function testRenderProductOnCard(product) {
-                cardMobileEl.innerHTML += `
-                   <div class='row' data-testid='tr-${product.id}'>
-                        <div class='col-12'>
-                            <div class="card mb-3 mx-auto" style="width: 100%;">
-                                <!-- Cabeçalho do Card -->
-                                <div class="card-header d-flex justify-content-between align-items-center">
-                                    <div class="d-flex">
-                                        <span class="fw-bold">Código</span>
-                                        <kbd class="ms-2 bg-warning text-danger">${product.code}</kbd>
-                                    </div>
-                                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="handleRemoveItemFromCart(${product.id})">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </button>
-                                </div>
-                                <!-- Corpo do Card em linha -->
-                                <div class="card-body d-flex justify-content-between align-items-center flex-wrap">
-                                    <!-- Nome do Produto -->
-                                    <div class="d-flex align-items-center">
-                                        <span class="fw-bold">${product.name}</span>
-                                    </div>
-                                    
-                                    <!-- Quantidade -->
-                                    <div class="d-flex align-items-center">
-                                        <p class="mb-0 me-2">Quantidade:</p>
-                                        <span class="fw-bold">${product.amount}</span>
-                                    </div>
-                                    
-                                    <!-- Preço Unitário -->
-                                    <div class="d-flex align-items-center">
-                                        <p class="mb-0 me-2">R$ (UNIT):</p>
-                                        <span class="fw-bold">${numberToBrazilianReal(1 * product.price)}</span>
-                                    </div>
-
-                                    <!-- Subtotal -->
-                                    <div class="d-flex align-items-center">
-                                        <p class="mb-0 me-2">R$ (Subtotal):</p>
-                                        <span class="fw-bold">${numberToBrazilianReal(product.amount * product.price)}</span>
-                                    </div>
-                                </div>
-                                <!-- Rodapé do Card -->
-                                <div class="card-footer d-flex justify-content-end">
-                                    <!-- Botão de Remover Quantidade -->
-                                    <button type="button" class="btn btn-outline-danger btn-sm me-2" onclick="handleUpdateProductAmount('minus', ${product.id})">
-                                        <i class="fa-solid fa-minus"></i> Retirar
-                                    </button>
-                                    <!-- Botão de Adicionar Quantidade -->
-                                    <button type="button" class="btn btn-outline-success btn-sm" onclick="handleUpdateProductAmount('plus', ${product.id})">
-                                        <i class="fa-solid fa-plus"></i> Adicionar
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                `
-
-                updateCart()
-                badgeCartTotalEl.textContent = cart.length
-            }
-
-        </script>
+       </script>
 </body>
 
 </html>
