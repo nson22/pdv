@@ -7,9 +7,23 @@
     <title>Frente de Caixa</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        #productList,
+        #cartList,
+        body {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
         #productList::-webkit-scrollbar,
-        #cartList::-webkit-scrollbar {
+        #cartList::-webkit-scrollbar,
+        body::-webkit-scrollbar {
             display: none;
         }
 
@@ -65,14 +79,17 @@
     <div class="container mt-4">
         <header class="fixed-top bg-white py-3">
             <div class="container">
-
-                <!-- Pesquisa de Produtos -->
-                <div class="mb-0 d-flex align-items-center">
+                <div class="mb-0 d-flex align-items-center justify-content-between">
                     <span class="navbar-brand text-danger fw-bold fs-4 d-block d-md-inline me-2">
                         PJ
                         <span
                             class="text-secondary fw-semibold text-uppercase text-warning d-md-inline">Variedades</span>
                     </span>
+                    <button class="btn btn-success text-uppercase" id="finishPurchaseBtn">
+                        <i class="fas fa-shopping-cart"></i>
+                        Fechar Compra
+                        <span class="badge bg-light text-dark ms-1" id="cartBadge">0</span>
+                    </button>
                 </div>
             </div>
         </header>
@@ -83,36 +100,37 @@
                 <div class="col-lg-8 col-md-7 product-cart-content d-flex flex-column">
                     <div class="row align-items-center mb-3">
                         <div class="col-12 col-md-4 mb-2 mb-md-0">
-                            <h2 class="mb-0">Produtos</h2>
+                            <h2 class="mb-0 text-uppercase">Produtos</h2>
                         </div>
                         <div class="col-12 col-md-8">
                             <input type="text" id="searchInput" class="form-control"
                                 placeholder="Pesquisar produto por código, nome ou valor">
                         </div>
                     </div>
-                    <div class="flex-grow-1 overflow-auto" id="productList" style="scrollbar-width: none; -ms-overflow-style: none;">
-                       
+                    <div class="flex-grow-1 overflow-auto" id="productList">
+
                     </div>
                 </div>
-                <div class="col-lg-4 col-md-5 product-cart-content">
-                    <div class="sticky-top bg-white d-flex justify-content-between align-items-center">
-                        <h2>Carrinho <span id="cartItemCount" class="badge bg-secondary fs-6">0</span></h2>
-                        <button id="finalizePurchase" class="btn btn-success">Fechar Compra</button>
+
+                <div class="col-lg-4 col-md-5 product-cart-content d-flex flex-column">
+                    <div class="sticky-top bg-white d-flex justify-content-center align-items-center">
+                        <h2 class="mb-0 text-uppercase">Itens no carrinho</h2>
                     </div>
-                    <div>
+                    <div class="flex-grow-1 overflow-auto">
                         <ul id="cartList" class="list-group mb-3">
                             <!-- Itens do carrinho serão adicionados aqui dinamicamente -->
                         </ul>
                     </div>
-                </div>
-                <div class="sticky-bottom bg-white py-3 border-top" style="width: 33.33%;">
-                    <div class="row align-items-center">
-                        <div class="col-12 mb-2">
-                            <div class="form-group d-flex align-items-center">
-                                <div class="input-group">
+                    <div class="sticky-bottom bg-white py-3 border-top mt-auto">
+                        <div class="row align-items-center">
+                            <div class="col-12 mb-2">
+                                <div class="form-group d-flex align-items-center">
+                                    <div class="input-group">
                                         <span class="input-group-text fw-bold">Desconto</span>
-                                        <input type="text" inputmode="numeric" id="discountInput" class="form-control" placeholder="R$ 0,00">
-                                        <button class="btn btn-outline-primary" type="button" id="clearDiscountBtn" onclick="clearDiscount()">
+                                        <input type="text" id="discountInput" class="form-control" placeholder="R$ 0,00"
+                                            data-currency="BRL" autocomplete="off">
+                                        <button class="btn btn-outline-secondary" type="button" id="clearDiscountBtn"
+                                            onclick="clearDiscount()">
                                             <i class="fas fa-times"></i>
                                         </button>
                                     </div>
@@ -123,28 +141,86 @@
                             <div class="form-group d-flex align-items-center">
                                 <div class="input-group">
                                     <span class="input-group-text fw-bold">Total</span>
-                                    <input disabled type="text" id="cartTotal" class="form-control" placeholder="R$ 0,00">
+                                    <input disabled type="text" id="cartTotal" class="form-control"
+                                        placeholder="R$ 0,00" data-currency="BRL">
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
-
-        </main>
-        <footer>
-        <!-- Toast -->
-        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-            <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="toast-header bg-danger text-white">
-                    <strong class="me-auto">Notificação</strong>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-                <div class="toast-body">
-                    <p id="toastMessage"></p>
+        <!-- Modal de Pagamento -->
+        <div class="modal fade text-uppercase" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title fw-bold" id="paymentModalLabel">Finalizar Pagamento</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="paymentForm" autocomplete="off">
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label for="totalAmount" class="form-label">Total da Compra</label>
+                                    <input type="text" class="form-control form-control-lg" id="totalAmount" placeholder="R$ 0,00" data-currency="BRL" disabled autocomplete="off">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="discountAmount" class="form-label">Desconto Aplicado</label>
+                                    <input type="text" class="form-control form-control-lg" id="discountAmount" placeholder="R$ 0,00" data-currency="BRL" disabled autocomplete="off">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="finalAmount" class="form-label">Valor Final</label>
+                                    <input type="text" class="form-control form-control-lg" id="finalAmount" placeholder="R$ 0,00" data-currency="BRL" disabled autocomplete="off">
+                                </div>
+                            </div>
+                            <div id="paymentMethodContainer">
+                                <div class="row mb-3">
+                                    <div class="col-md-12">
+                                        <label for="paymentMethod" class="form-label">Método de Pagamento</label>
+                                        <select class="form-select form-select-lg" id="paymentMethod" required autocomplete="off">
+                                            <option value="" disabled selected>Selecione o método de pagamento</option>
+                                            <option value="credit">Cartão de Crédito</option>
+                                            <option value="debit">Cartão de Débito</option>
+                                            <option value="cash">Dinheiro</option>
+                                            <option value="pix">PIX</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="paymentAmount" class="form-label">Valor Pago</label>
+                                    <input type="text" class="form-control form-control-lg" id="paymentAmount" placeholder="R$ 0,00" data-currency="BRL" required autocomplete="off">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="changeAmount" class="form-label">Troco</label>
+                                    <input type="text" class="form-control form-control-lg" id="changeAmount" placeholder="R$ 0,00" data-currency="BRL" disabled autocomplete="off">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-lg" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary btn-lg" id="confirmPayment">Confirmar Pagamento</button>
+                    </div>
                 </div>
             </div>
         </div>
+        </main>
+        <footer>
+            <!-- Toast -->
+            <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+                <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-header bg-danger text-white">
+                        <strong class="me-auto">Notificação</strong>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body">
+                        <p id="toastMessage"></p>
+                    </div>
+                </div>
+            </div>
         </footer>
     </div>
 
@@ -156,7 +232,7 @@
         // Function to initialize IndexedDB
         function initDB() {
             return new Promise((resolve, reject) => {
-                const request = indexedDB.open('ProductsDB', 1);
+                const request = indexedDB.open('ProductsDB', 4);
 
                 request.onerror = (event) => reject("IndexedDB error: " + event.target.error);
 
@@ -167,9 +243,12 @@
 
                 request.onupgradeneeded = (event) => {
                     const db = event.target.result;
-                    const objectStore = db.createObjectStore('products', { keyPath: 'code' });
-                    objectStore.createIndex('name', 'name', { unique: false });
-                    objectStore.createIndex('price', 'price', { unique: false });
+                    if (!db.objectStoreNames.contains('products')) {
+                        const objectStore = db.createObjectStore('products', { keyPath: 'id', autoIncrement: true });
+                        objectStore.createIndex('code', 'code', { unique: false });
+                        objectStore.createIndex('name', 'name', { unique: false });
+                        objectStore.createIndex('price', 'price', { unique: false });
+                    }
                 };
             });
         }
@@ -211,10 +290,11 @@
                 if (loadedProducts.length === 0) {
                     // If no products in DB, generate them
                     products = Array.from({ length: 1500 }, (_, i) => {
+                        const id = Date.now() + i;
                         const code = (i + 1).toString().padStart(3, '0');
-                        const name = `Produto ${String.fromCharCode(65 + i)}`;
+                        const name = `Produto ${['Pequeno', 'MédioMédioMédioMédio', 'GrandeGrandeGrandeGrandeGrandeGrandeGrandeGrandeGrandeGrandeGrandeGrande'][i % 3]} ${String.fromCharCode(65 + i)}`;
                         const price = 10.1 + i * 5.5;
-                        return { code, name, price: Number(price.toFixed(2)) };
+                        return { id, code, name, price: Number(price.toFixed(2)) };
                     });
                     // Save generated products to DB
                     saveProductsToDB(db, products).then(() => {
@@ -234,7 +314,7 @@
 
         function displayProducts(products) {
             const productList = document.getElementById('productList');
-            
+
             productList.innerHTML = '';
             const tableContainer = document.createElement('div');
             tableContainer.className = 'table-responsive';
@@ -261,11 +341,11 @@
             products.forEach(product => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td class="col-2"><span class="badge bg-secondary">${product.code}</span></td>
+                    <td class="col-2"><kbd>${product.code}</kbd></td>
                     <td class="col-6"><span class="text-truncate" style="max-width: 200px; display: inline-block;">${product.name}</span></td>
-                    <td class="col-2"><span class="fw-bold">${product.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span></td>
+                    <td class="col-2"><span class="fw-bold">${numberToBrazilianReal(product.price)}</span></td>
                     <td class="col-2">
-                        <button class="btn btn-outline-primary btn-sm" onclick="addToCart('${product.code}')">
+                        <button class="btn btn-outline-primary btn-sm" onclick="addToCart('${product.id}')">
                             Adicionar
                         </button>
                     </td>
@@ -274,15 +354,16 @@
             });
         }
 
-        function addToCart(productCode) {
-            const product = products.find(p => p.code === productCode);
+        function addToCart(productId) {
+            const product = products.find(product => product.id === Number(productId));
             if (product) {
-                const existingItem = cart.find(item => item.code === product.code);
+                const existingItem = cart.find(item => item.id === product.id);
                 if (existingItem) {
                     existingItem.quantity += 1;
                 } else {
                     cart.push({ ...product, quantity: 1 });
                 }
+                localStorage.setItem('CART', JSON.stringify(cart));
                 updateCart();
                 updateCartBadge();
             }
@@ -301,7 +382,7 @@
                     <div class="d-flex justify-content-center w-100">
                         <i class="fas fa-shopping-bag fa-10x text-muted opacity-50"></i>
                     </div>
-                    <p class="mt-3 text-muted">Carrinho está vazio</p>
+                    <p class="mt-3 text-muted text-uppercase">Carrinho vazio</p>
                 `;
                 cartList.appendChild(emptyCartMessage);
             } else {
@@ -323,24 +404,26 @@
                                 <input type="number" class="form-control form-control-sm" value="${item.quantity}" min="1" onchange="updateQuantity('${item.code}', this.value || 1)" style="width: 80px;">
                             </div>
                             <div class="d-flex justify-content-between align-items-center mt-2">
-                                <p class="mb-0">Preço: ${item.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
-                                <span class="fw-bold">Subtotal: ${subtotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                                <p class="mb-0">Preço: ${numberToBrazilianReal(item.price)}</p>
+                                <span class="fw-bold">Subtotal: ${numberToBrazilianReal(subtotal)}</span>
                             </div>
                         </div>
                     `;
                     cartList.appendChild(li);
                 });
-                
             }
 
             // Atualizar o total com o desconto
             const finalTotal = Math.max(total - discount, 0);
-            cartTotal.value = finalTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            cartTotal.value = numberToBrazilianReal(finalTotal)
             updateCartBadge();
+
+            // Update localStorage CART
+            localStorage.setItem('CART', JSON.stringify(cart));
         }
 
         function updateCartBadge() {
-            const cartItemCount = document.getElementById('cartItemCount');
+            const cartItemCount = document.getElementById('cartBadge');
             cartItemCount.textContent = cart.length;
         }
 
@@ -369,6 +452,86 @@
             }
         }
 
+        // Add event listener to the finish purchase button
+        document.getElementById('finishPurchaseBtn').addEventListener('click', () => {
+            // Check if the cart is not empty
+            if (cart.length > 0) {
+                // Calculate total and discount
+                const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+                const finalTotal = Math.max(total - discount, 0);
+
+                // Update modal fields
+                document.getElementById('totalAmount').value = numberToBrazilianReal(total);
+                document.getElementById('discountAmount').value = numberToBrazilianReal(discount);
+                document.getElementById('finalAmount').value = numberToBrazilianReal(finalTotal);
+
+                // Get the payment modal element
+                const paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
+                
+                // Open the payment modal
+                paymentModal.show();
+
+                // Add event listener for blur event on paymentAmount
+                document.getElementById('paymentAmount').addEventListener('input', (e) => {
+                const paymentAmount = brazilianCurrencyToNumber(e.target.value);
+                const finalAmount = brazilianCurrencyToNumber(document.getElementById('finalAmount').value);
+                const confirmButton = document.getElementById('confirmPayment');
+                const changeAmount = document.getElementById('changeAmount');
+                const additionalPaymentRow = document.getElementById('additionalPaymentRow');
+
+                if (paymentAmount < finalAmount) {
+                    confirmButton.textContent = 'Escolher Outro Método';
+                    changeAmount.value = 'R$ 0,00';
+                    
+                    if (!additionalPaymentRow) {
+                        const newRow = document.createElement('div');
+                        newRow.id = 'additionalPaymentRow';
+                        newRow.className = 'row mb-3';
+                        newRow.innerHTML = `
+                            <div class="col-md-12">
+                                <label for="additionalPayment" class="form-label">Pagamento Adicional</label>
+                                <input type="text" class="form-control form-control-lg" id="additionalPayment" placeholder="R$ 0,00" data-currency="BRL" required autocomplete="off">
+                            </div>
+                        `;
+                        document.getElementById('paymentForm').insertBefore(newRow, document.querySelector('.modal-footer'));
+                    }
+                } else {
+                    confirmButton.textContent = 'Confirmar Pagamento';
+                    changeAmount.value = numberToBrazilianReal(paymentAmount - finalAmount);
+                    
+                    if (additionalPaymentRow) {
+                        additionalPaymentRow.remove();
+                    }
+                }
+                });
+            } else {
+                // Show an error message if the cart is empty
+                const toastEl = document.getElementById('liveToast');
+                const toastMessage = document.getElementById('toastMessage');
+                toastMessage.textContent = 'O carrinho está vazio. Adicione itens antes de finalizar a compra.';
+                const toast = new bootstrap.Toast(toastEl);
+                toast.show();
+            }
+        });
+        
+
+        function numberToBrazilianReal(number) {
+            return number.toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+            });
+        }
+
+        function brazilianCurrencyToNumber(currency) {
+            if (!currency.includes("R$")) {
+                currency = `R$ ${currency}`
+            }
+            let cleanValue = currency.replace("R$", "").trim();
+            cleanValue = cleanValue.replace(/\./g, "");
+            cleanValue = cleanValue.replace(",", ".");
+            return parseFloat(cleanValue);
+        }
+
         document.getElementById('searchInput').addEventListener('input', (e) => {
             const searchTerm = e.target.value.toLowerCase();
             const filteredProducts = products.filter(product =>
@@ -379,17 +542,11 @@
             displayProducts(filteredProducts);
         });
 
-        document.getElementById('finalizePurchase').addEventListener('click', () => {
-            const paymentMethod = document.querySelector('input[name="paymentOption"]:checked').id;
-            alert(`Compra finalizada! Método de pagamento: ${paymentMethod}`);
-            // Aqui você pode adicionar a lógica para processar o pagamento
-        });
-
         // Adicionar evento para atualizar o desconto
-        document.getElementById('discountInput').addEventListener('input', (e) => {
-            const discountValue = parseFloat(e.target.value.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+        document.getElementById('discountInput').addEventListener('blur', (e) => {
+            const discountValue = brazilianCurrencyToNumber(e.target.value);
             const currentTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-            
+
             if (discountValue > currentTotal) {
                 // Exibir toast com mensagem de erro
                 const toastEl = document.getElementById('liveToast');
@@ -397,21 +554,56 @@
                 toastMessage.textContent = 'O desconto não pode ser maior que o total da compra.';
                 const toast = new bootstrap.Toast(toastEl);
                 toast.show();
-                
+
                 // Resetar o valor do desconto para 0
                 e.target.value = '';
                 e.target.placeholder = 'R$ 0,00';
                 discount = 0;
             } else {
-                discount = discountValue
+                discount = discountValue;
             }
             updateCart();
         });
 
-        e.target.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-
         // Inicializar a exibição de produtos
         displayProducts(products);
+
+        // Adicionar evento para formatar inputs com data-currency="BRL"
+        document.querySelectorAll('[data-currency="BRL"]').forEach(input => {
+            input.addEventListener('input', function (e) {
+                let value = e.target.value;
+                value = value.replace(/\D/g, "");
+                value = (value / 100).toFixed(2) // Adiciona casas decimais
+                    .replace(".", ",")           // Substitui ponto por vírgula
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Adiciona separador de milhares
+                e.target.value = value ? `R$ ${value}` : "";
+            });
+        });
+
+        // Add event listener for window load
+        window.addEventListener('load', () => {
+            // Check if CART exists in localStorage and update the info
+            const savedCart = localStorage.getItem('CART');
+            if (savedCart) {
+                // Parse the saved cart data
+                const parsedCart = JSON.parse(savedCart);
+
+                // Update the global cart variable
+                cart.length = 0; // Clear the current cart
+                cart.push(...parsedCart); // Add all items from saved cart
+
+                // Update the cart display
+                updateCart();
+
+                // Update the cart badge
+                updateCartBadge();
+
+                console.log('Cart loaded from localStorage');
+            } else {
+                console.log('No saved cart found in localStorage');
+            }
+
+        });
 
     </script>
 </body>
