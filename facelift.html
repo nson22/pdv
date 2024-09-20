@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Frente de Caixa</title>
+    <title>PJ VARIEDADES | TUDO PARA SEU LAR</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap"
@@ -27,39 +27,9 @@
             display: none;
         }
 
-        @media (max-width: 767px) {
-            .btn-group {
-                display: flex;
-                flex-direction: column;
-            }
-
-            .btn-group .btn {
-                width: 100%;
-                margin-bottom: 5px;
-            }
-
-            #productList,
-            #cartList {
-                max-height: 300px;
-                overflow-y: auto;
-            }
-        }
-
-        @media (min-width: 768px) and (max-width: 991px) {
-
-            #productList,
-            #cartList {
-                max-height: 400px;
-                overflow-y: auto;
-            }
-        }
-
-        @media (min-width: 992px) {
-
-            #productList,
-            #cartList {
-                height: 500px;
-            }
+        #productList,
+        #cartList {
+            height: 500px;
         }
 
         .product-cart-container {
@@ -85,7 +55,7 @@
                         <span
                             class="text-secondary fw-semibold text-uppercase text-warning d-md-inline">Variedades</span>
                     </span>
-                    <button class="btn btn-success text-uppercase" id="finishPurchaseBtn">
+                    <button class="btn btn-success text-uppercase" id="finishPurchaseBtn" onclick="openPaymentModal()">
                         <i class="fas fa-shopping-cart"></i>
                         Fechar Compra
                         <span class="badge bg-light text-dark ms-1" id="cartBadge">0</span>
@@ -100,11 +70,19 @@
                 <div class="col-lg-8 col-md-7 product-cart-content d-flex flex-column">
                     <div class="row align-items-center mb-3">
                         <div class="col-12 col-md-4 mb-2 mb-md-0">
-                            <h2 class="mb-0 text-uppercase">Produtos</h2>
+                            <h2 class="mb-2 text-uppercase">Produtos</h2>
                         </div>
-                        <div class="col-12 col-md-8">
-                            <input type="text" id="searchInput" class="form-control"
-                                placeholder="Pesquisar produto por código, nome ou valor">
+                        <div class="col-md-12 d-flex">
+                            <div class="input-group">
+                                <input type="search" id="searchInput" class="form-control" autocomplete="off"
+                                    placeholder="Pesquisar produto por código, nome ou valor">
+                            </div>
+                            <div class="ms-2 col-md-auto">
+                                <button class="btn btn-outline-success btn-small text-uppercase" data-bs-toggle="modal"
+                                    data-bs-target="#customSaleModal">Avulsa<kbd
+                                        class="ms-1 bg-secondary text-light">ALT +
+                                        A</kbd> </button>
+                            </div>
                         </div>
                     </div>
                     <div class="flex-grow-1 overflow-auto" id="productList">
@@ -149,63 +127,132 @@
                     </div>
                 </div>
             </section>
-        <!-- Modal de Pagamento -->
-        <div class="modal fade text-uppercase" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title fw-bold" id="paymentModalLabel">Finalizar Pagamento</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="paymentForm" autocomplete="off">
-                            <div class="row mb-3">
-                                <div class="col-md-4">
-                                    <label for="totalAmount" class="form-label">Total da Compra</label>
-                                    <input type="text" class="form-control form-control-lg" id="totalAmount" placeholder="R$ 0,00" data-currency="BRL" disabled autocomplete="off">
+
+            <!-- Modal para Venda Avulsa -->
+            <div class="modal fade text-uppercase" id="customSaleModal" tabindex="-1"
+                aria-labelledby="customSaleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title fw-bold" id="customSaleModalLabel">Venda Avulsa</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="customSaleForm">
+                                <div class="mb-3">
+                                    <label for="customProductName" class="form-label">Nome do Produto</label>
+                                    <input type="text" class="form-control" id="customProductName" required>
                                 </div>
-                                <div class="col-md-4">
-                                    <label for="discountAmount" class="form-label">Desconto Aplicado</label>
-                                    <input type="text" class="form-control form-control-lg" id="discountAmount" placeholder="R$ 0,00" data-currency="BRL" disabled autocomplete="off">
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="finalAmount" class="form-label">Valor Final</label>
-                                    <input type="text" class="form-control form-control-lg" id="finalAmount" placeholder="R$ 0,00" data-currency="BRL" disabled autocomplete="off">
-                                </div>
-                            </div>
-                            <div id="paymentMethodContainer">
-                                <div class="row mb-3">
-                                    <div class="col-md-12">
-                                        <label for="paymentMethod" class="form-label">Método de Pagamento</label>
-                                        <select class="form-select form-select-lg" id="paymentMethod" required autocomplete="off">
-                                            <option value="" disabled selected>Selecione o método de pagamento</option>
-                                            <option value="credit">Cartão de Crédito</option>
-                                            <option value="debit">Cartão de Débito</option>
-                                            <option value="cash">Dinheiro</option>
-                                            <option value="pix">PIX</option>
-                                        </select>
+                                <div class="mb-3">
+                                    <label for="customProductPrice" class="form-label">Valor</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">R$</span>
+                                        <input type="text" class="form-control" id="customProductPrice"
+                                            data-currency="BRL" autocomplete="off" required>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label for="paymentAmount" class="form-label">Valor Pago</label>
-                                    <input type="text" class="form-control form-control-lg" id="paymentAmount" placeholder="R$ 0,00" data-currency="BRL" required autocomplete="off">
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="changeAmount" class="form-label">Troco</label>
-                                    <input type="text" class="form-control form-control-lg" id="changeAmount" placeholder="R$ 0,00" data-currency="BRL" disabled autocomplete="off">
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary btn-lg" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-primary btn-lg" id="confirmPayment">Confirmar Pagamento</button>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger me-2" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-success"
+                                onclick="addCustomProduct()">Adicionar</button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+            <!-- Modal de Pagamento -->
+            <div class="modal fade text-uppercase" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-fullscreen">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title fw-bold" id="paymentModalLabel">Finalizar Pagamento</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <!-- Lado esquerdo: Listagem de produtos -->
+                                <div class="col-md-6">
+                                    <h6 class="mb-3">Produtos no Carrinho</h6>
+                                    <div style="max-height: 680px; overflow-y: auto;">
+                                        <ul id="modalProductList" class="list-group">
+                                            <!-- Os itens serão adicionados dinamicamente aqui -->
+                                        </ul>
+                                    </div>
+                                </div>
+                                <!-- Lado direito: Formulário de pagamento -->
+                                <div class="col-md-6">
+                                    <form id="paymentForm" autocomplete="off">
+                                        <div class="row mb-3" id="payments">
+                                            <div class="col-3 d-grid mx-auto"> <input type="radio" class="btn-check"
+                                                    data-payment="PIX" data-testid="radioPix" name="payment-options"
+                                                    id="pix-outlined" autocomplete="off" checked>
+                                                <label class="btn btn-outline-secondary" for="pix-outlined"><i
+                                                        class="fa-brands fa-pix"></i><br />PIX</label>
+                                            </div>
+                                            <div class="col-3 d-grid mx-auto"><input type="radio" class="btn-check"
+                                                    data-payment="CREDITO" data-testid="radioCredit"
+                                                    name="payment-options" id="credit-outlined" autocomplete="off">
+                                                <label class="btn btn-outline-secondary" for="credit-outlined"><i
+                                                        class="fa-solid fa-credit-card"></i><br />Crédito</label>
+                                            </div>
+                                            <div class="col-3 d-grid mx-auto"> <input type="radio" class="btn-check"
+                                                    data-payment="DEBITO" data-testid="radioDebit"
+                                                    name="payment-options" id="debit-outlined" autocomplete="off">
+                                                <label class="btn btn-outline-secondary" for="debit-outlined"><i
+                                                        class="fa-regular fa-credit-card"></i><br />Débito</label>
+                                            </div>
+                                            <div class="col-3 d-grid mx-auto"> <input type="radio" class="btn-check"
+                                                    data-payment="DINHEIRO" data-testid="radioMoney"
+                                                    name="payment-options" id="money-outlined" autocomplete="off">
+                                                <label class="btn btn-outline-secondary" for="money-outlined"><i
+                                                        class="fa-solid fa-brazilian-real-sign"></i><br />Dinheiro</label>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-md-4">
+                                                <label for="totalAmount" class="form-label">Total da Compra</label>
+                                                <input type="text" class="form-control form-control-lg" id="totalAmount"
+                                                    placeholder="R$ 0,00" data-currency="BRL" disabled
+                                                    autocomplete="off">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="discountAmount" class="form-label">Desconto Aplicado</label>
+                                                <input type="text" class="form-control form-control-lg"
+                                                    id="discountAmount" placeholder="R$ 0,00" data-currency="BRL"
+                                                    disabled autocomplete="off">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="finalAmount" class="form-label">Valor Final</label>
+                                                <input type="text" class="form-control form-control-lg" id="finalAmount"
+                                                    placeholder="R$ 0,00" data-currency="BRL" disabled
+                                                    autocomplete="off">
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-3">
+                                            <div class="col-md-12">
+                                                <label for="paymentAmount" class="form-label">Valor Pago</label>
+                                                <input type="text" class="form-control form-control-lg"
+                                                    id="paymentAmount" placeholder="R$ 0,00" data-currency="BRL"
+                                                    required autocomplete="off">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary btn-lg"
+                                data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-primary btn-lg" id="confirmPayment"
+                                onclick="handlePayment()">Confirmar
+                                Pagamento</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
         <footer>
             <!-- Toast -->
@@ -229,88 +276,92 @@
         // Dados de exemplo (substitua por uma chamada de API real)
         let products = [];
 
-        // Function to initialize IndexedDB
-        function initDB() {
-            return new Promise((resolve, reject) => {
-                const request = indexedDB.open('ProductsDB', 4);
-
-                request.onerror = (event) => reject("IndexedDB error: " + event.target.error);
-
-                request.onsuccess = (event) => {
-                    const db = event.target.result;
-                    resolve(db);
-                };
-
-                request.onupgradeneeded = (event) => {
-                    const db = event.target.result;
-                    if (!db.objectStoreNames.contains('products')) {
-                        const objectStore = db.createObjectStore('products', { keyPath: 'id', autoIncrement: true });
-                        objectStore.createIndex('code', 'code', { unique: false });
-                        objectStore.createIndex('name', 'name', { unique: false });
-                        objectStore.createIndex('price', 'price', { unique: false });
-                    }
-                };
-            });
-        }
-
-        // Function to save products to IndexedDB
-        function saveProductsToDB(db, products) {
-            return new Promise((resolve, reject) => {
-                const transaction = db.transaction(['products'], 'readwrite');
-                const objectStore = transaction.objectStore('products');
-
-                products.forEach(product => {
-                    objectStore.put(product);
-                });
-
-                transaction.oncomplete = () => resolve();
-                transaction.onerror = (event) => reject("Error saving products: " + event.target.error);
-            });
-        }
-
-        // Function to load products from IndexedDB
-        function loadProductsFromDB(db) {
-            return new Promise((resolve, reject) => {
-                const transaction = db.transaction(['products'], 'readonly');
-                const objectStore = transaction.objectStore('products');
-                const request = objectStore.getAll();
-
-                request.onsuccess = (event) => {
-                    products = event.target.result;
-                    resolve(products);
-                };
-
-                request.onerror = (event) => reject("Error loading products: " + event.target.error);
-            });
-        }
-
-        // Initialize the database and load or generate products
-        initDB().then(db => {
-            loadProductsFromDB(db).then(loadedProducts => {
-                if (loadedProducts.length === 0) {
-                    // If no products in DB, generate them
-                    products = Array.from({ length: 1500 }, (_, i) => {
-                        const id = Date.now() + i;
-                        const code = (i + 1).toString().padStart(3, '0');
-                        const name = `Produto ${['Pequeno', 'MédioMédioMédioMédio', 'GrandeGrandeGrandeGrandeGrandeGrandeGrandeGrandeGrandeGrandeGrandeGrande'][i % 3]} ${String.fromCharCode(65 + i)}`;
-                        const price = 10.1 + i * 5.5;
-                        return { id, code, name, price: Number(price.toFixed(2)) };
-                    });
-                    // Save generated products to DB
-                    saveProductsToDB(db, products).then(() => {
-                        console.log("Products saved to IndexedDB");
-                        displayProducts(products);
-                    });
-                } else {
-                    console.log("Products loaded from IndexedDB");
-                    displayProducts(loadedProducts);
-                }
-                updateCart(); // Adicione esta linha para mostrar o ícone do carrinho vazio ao carregar a página
-            });
-        }).catch(error => console.error("Database initialization error:", error));
-
+        //Global Variables
         const cart = [];
         let discount = 0;
+
+        //DOM Elements
+        const paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
+        const toast = new bootstrap.Toast('#liveToast');
+        const toastMessage = document.getElementById('toastMessage');
+
+        //DOM Events
+        // Add event listener for window load
+        window.addEventListener('load', () => {
+
+            // Inicializar a exibição de produtos
+            displayProducts(products);
+
+            // Check if CART exists in localStorage and update the info
+            const savedCart = localStorage.getItem('CART');
+            if (savedCart) {
+                // Parse the saved cart data
+                const parsedCart = JSON.parse(savedCart);
+
+                // Update the global cart variable
+                cart.length = 0; // Clear the current cart
+                cart.push(...parsedCart); // Add all items from saved cart
+
+                // Update the cart display
+                updateCart();
+
+                // Update the cart badge
+                updateCartBadge();
+
+                console.log('Cart loaded from localStorage');
+            } else {
+                console.log('No saved cart found in localStorage');
+            }
+
+        });
+
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredProducts = products.filter(product =>
+                product.code.toLowerCase().includes(searchTerm) ||
+                product.name.toLowerCase().includes(searchTerm) ||
+                product.price.toFixed(2).toString().includes(searchTerm)
+            );
+            displayProducts(filteredProducts);
+        });
+
+        // Adicionar evento para atualizar o desconto
+        document.getElementById('discountInput').addEventListener('blur', (e) => {
+            const discountValue = brazilianCurrencyToNumber(e.target.value);
+            const currentTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+            if (discountValue > currentTotal) {
+                // Exibir toast com mensagem de erro
+                showToast('O desconto não pode ser maior que o total da compra.', 'error');
+                // Resetar o valor do desconto para 0
+                e.target.value = '';
+                e.target.placeholder = 'R$ 0,00';
+                discount = 0;
+            } else {
+                discount = discountValue;
+            }
+            updateCart();
+        });
+
+        // Adicionar evento para formatar inputs com data-currency="BRL"
+        document.querySelectorAll('[data-currency="BRL"]').forEach(input => {
+            input.addEventListener('input', function (e) {
+                let value = e.target.value;
+                value = value.replace(/\D/g, "");
+                value = (value / 100).toFixed(2) // Adiciona casas decimais
+                    .replace(".", ",")           // Substitui ponto por vírgula
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Adiciona separador de milhares
+                e.target.value = value ? `R$ ${value}` : "";
+            });
+        });
+
+        // Add event listener for Ctrl+K shortcut
+        document.addEventListener('keydown', function (event) {
+            if (event.altKey && event.code === 'KeyA') {
+                const customSaleModal = new bootstrap.Modal(document.getElementById('customSaleModal'));
+                customSaleModal.show(); // Open the avulsa modal
+            }
+        });
 
         function displayProducts(products) {
             const productList = document.getElementById('productList');
@@ -452,68 +503,68 @@
             }
         }
 
-        // Add event listener to the finish purchase button
-        document.getElementById('finishPurchaseBtn').addEventListener('click', () => {
-            // Check if the cart is not empty
-            if (cart.length > 0) {
-                // Calculate total and discount
-                const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-                const finalTotal = Math.max(total - discount, 0);
+        function addCustomProduct() {
+            const customProductName = document.getElementById('customProductName').value.trim();
+            const customProductPrice = brazilianCurrencyToNumber(document.getElementById('customProductPrice').value);
 
-                // Update modal fields
-                document.getElementById('totalAmount').value = numberToBrazilianReal(total);
-                document.getElementById('discountAmount').value = numberToBrazilianReal(discount);
-                document.getElementById('finalAmount').value = numberToBrazilianReal(finalTotal);
+            if (customProductName && !isNaN(customProductPrice) && customProductPrice > 0) {
+                const customProduct = {
+                    code: `AVULSA(${Date.now()})`, // Generate a unique code
+                    name: customProductName,
+                    price: customProductPrice,
+                    quantity: 1
+                };
 
-                // Get the payment modal element
-                const paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
-                
-                // Open the payment modal
-                paymentModal.show();
+                cart.push(customProduct);
+                updateCart();
+                updateCartBadge();
 
-                // Add event listener for blur event on paymentAmount
-                document.getElementById('paymentAmount').addEventListener('input', (e) => {
-                const paymentAmount = brazilianCurrencyToNumber(e.target.value);
-                const finalAmount = brazilianCurrencyToNumber(document.getElementById('finalAmount').value);
-                const confirmButton = document.getElementById('confirmPayment');
-                const changeAmount = document.getElementById('changeAmount');
-                const additionalPaymentRow = document.getElementById('additionalPaymentRow');
+                // Clear input fields
+                document.getElementById('customProductName').value = '';
+                document.getElementById('customProductPrice').value = '';
 
-                if (paymentAmount < finalAmount) {
-                    confirmButton.textContent = 'Escolher Outro Método';
-                    changeAmount.value = 'R$ 0,00';
-                    
-                    if (!additionalPaymentRow) {
-                        const newRow = document.createElement('div');
-                        newRow.id = 'additionalPaymentRow';
-                        newRow.className = 'row mb-3';
-                        newRow.innerHTML = `
-                            <div class="col-md-12">
-                                <label for="additionalPayment" class="form-label">Pagamento Adicional</label>
-                                <input type="text" class="form-control form-control-lg" id="additionalPayment" placeholder="R$ 0,00" data-currency="BRL" required autocomplete="off">
-                            </div>
-                        `;
-                        document.getElementById('paymentForm').insertBefore(newRow, document.querySelector('.modal-footer'));
-                    }
-                } else {
-                    confirmButton.textContent = 'Confirmar Pagamento';
-                    changeAmount.value = numberToBrazilianReal(paymentAmount - finalAmount);
-                    
-                    if (additionalPaymentRow) {
-                        additionalPaymentRow.remove();
-                    }
-                }
-                });
+                // Show success message
+                showToast('Produto personalizado adicionado com sucesso!', 'success');
             } else {
-                // Show an error message if the cart is empty
-                const toastEl = document.getElementById('liveToast');
-                const toastMessage = document.getElementById('toastMessage');
-                toastMessage.textContent = 'O carrinho está vazio. Adicione itens antes de finalizar a compra.';
-                const toast = new bootstrap.Toast(toastEl);
-                toast.show();
+                // Show error message
+                showToast('Por favor, insira um nome válido e um preço maior que zero.', 'error');
             }
-        });
-        
+        }
+
+        function showToast(message, type) {
+            toastMessage.textContent = message;
+            const toastHeader = document.querySelector('.toast-header');
+            const toastIcon = document.createElement('i');
+
+            toastHeader.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-info');
+
+            switch (type) {
+                case 'success':
+                    toastHeader.classList.add('bg-success');
+                    toastIcon.className = 'fas fa-check-circle me-2';
+                    break;
+                case 'error':
+                    toastHeader.classList.add('bg-danger');
+                    toastIcon.className = 'fas fa-exclamation-circle me-2';
+                    break;
+                case 'warning':
+                    toastHeader.classList.add('bg-warning');
+                    toastIcon.className = 'fas fa-exclamation-triangle me-2';
+                    break;
+                default:
+                    toastHeader.classList.add('bg-info');
+                    toastIcon.className = 'fas fa-info-circle me-2';
+            }
+
+            // Remove existing icon if present
+            const existingIcon = toastHeader.querySelector('i');
+            if (existingIcon) {
+                existingIcon.remove();
+            }
+
+            toastHeader.prepend(toastIcon);
+            toast.show();
+        }
 
         function numberToBrazilianReal(number) {
             return number.toLocaleString("pt-BR", {
@@ -532,78 +583,260 @@
             return parseFloat(cleanValue);
         }
 
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            const filteredProducts = products.filter(product =>
-                product.code.toLowerCase().includes(searchTerm) ||
-                product.name.toLowerCase().includes(searchTerm) ||
-                product.price.toFixed(2).toString().includes(searchTerm)
-            );
-            displayProducts(filteredProducts);
-        });
-
-        // Adicionar evento para atualizar o desconto
-        document.getElementById('discountInput').addEventListener('blur', (e) => {
-            const discountValue = brazilianCurrencyToNumber(e.target.value);
-            const currentTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
-            if (discountValue > currentTotal) {
-                // Exibir toast com mensagem de erro
-                const toastEl = document.getElementById('liveToast');
-                const toastMessage = document.getElementById('toastMessage');
-                toastMessage.textContent = 'O desconto não pode ser maior que o total da compra.';
-                const toast = new bootstrap.Toast(toastEl);
-                toast.show();
-
-                // Resetar o valor do desconto para 0
-                e.target.value = '';
-                e.target.placeholder = 'R$ 0,00';
-                discount = 0;
-            } else {
-                discount = discountValue;
+        function openPaymentModal() {
+            // Check if cart is empty
+            if (cart.length === 0) {
+                showToast('O carrinho está vazio. Adicione itens antes de prosseguir com o pagamento.', 'error');
+                return;
             }
-            updateCart();
-        });
 
-        // Inicializar a exibição de produtos
-        displayProducts(products);
+            // Reset payment form
+            document.getElementById('paymentForm').reset();
 
-        // Adicionar evento para formatar inputs com data-currency="BRL"
-        document.querySelectorAll('[data-currency="BRL"]').forEach(input => {
-            input.addEventListener('input', function (e) {
-                let value = e.target.value;
-                value = value.replace(/\D/g, "");
-                value = (value / 100).toFixed(2) // Adiciona casas decimais
-                    .replace(".", ",")           // Substitui ponto por vírgula
-                    .replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Adiciona separador de milhares
-                e.target.value = value ? `R$ ${value}` : "";
+            // Update total amount
+            const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0) - discount;
+            document.getElementById('totalAmount').value = numberToBrazilianReal(total);
+
+            // Update discount amount
+            document.getElementById('discountAmount').value = numberToBrazilianReal(discount);
+
+            // Populate modal product list
+            const modalProductList = document.getElementById('modalProductList');
+            modalProductList.innerHTML = '';
+            cart.forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                li.innerHTML = `
+                    <div>
+                        <h6 class="my-0">${item.name}</h6>
+                        <small class="text-muted">${item.quantity}x ${numberToBrazilianReal(item.price)}</small>
+                    </div>
+                    <span class="text-muted">${numberToBrazilianReal(item.price * item.quantity)}</span>
+                `;
+                modalProductList.appendChild(li);
             });
-        });
 
-        // Add event listener for window load
-        window.addEventListener('load', () => {
-            // Check if CART exists in localStorage and update the info
-            const savedCart = localStorage.getItem('CART');
-            if (savedCart) {
-                // Parse the saved cart data
-                const parsedCart = JSON.parse(savedCart);
-
-                // Update the global cart variable
-                cart.length = 0; // Clear the current cart
-                cart.push(...parsedCart); // Add all items from saved cart
-
-                // Update the cart display
-                updateCart();
-
-                // Update the cart badge
-                updateCartBadge();
-
-                console.log('Cart loaded from localStorage');
-            } else {
-                console.log('No saved cart found in localStorage');
+            // Add discount item if applicable
+            if (discount > 0) {
+                const discountLi = document.createElement('li');
+                discountLi.className = 'list-group-item d-flex justify-content-between bg-light';
+                discountLi.innerHTML = `
+                    <div class="text-success">
+                        <h6 class="my-0">Desconto</h6>
+                    </div>
+                    <span class="text-success">-${numberToBrazilianReal(discount)}</span>
+                `;
+                modalProductList.appendChild(discountLi);
             }
 
-        });
+            // Add total item
+            const totalLi = document.createElement('li');
+            totalLi.className = 'list-group-item d-flex justify-content-between';
+            totalLi.innerHTML = `
+                <span>Total (BRL)</span>
+                <strong>${numberToBrazilianReal(total)}</strong>
+            `;
+            modalProductList.appendChild(totalLi);
+
+            // Show the modal
+            paymentModal.show();
+        }
+
+        async function handlePayment() {
+            debugger
+            const paymentAmountPayed = document.getElementById('paymentAmount');
+            const paymentTotalEl = document.getElementById('totalAmount');
+            const totalAmount = brazilianCurrencyToNumber(paymentTotalEl.value);
+
+            if (Number(paymentAmountPayed.value) <= 0 || isNaN(totalAmount)) {
+                paymentAmountPayed.classList.add('border-danger');
+                paymentAmountPayed.classList.add('is-invalid');
+                paymentAmountPayed.style.boxShadow = '0 0 0 0.2rem rgba(220, 53, 69, 0.25)';
+                paymentAmountPayed.focus();
+                return;
+            }
+
+            let id = Date.now();
+            const paymentDiscount = document.getElementById('discountAmount');
+            let total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+            let isInstallments = false;
+
+            if (!isInstallments) {
+                paymentTotalEl.value = numberToBrazilianReal(total);
+            }
+
+            const payment = {
+                id,
+                products: cart.map(product => ({
+                    code: product.code,
+                    name: product.name,
+                    quantity: product.quantity,
+                    price: product.price
+                })),
+                discount: brazilianCurrencyToNumber(paymentDiscount.value) || 0
+            };
+
+            let amountPayed = brazilianCurrencyToNumber(paymentAmountPayed.value);
+
+            if (payment.discount > 0) {
+                total -= payment.discount;
+                paymentTotalEl.value = numberToBrazilianReal(total);
+            }
+
+            if (amountPayed > total) {
+                showToast("O valor de pagamento excede o valor da venda, portanto o valor foi ajustado.", "info");
+                paymentAmountPayed.value = numberToBrazilianReal(total);
+                amountPayed = total;
+                return;
+            }
+
+            if (total === amountPayed) {
+                let paymentType = addPaymentMethod();
+
+                payment.paymentsMethods = [
+                    {
+                        id,
+                        paymentType,
+                        amountPayed
+                    }
+                ];
+
+                await postPayment(payment);
+                clearCart();
+                paymentModal.hide();
+                return;
+            }
+
+            if (total > amountPayed) {
+                isInstallments = true;
+
+                let remainingAmount = total - amountPayed;
+                let paymentType = addPaymentMethod();
+
+                payment.paymentsMethods = [
+                    {
+                        id,
+                        paymentType,
+                        amountPayed
+                    }
+                ];
+
+                while (remainingAmount > 0) {
+                    paymentTotalEl.value = numberToBrazilianReal(remainingAmount);
+                    paymentAmountPayed.value = "";
+                    modalPayment.show();
+
+                    await new Promise(resolve => {
+                        const confirmButton = document.querySelector("#confirmPayment");
+                        confirmButton.addEventListener("click", resolve, { once: true });
+                    });
+
+                    let partialPayment = brazilianCurrencyToNumber(paymentAmountPayed.value);
+
+                    if (partialPayment > remainingAmount) {
+                        showToast("O valor de pagamento excede o valor restante, portanto o valor foi ajustado.", "info");
+                        partialPayment = remainingAmount;
+                    }
+
+                    remainingAmount -= partialPayment;
+
+                    paymentType = addPaymentMethod();
+
+                    payment.paymentsMethods.push({
+                        id,
+                        paymentType,
+                        amountPayed: partialPayment
+                    });
+                }
+
+                // await postPayment(payment);
+                console.log("payment", payment);
+                clearCart();
+                paymentModal.hide();
+                return;
+            }
+        }
+
+        // Function to initialize IndexedDB
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('ProductsDB', 4);
+
+                request.onerror = (event) => reject("IndexedDB error: " + event.target.error);
+
+                request.onsuccess = (event) => {
+                    const db = event.target.result;
+                    resolve(db);
+                };
+
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains('products')) {
+                        const objectStore = db.createObjectStore('products', { keyPath: 'id', autoIncrement: true });
+                        objectStore.createIndex('code', 'code', { unique: false });
+                        objectStore.createIndex('name', 'name', { unique: false });
+                        objectStore.createIndex('price', 'price', { unique: false });
+                    }
+                };
+            });
+        }
+
+        // Function to save products to IndexedDB
+        function saveProductsToDB(db, products) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['products'], 'readwrite');
+                const objectStore = transaction.objectStore('products');
+
+                products.forEach(product => {
+                    objectStore.put(product);
+                });
+
+                transaction.oncomplete = () => resolve();
+                transaction.onerror = (event) => reject("Error saving products: " + event.target.error);
+            });
+        }
+
+        // Function to load products from IndexedDB
+        function loadProductsFromDB(db) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['products'], 'readonly');
+                const objectStore = transaction.objectStore('products');
+                const request = objectStore.getAll();
+
+                request.onsuccess = (event) => {
+                    products = event.target.result;
+                    resolve(products);
+                };
+
+                request.onerror = (event) => reject("Error loading products: " + event.target.error);
+            });
+        }
+
+        // Initialize the database and load or generate products
+        initDB().then(db => {
+            loadProductsFromDB(db).then(loadedProducts => {
+                if (loadedProducts.length === 0) {
+                    // If no products in DB, generate them
+                    products = Array.from({ length: 1500 }, (_, i) => {
+                        const id = Date.now() + i;
+                        const code = (i + 1).toString().padStart(3, '0');
+                        const name = `Produto ${['Pequeno', 'MédioMédioMédioMédio', 'GrandeGrandeGrandeGrandeGrandeGrandeGrandeGrandeGrandeGrandeGrandeGrande'][i % 3]} ${String.fromCharCode(65 + i)}`;
+                        const price = 10.1 + i * 5.5;
+                        return { id, code, name, price: Number(price.toFixed(2)) };
+                    });
+                    // Save generated products to DB
+                    saveProductsToDB(db, products).then(() => {
+                        console.log("Products saved to IndexedDB");
+                        displayProducts(products);
+                    });
+                } else {
+                    console.log("Products loaded from IndexedDB");
+                    displayProducts(loadedProducts);
+                }
+                updateCart(); // Adicione esta linha para mostrar o ícone do carrinho vazio ao carregar a página
+            });
+        }).catch(error => console.error("Database initialization error:", error));
+
 
     </script>
 </body>
