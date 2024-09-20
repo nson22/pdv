@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frente de Caixa</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        #productList::-webkit-scrollbar,
+        #cartList::-webkit-scrollbar {
+            display: none;
+        }
+
+        @media (max-width: 767px) {
+            .btn-group {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .btn-group .btn {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+
+            #productList,
+            #cartList {
+                max-height: 300px;
+                overflow-y: auto;
+            }
+        }
+
+        @media (min-width: 768px) and (max-width: 991px) {
+
+            #productList,
+            #cartList {
+                max-height: 400px;
+                overflow-y: auto;
+            }
+        }
+
+        @media (min-width: 992px) {
+
+            #productList,
+            #cartList {
+                height: 500px;
+            }
+        }
+
+        .product-cart-container {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 250px);
+        }
+
+        .product-cart-content {
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-4">
+        <header class="fixed-top bg-white py-3">
+            <div class="container">
+
+                <!-- Pesquisa de Produtos -->
+                <div class="mb-0 d-flex align-items-center">
+                    <span class="navbar-brand text-danger fw-bold fs-4 d-block d-md-inline me-2">
+                        PJ
+                        <span
+                            class="text-secondary fw-semibold text-uppercase text-warning d-md-inline">Variedades</span>
+                    </span>
+                </div>
+            </div>
+        </header>
+
+        <main class="mt-5 pt-5">
+            <!-- Lista de Produtos e Carrinho -->
+            <section class="row product-cart-container">
+                <div class="col-lg-8 col-md-7 product-cart-content d-flex flex-column">
+                    <div class="row align-items-center mb-3">
+                        <div class="col-12 col-md-4 mb-2 mb-md-0">
+                            <h2 class="mb-0">Produtos</h2>
+                        </div>
+                        <div class="col-12 col-md-8">
+                            <input type="text" id="searchInput" class="form-control"
+                                placeholder="Pesquisar produto por código, nome ou valor">
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 overflow-auto" id="productList" style="scrollbar-width: none; -ms-overflow-style: none;">
+                       
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-5 product-cart-content">
+                    <div class="sticky-top bg-white d-flex justify-content-between align-items-center">
+                        <h2>Carrinho <span id="cartItemCount" class="badge bg-secondary fs-6">0</span></h2>
+                        <button id="finalizePurchase" class="btn btn-success">Fechar Compra</button>
+                    </div>
+                    <div>
+                        <ul id="cartList" class="list-group mb-3">
+                            <!-- Itens do carrinho serão adicionados aqui dinamicamente -->
+                        </ul>
+                    </div>
+                </div>
+                <div class="sticky-bottom bg-white py-3 border-top" style="width: 33.33%;">
+                    <div class="row align-items-center">
+                        <div class="col-12 mb-2">
+                            <div class="form-group d-flex align-items-center">
+                                <div class="input-group">
+                                        <span class="input-group-text fw-bold">Desconto</span>
+                                        <input type="text" inputmode="numeric" id="discountInput" class="form-control" placeholder="R$ 0,00">
+                                        <button class="btn btn-outline-primary" type="button" id="clearDiscountBtn" onclick="clearDiscount()">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group d-flex align-items-center">
+                                <div class="input-group">
+                                    <span class="input-group-text fw-bold">Total</span>
+                                    <input disabled type="text" id="cartTotal" class="form-control" placeholder="R$ 0,00">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+        <footer>
+        <!-- Toast -->
+        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+            <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header bg-danger text-white">
+                    <strong class="me-auto">Notificação</strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    <p id="toastMessage"></p>
+                </div>
+            </div>
+        </div>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Dados de exemplo (substitua por uma chamada de API real)
+        let products = [];
+
+        // Function to initialize IndexedDB
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('ProductsDB', 1);
+
+                request.onerror = (event) => reject("IndexedDB error: " + event.target.error);
+
+                request.onsuccess = (event) => {
+                    const db = event.target.result;
+                    resolve(db);
+                };
+
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    const objectStore = db.createObjectStore('products', { keyPath: 'code' });
+                    objectStore.createIndex('name', 'name', { unique: false });
+                    objectStore.createIndex('price', 'price', { unique: false });
+                };
+            });
+        }
+
+        // Function to save products to IndexedDB
+        function saveProductsToDB(db, products) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['products'], 'readwrite');
+                const objectStore = transaction.objectStore('products');
+
+                products.forEach(product => {
+                    objectStore.put(product);
+                });
+
+                transaction.oncomplete = () => resolve();
+                transaction.onerror = (event) => reject("Error saving products: " + event.target.error);
+            });
+        }
+
+        // Function to load products from IndexedDB
+        function loadProductsFromDB(db) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['products'], 'readonly');
+                const objectStore = transaction.objectStore('products');
+                const request = objectStore.getAll();
+
+                request.onsuccess = (event) => {
+                    products = event.target.result;
+                    resolve(products);
+                };
+
+                request.onerror = (event) => reject("Error loading products: " + event.target.error);
+            });
+        }
+
+        // Initialize the database and load or generate products
+        initDB().then(db => {
+            loadProductsFromDB(db).then(loadedProducts => {
+                if (loadedProducts.length === 0) {
+                    // If no products in DB, generate them
+                    products = Array.from({ length: 1500 }, (_, i) => {
+                        const code = (i + 1).toString().padStart(3, '0');
+                        const name = `Produto ${String.fromCharCode(65 + i)}`;
+                        const price = 10.1 + i * 5.5;
+                        return { code, name, price: Number(price.toFixed(2)) };
+                    });
+                    // Save generated products to DB
+                    saveProductsToDB(db, products).then(() => {
+                        console.log("Products saved to IndexedDB");
+                        displayProducts(products);
+                    });
+                } else {
+                    console.log("Products loaded from IndexedDB");
+                    displayProducts(loadedProducts);
+                }
+                updateCart(); // Adicione esta linha para mostrar o ícone do carrinho vazio ao carregar a página
+            });
+        }).catch(error => console.error("Database initialization error:", error));
+
+        const cart = [];
+        let discount = 0;
+
+        function displayProducts(products) {
+            const productList = document.getElementById('productList');
+            
+            productList.innerHTML = '';
+            const tableContainer = document.createElement('div');
+            tableContainer.className = 'table-responsive';
+            tableContainer.style.maxHeight = '100%';
+            tableContainer.style.overflow = 'auto';
+            const table = document.createElement('table');
+            table.className = 'table table-hover table-striped';
+            table.innerHTML = `
+                <thead class="sticky-top bg-light">
+                    <tr>
+                        <th>Código</th>
+                        <th>Nome</th>
+                        <th>Preço</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            `;
+            tableContainer.appendChild(table);
+            productList.appendChild(tableContainer);
+            const tbody = table.querySelector('tbody');
+
+            products.forEach(product => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="col-2"><span class="badge bg-secondary">${product.code}</span></td>
+                    <td class="col-6"><span class="text-truncate" style="max-width: 200px; display: inline-block;">${product.name}</span></td>
+                    <td class="col-2"><span class="fw-bold">${product.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span></td>
+                    <td class="col-2">
+                        <button class="btn btn-outline-primary btn-sm" onclick="addToCart('${product.code}')">
+                            Adicionar
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function addToCart(productCode) {
+            const product = products.find(p => p.code === productCode);
+            if (product) {
+                const existingItem = cart.find(item => item.code === product.code);
+                if (existingItem) {
+                    existingItem.quantity += 1;
+                } else {
+                    cart.push({ ...product, quantity: 1 });
+                }
+                updateCart();
+                updateCartBadge();
+            }
+        }
+
+        function updateCart() {
+            const cartList = document.getElementById('cartList');
+            const cartTotal = document.getElementById('cartTotal');
+            cartList.innerHTML = '';
+            let total = 0;
+
+            if (cart.length === 0) {
+                const emptyCartMessage = document.createElement('div');
+                emptyCartMessage.className = 'd-flex flex-column align-items-center justify-content-center h-100 text-center';
+                emptyCartMessage.innerHTML = `
+                    <div class="d-flex justify-content-center w-100">
+                        <i class="fas fa-shopping-bag fa-10x text-muted opacity-50"></i>
+                    </div>
+                    <p class="mt-3 text-muted">Carrinho está vazio</p>
+                `;
+                cartList.appendChild(emptyCartMessage);
+            } else {
+                cart.forEach(item => {
+                    const subtotal = item.price * item.quantity;
+                    total += subtotal;
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item list-group-item-action mt-2';
+                    li.innerHTML = `
+                        <div class="w-100">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-truncate me-2">Código:<kbd class="ms-2">${item.code}</kbd></span>
+                                <button class="btn btn-danger btn-sm" onclick="removeFromCart('${item.code}')">
+                                    Remover
+                                </button>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <h5 class="mb-0 text-truncate me-2">${item.name}</h5>
+                                <input type="number" class="form-control form-control-sm" value="${item.quantity}" min="1" onchange="updateQuantity('${item.code}', this.value || 1)" style="width: 80px;">
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <p class="mb-0">Preço: ${item.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
+                                <span class="fw-bold">Subtotal: ${subtotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                            </div>
+                        </div>
+                    `;
+                    cartList.appendChild(li);
+                });
+                
+            }
+
+            // Atualizar o total com o desconto
+            const finalTotal = Math.max(total - discount, 0);
+            cartTotal.value = finalTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            updateCartBadge();
+        }
+
+        function updateCartBadge() {
+            const cartItemCount = document.getElementById('cartItemCount');
+            cartItemCount.textContent = cart.length;
+        }
+
+        function clearDiscount() {
+            const discountInput = document.getElementById('discountInput');
+            discountInput.value = '';
+            discountInput.placeholder = 'R$ 0,00';
+            discount = 0;
+            updateCart();
+        }
+
+        function updateQuantity(code, newQuantity) {
+            const item = cart.find(item => item.code === code);
+            if (item) {
+                item.quantity = parseInt(newQuantity);
+                updateCart();
+            }
+        }
+
+        function removeFromCart(code) {
+            const index = cart.findIndex(item => item.code === code);
+            if (index !== -1) {
+                cart.splice(index, 1);
+                updateCart();
+                updateCartBadge();
+            }
+        }
+
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredProducts = products.filter(product =>
+                product.code.toLowerCase().includes(searchTerm) ||
+                product.name.toLowerCase().includes(searchTerm) ||
+                product.price.toFixed(2).toString().includes(searchTerm)
+            );
+            displayProducts(filteredProducts);
+        });
+
+        document.getElementById('finalizePurchase').addEventListener('click', () => {
+            const paymentMethod = document.querySelector('input[name="paymentOption"]:checked').id;
+            alert(`Compra finalizada! Método de pagamento: ${paymentMethod}`);
+            // Aqui você pode adicionar a lógica para processar o pagamento
+        });
+
+        // Adicionar evento para atualizar o desconto
+        document.getElementById('discountInput').addEventListener('input', (e) => {
+            const discountValue = parseFloat(e.target.value.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+            const currentTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+            
+            if (discountValue > currentTotal) {
+                // Exibir toast com mensagem de erro
+                const toastEl = document.getElementById('liveToast');
+                const toastMessage = document.getElementById('toastMessage');
+                toastMessage.textContent = 'O desconto não pode ser maior que o total da compra.';
+                const toast = new bootstrap.Toast(toastEl);
+                toast.show();
+                
+                // Resetar o valor do desconto para 0
+                e.target.value = '';
+                e.target.placeholder = 'R$ 0,00';
+                discount = 0;
+            } else {
+                discount = discountValue
+            }
+            updateCart();
+        });
+
+        e.target.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+        // Inicializar a exibição de produtos
+        displayProducts(products);
+
+    </script>
+</body>
+
+</html>
