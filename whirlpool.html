@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+    <header>
+        <nav class="navbar navbar-expand-lg">
+            <div class="container">
+                <div class="d-flex justify-content-between align-items-center w-100">
+                    <div class="d-flex align-items-center">
+                        <img class="mb-2 mb-lg-0 me-lg-2"
+                            src="https://upload.wikimedia.org/wikipedia/commons/9/95/Whirlpool_Corporation_Logo_%28as_of_2017%29.svg"
+                            alt="" width="100" height="auto">
+                        <h1 class="navbar-brand fs-4 fw-bold mb-2 mb-lg-0 text-center text-lg-start d-none d-md-block">
+                            Engenharia da Qualidade | Manaus</h1>
+                    </div>
+                    <button id="themeToggle" class="btn btn-outline-primary">
+                        <i id="themeIcon" class="bi bi-moon"></i>
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container my-3 my-md-3 py-2 py-md-4 flex-grow-1">
+        <h2 class="mb-3 mb-md-4 text-primary text-center">Laboratório de Análise de Produto</h2>
+        <form id="productForm" class="bg-body-tertiary p-3 p-md-4 rounded shadow-sm"
+            action="https://script.google.com/macros/s/AKfycbwxoBGeGdSnJTkKdPlVFdfz-PNPYQIXODsgAc9x_vmgM4xLVOOp3pRzX_183Blov6RNHw/exec"
+            target="_blank" method="post">
+            <div class="row g-2 g-md-3 mt-2 mt-md-3">
+                <div class="col-12 col-md-4">
+                    <label for="inspectors" class="form-label text-uppercase fw-bold small">Inspetores</label>
+                    <select class="form-select" id="inspectors" name="inspectors" required data-testid="inspectors">
+                        <option>Selecionar</option>
+                    </select>
+                </div>
+                <div class="col-12 col-md-4">
+                    <label class="form-label text-uppercase fw-bold small" for="barcode">Codigo do Produto</label>
+                    <input type="text" class="form-control" id="barcode" name="barcode"
+                        style="text-transform:uppercase;" pattern="(B|C)(L|B|C|M|P)[A-Z0-9]{19}" required
+                        placeholder="CCB07FBA00MA4298516EC" data-testid="barcode">
+                </div>
+                <div class="col-12 col-md-4">
+                    <label for="lines" class="form-label text-uppercase fw-bold small">Linha</label>
+                    <select class="form-select" id="lines" name="lines" required data-testid="lines">
+                        <option>Selecionar</option>
+                    </select>
+                </div>
+                <div class="col-12 col-md-6 mt-3">
+                    <h6 class="card-title mb-2">Tipo de Avaliação</h6>
+                    <div for="evaluation" class="btn-group w-100">
+                        <input type="radio" class="btn-check" name="evaluation" id="funcional" autocomplete="off"
+                            checked value="Funcional" data-testid="funcional" />
+                        <label class="btn btn-outline-primary" for="funcional"
+                            style="text-transform:uppercase;">Funcional</label>
+                        <input type="radio" class="btn-check" name="evaluation" id="safety" autocomplete="off"
+                            value="Safety" data-testid="safety" />
+                        <label class="btn btn-outline-primary" for="safety"
+                            style="text-transform:uppercase;">Safety</label>
+                        <input type="radio" class="btn-check" name="evaluation" id="embalagem" autocomplete="off"
+                            value="Estético" data-testid="estetico" />
+                        <label class="btn btn-outline-primary" for="embalagem"
+                            style="text-transform:uppercase;">Estético</label>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 mt-3">
+                    <h6 class="card-title mb-2"> Resultado Avaliação</h6>
+                    <div for="status" class="btn-group w-100">
+                        <input type="radio" class="btn-check" name="status" id="approvedBtn" autocomplete="off" checked
+                            value="Aprovado" data-testid="aprovado" />
+                        <label class="btn btn-outline-success" for="approvedBtn"
+                            style="text-transform:uppercase;">Aprovado</label>
+                        <input type="radio" class="btn-check" name="status" id="failedBtn" autocomplete="off"
+                            value="Reprovado" data-testid="reprovado" />
+                        <label class="btn btn-outline-danger" for="failedBtn"
+                            style="text-transform:uppercase;">Reprovado</label>
+                    </div>
+                </div>
+
+
+                <div class="col-12 col-md-4 col-lg-3">
+                    <label for="part" class="form-label text-uppercase fw-bold small">Peça</label>
+                    <select class="form-select" id="part" name="part" data-reproved="true" required disabled
+                        data-testid="part">
+                        <option>Selecionar</option>
+                    </select>
+                </div>
+                <div class="col-12 col-md-4 col-lg-3">
+                    <label for="fail" class="form-label text-uppercase fw-bold small">Falha</label>
+                    <input class="form-select" id="fail" name="fail" data-reproved="true" placeholder="Selecionar"
+                        required disabled list="failOptions" data-testid="fail">
+                    <datalist id="failOptions">
+                    </datalist>
+                </div>
+                <div class="col-12 col-md-4 col-lg-2">
+                    <label for="effect" class="form-label text-uppercase fw-bold small">Efeito</label>
+                    <select class="form-select" id="effect" name="effect" data-reproved="true" required disabled
+                        data-testid="effect">
+                        <option value="">Selecionar</option>
+                    </select>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3">
+                    <label for="rating" class="form-label text-uppercase fw-bold small">Classificação</label>
+                    <select class="form-select" id="rating" name="rating" data-reproved="true" disabled required
+                        data-testid="rating">
+                        <option>Classificar</option>
+
+                    </select>
+                </div>
+                <div class="col-12 col-md-6 col-lg-1">
+                    <label for="quantity" class="form-label text-uppercase fw-bold small">Quantidade</label>
+                    <input type="search" inputmode="numeric" min="1" value="1" data-reproved="true" class="form-control"
+                        id="quantity" data-testid="quantity" name="quantity" disabled required>
+                </div>
+                <div class="col-12">
+                    <label for="observation" class="form-label text-uppercase fw-bold small">Observação</label>
+                    <textarea class="form-control" id="observation" rows="3" name="observation" style="resize: none;"
+                        data-reproved="true" disabled data-testid="observation"></textarea>
+                </div>
+                <div class="col-12 mt-3 mt-md-4">
+                    <button type="submit" class="btn btn-primary w-100 w-md-auto text-uppercase fw-bold">
+                        <i class="bi bi-send me-2"></i> Enviar
+                    </button>
+                </div>
+            </div>
+        </form>
+        <div class="modal fade" id="loadingModal" tabindex="-1" aria-labelledby="loadingModalLabel" aria-hidden="true"
+            data-bs-backdrop="static" data-bs-keyboard="false">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-body text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Carregando...</span>
+                        </div>
+                        <p class="mt-2">Aguarde...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <div class="toast-container position-fixed bottom-0 start-50 translate-middle-x p-3 mb-5">
+        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">Notificação</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer py-3 bg-body-tertiary mt-auto">
+        <div class="container text-center">
+            <span class="text-muted">&copy; <span id="year"></span> Whirlpool Corporation. Todos os direitos
+                reservados.</span>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+        const savedTheme = localStorage.getItem('theme');
+
+        window.addEventListener('load', function () {
+            document.getElementById('year').textContent = new Date().getFullYear();
+
+            if (savedTheme) {
+                setTheme(savedTheme);
+            } else {
+                setTheme('light');
+            }
+
+            loadingModal.show();
+            loadInspectors();
+            loadLines();
+        });
+
+        document.getElementById('themeToggle').addEventListener('click', function () {
+            const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            setTheme(newTheme);
+        });
+
+        document.getElementById('quantity').addEventListener('input', function (e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+
+            if (this.value === '' || parseInt(this.value) < 1) {
+                this.value = '1';
+            }
+
+            this.value = this.value.replace(/^0+/, '');
+        });
+
+        document.getElementById('lines').addEventListener('change', function () {
+            const failedButton = document.getElementById('failedBtn');
+            if (failedButton.checked) {
+                loadFailData();
+            }
+        });
+
+        document.getElementById('failedBtn').addEventListener('change', function () {
+            if (this.checked) {
+                loadFailData();
+            }
+        });
+
+        document.getElementById('approvedBtn').addEventListener('change', function () {
+            const reprovedFields = document.querySelectorAll('[data-reproved="true"]');
+            reprovedFields.forEach(field => {
+                field.disabled = true;
+            });
+        });
+
+        // document.querySelectorAll("[data-testid]").forEach(field => {
+        //     if (field.tagName.toLowerCase() === 'select' && field.children.length > 0) {
+        //         field.children[0].selected = true;
+        //     }
+
+        //     if (field.tagName.toLowerCase() === 'input' || field.tagName.toLowerCase() === 'textarea') {
+        //         field.value = '';
+        //     }
+
+        //     if (field.tagName.toLowerCase() === "radio") {
+        //         firstRadio.checked = true;
+        //     }
+        // });
+
+        function loadFailData() {
+            const selectedLine = document.getElementById('lines');
+
+            if (selectedLine.value !== '') {
+                const selectedRating = document.getElementById('failedBtn').value;
+                if (selectedRating === 'Reprovado' && selectedLine) {
+                    document.getElementById('quantity').removeAttribute("disabled")
+                    document.getElementById('observation').removeAttribute("disabled")
+                    let whichLine = selectedLine.value.split('-')[1]
+                    loadingModal.show();
+                    loadParts(whichLine);
+                    loadFails(whichLine);
+                    loadEffects(whichLine);
+                    loadRatings();
+                }
+                return
+            }
+
+            document.getElementById('approvedBtn').checked = true;
+            selectedLine.focus();
+            showToast("Selecione uma linha válida.", "warning");
+
+        }
+
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-bs-theme', theme);
+            localStorage.setItem('theme', theme);
+
+            // Change the icon based on the theme
+            const themeIcon = document.getElementById('themeIcon');
+            if (theme === 'dark') {
+                themeIcon.classList.replace('bi-sun', 'bi-moon');
+            } else {
+                themeIcon.classList.replace('bi-moon', 'bi-sun');
+            }
+        }
+
+        function loadInspectors() {
+            fetchInspectors()
+                .then(inspectors => {
+                    const inspectorsDropdown = document.getElementById('inspectors');
+                    inspectorsDropdown.innerHTML = '';
+
+                    const defaultOption = document.createElement('option');
+                    defaultOption.value = '';
+                    defaultOption.textContent = 'Selecionar';
+                    defaultOption.selected = true;
+                    defaultOption.disabled = true;
+                    inspectorsDropdown.appendChild(defaultOption);
+
+                    inspectors.forEach(inspector => {
+                        const option = document.createElement('option');
+                        option.value = inspector;
+                        option.textContent = inspector;
+                        inspectorsDropdown.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    showToast("Erro ao carregar inspetores. Por favor, tente novamente mais tarde.", "error");
+                })
+        }
+
+        function fetchInspectors() {
+            return new Promise((resolve, reject) => {
+                google.script.run
+                    .withSuccessHandler(resolve)
+                    .withFailureHandler(reject)
+                    .getInspectorsFromSheet();
+            });
+        }
+
+        function loadLines() {
+            fetchLines()
+                .then(lines => {
+                    const linesDropdown = document.getElementById('lines');
+                    linesDropdown.innerHTML = '';
+
+                    const defaultOption = document.createElement('option');
+                    defaultOption.value = '';
+                    defaultOption.textContent = 'Selecionar';
+                    defaultOption.selected = true;
+                    defaultOption.disabled = true;
+                    linesDropdown.appendChild(defaultOption);
+
+                    lines.forEach(line => {
+                        const option = document.createElement('option');
+                        option.value = `${line[0]}-${line[1]}`;
+                        option.textContent = line[0];
+                        linesDropdown.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    showToast("Erro ao carregar as linhas. Por favor, tente novamente mais tarde.", 'error');
+                }).finally(() => {
+                    if (loadingModal._isShown) {
+                        loadingModal.hide();
+                    }
+                })
+        }
+
+        function fetchLines() {
+            return new Promise((resolve, reject) => {
+                google.script.run
+                    .withSuccessHandler(resolve)
+                    .withFailureHandler(reject)
+                    .getLinesFromSheet();
+            });
+        }
+
+        function loadRatings() {
+            fetchRatings()
+                .then(ratings => {
+                    const ratingsDropdown = document.getElementById('rating');
+                    ratingsDropdown.innerHTML = '';
+                    ratingsDropdown.disabled = false;
+
+                    const defaultOption = document.createElement('option');
+                    defaultOption.value = '';
+                    defaultOption.textContent = 'Classificar';
+                    defaultOption.selected = true;
+                    defaultOption.disabled = true;
+                    ratingsDropdown.appendChild(defaultOption);
+
+                    ratings.forEach(rating => {
+                        const option = document.createElement('option');
+                        option.value = rating;
+                        option.textContent = rating;
+                        ratingsDropdown.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    showToast("Erro ao carregar as classificações. Por favor, tente novamente mais tarde.");
+                }).finally(() => {
+                    if (loadingModal._isShown) {
+                        loadingModal.hide();
+                    }
+                })
+        }
+
+        function fetchRatings() {
+            return new Promise((resolve, reject) => {
+                google.script.run
+                    .withSuccessHandler(resolve)
+                    .withFailureHandler(reject)
+                    .getRatingsFromSheet();
+            });
+        }
+
+        function loadParts(query) {
+            fetchPartsFromSheet(query)
+                .then(parts => {
+                    const partsDropdown = document.getElementById('part');
+                    partsDropdown.innerHTML = '';
+                    partsDropdown.disabled = false;
+
+                    const defaultOption = document.createElement('option');
+                    defaultOption.value = '';
+                    defaultOption.textContent = 'Selecionar';
+                    defaultOption.selected = true;
+                    defaultOption.disabled = true;
+                    partsDropdown.appendChild(defaultOption);
+
+                    parts.forEach(part => {
+                        const option = document.createElement('option');
+                        option.value = part;
+                        option.textContent = part;
+                        partsDropdown.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    showToast("Erro ao carregar as peças. Por favor, tente novamente mais tarde.", 'error');
+                }).finally(() => {
+                    if (loadingModal._isShown) {
+                        loadingModal.hide();
+                    }
+                })
+        }
+
+        function fetchPartsFromSheet(query) {
+            return new Promise((resolve, reject) => {
+                google.script.run
+                    .withSuccessHandler(resolve)
+                    .withFailureHandler(reject)
+                    .getPartsFromSheet(query);
+            });
+        }
+
+        function loadFails(query) {
+            fetchFailsFromSheet(query)
+                .then(fails => {
+                    const failsDropdown = document.getElementById('fail');
+                    failsDropdown.disabled = false;
+
+                    const failsDatalist = document.getElementById('failOptions');
+                    failsDatalist.innerHTML = '';
+
+                    fails.forEach(fail => {
+                        const option = document.createElement('option');
+                        option.value = fail;
+                        option.textContent = fail;
+                        failsDatalist.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    showToast("Erro ao carregar as falhas. Por favor, tente novamente mais tarde.", 'error');
+                }).finally(() => {
+                    if (loadingModal._isShown) {
+                        loadingModal.hide();
+                    }
+                })
+        }
+
+        function fetchFailsFromSheet(query) {
+            return new Promise((resolve, reject) => {
+                google.script.run
+                    .withSuccessHandler(resolve)
+                    .withFailureHandler(reject)
+                    .getFailsFromSheet(query);
+            });
+        }
+
+        function loadEffects(query) {
+            fetchEffectsFromSheet(query)
+                .then(effects => {
+                    const effectsDropdown = document.getElementById('effect');
+                    effectsDropdown.innerHTML = '';
+                    effectsDropdown.disabled = false;
+
+                    const defaultOption = document.createElement('option');
+                    defaultOption.value = '';
+                    defaultOption.textContent = 'Selecionar';
+                    defaultOption.selected = true;
+                    effectsDropdown.appendChild(defaultOption);
+
+                    effects.forEach(effect => {
+                        const option = document.createElement('option');
+                        option.value = effect;
+                        option.textContent = effect;
+                        effectsDropdown.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    showToast("Erro ao carregar os efeitos. Por favor, tente novamente mais tarde.", "error");
+                }).finally(() => {
+                    if (loadingModal._isShown) {
+                        loadingModal.hide();
+                    }
+                })
+        }
+
+        function fetchEffectsFromSheet(query) {
+            return new Promise((resolve, reject) => {
+                google.script.run
+                    .withSuccessHandler(resolve)
+                    .withFailureHandler(reject)
+                    .getEffectsFromSheet(query);
+            });
+        }
+
+        function showToast(message, type = "warning") {
+            const toast = document.getElementById('liveToast');
+            const toastHeader = toast.querySelector('.toast-header');
+            const toastBody = toast.querySelector('.toast-body');
+            toastHeader.classList.remove('text-bg-warning', 'text-bg-success', 'text-bg-danger');
+            let icon = '';
+
+            switch (type) {
+                case 'warning':
+                    toastHeader.classList.add('text-bg-warning');
+                    icon = 'bi-exclamation-triangle';
+                    break;
+                case 'success':
+                    toastHeader.classList.add('text-bg-success');
+                    icon = 'bi-check-circle';
+                    break;
+                case 'error':
+                    toastHeader.classList.add('text-bg-danger');
+                    icon = 'bi-x-circle';
+                    break;
+                default:
+                    toastHeader.classList.add('text-bg-warning');
+                    icon = 'bi-info-circle';
+            }
+            toastHeader.innerHTML = `<i class="bi ${icon} me-2"></i> Notificação`;
+            toastBody.textContent = message;
+            new bootstrap.Toast(toast).show();
+        }
+
+    </script>
+</body>
+
+</html>

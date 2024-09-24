@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-4">
+        <header class="fixed-top bg-light py-3">
+            <div class="container">
+                <div class="mb-0 d-flex align-items-center justify-content-between">
+                    <span class="navbar-brand text-danger fw-bold fs-4 d-block d-md-inline me-2 text-uppercase"
+                        style="font-family: 'Montserrat', sans-serif;">
+                        PJ
+                        <span
+                            class="text-secondary fw-semibold text-warning d-md-inline text-uppercase">Variedades</span>
+                    </span>
+                    <button class="btn btn-primary text-uppercase" id="finishPurchaseBtn" onclick="openPaymentModal()">
+                        <i class="fas fa-shopping-cart"></i>
+                        Fechar Venda
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="mt-5 pt-5 d-flex flex-column" style="height: calc(100vh - 56px - 150px); overflow: hidden;">
+            <!-- Lista de Produtos e Carrinho -->
+            <section class="row flex-grow-1 overflow-hidden h-100">
+                <div class="col-lg-8 col-md-7 d-flex flex-column h-100">
+                    <div class="row align-items-center mb-3">
+                        <div class="col-12 col-md-4 mb-2 mb-md-0">
+                            <h2 class="mb-2">Produtos</h2>
+                        </div>
+                        <div class="col-md-12 d-flex">
+                            <div class="input-group">
+                                <input type="search" id="searchInput" class="form-control" autocomplete="off"
+                                    placeholder="Pesquisar produto por código ou nome">
+                            </div>
+                            <div class="ms-2 col-md-auto">
+                                <button class="btn btn-primary btn-small text-uppercase" data-bs-toggle="modal"
+                                    data-bs-target="#customSaleModal">Avulsa</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 overflow-auto" id="productList">
+                        <!-- Produtos serão adicionados aqui dinamicamente -->
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-5 d-flex flex-column h-100">
+                    <div class="sticky-top bg-white d-flex justify-content-center align-items-center">
+                        <h2 class="mb-0">Itens no carrinho <h5><span class="badge bg-secondary ms-1"
+                                    id="cartBadge">0</span></h5>
+                        </h2>
+                    </div>
+                    <div class="flex-grow-1 overflow-auto">
+                        <ul id="cartList" class="list-group mb-3">
+                            <!-- Itens do carrinho serão adicionados aqui dinamicamente -->
+                        </ul>
+                    </div>
+                    <div class="sticky-bottom bg-white pt-1 border-top">
+                        <div class="row align-items-center">
+                            <div class="col-12 mt-1 mb-1">
+                                <div class="form-group d-flex align-items-center">
+                                    <div class="input-group">
+                                        <span class="input-group-text fw-bold">Desconto</span>
+                                        <input type="search" id="discountInput" inputmode="decimal"
+                                            class="form-control form-control-lg" placeholder="R$ 0,00"
+                                            data-currency="BRL" autocomplete="off">
+                                        <!-- <button class="btn btn-outline-secondary" type="button" id="clearDiscountBtn"
+                                            onclick="clearDiscount()">
+                                            <i class="fas fa-times"></i>
+                                        </button> -->
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 mt-1 mb-1">
+                                <div class="form-group d-flex align-items-center">
+                                    <div class="input-group">
+                                        <span class="input-group-text fw-bold">Total</span>
+                                        <input disabled type="text" id="cartTotal" class="form-control form-control-lg"
+                                            placeholder="R$ 0,00" data-currency="BRL">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        <footer class="fixed-bottom bg-light pt-2 mt-1">
+            <div class="shortcut-helpers">
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <ul class="list-unstyled">
+                                <li><kbd>F1</kbd> - <small>Ajuda</small></li>
+                                <li><kbd>F2</kbd> - <small>Nova Venda</small></li>
+                                <li><kbd>F3</kbd> - <small>Buscar Produto</small></li>
+                            </ul>
+                        </div>
+                        <div class="col">
+                            <ul class="list-unstyled">
+                                <li><kbd>F1</kbd> - <small>Ajuda</small></li>
+                                <li><kbd>F2</kbd> - <small>Nova Venda</small></li>
+                                <li><kbd>F3</kbd> - <small>Buscar Produto</small></li>
+                            </ul>
+                        </div>
+                        <div class="col">
+                            <ul class="list-unstyled">
+                                <li><kbd>F1</kbd> - <small>Ajuda</small></li>
+                                <li><kbd>F2</kbd> - <small>Nova Venda</small></li>
+                                <li><kbd>F3</kbd> - <small>Buscar Produto</small></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+        </footer>
+        <!-- Modal para Venda Avulsa -->
+        <div class="modal fade" id="customSaleModal" tabindex="-1" aria-labelledby="customSaleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title fw-bold text-uppercase" id="customSaleModalLabel">Venda Avulsa</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="customSaleForm">
+                            <div class="mb-3">
+                                <label for="customProductName" class="form-label">Nome do Produto</label>
+                                <input type="text" class="form-control" id="customProductName" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="customProductPrice" class="form-label">Valor</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">R$</span>
+                                    <input type="text" class="form-control" id="customProductPrice" data-currency="BRL"
+                                        autocomplete="off" required>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger me-2" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-success" onclick="addCustomProduct()">Adicionar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal de Pagamento -->
+        <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-fullscreen">
+                <div class="modal-content p-3">
+                    <div class="modal-header">
+                        <h5 class="modal-title fw-bold" id="paymentModalLabel">Finalizar Pagamento <span
+                                class="badge bg-secondary" id="paymentId"></span></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" style="overflow-y: hidden;">
+                        <div class="row">
+                            <!-- Lado esquerdo: Listagem de produtos -->
+                            <div class="col-md-6">
+                                <h6 class="mb-3">Produtos no Carrinho</h6>
+                                <div style="overflow-y: auto; max-height: calc(99vh - 200px);">
+                                    <ul id="modalProductList" class="list-group">
+                                        <!-- Os itens serão adicionados dinamicamente aqui -->
+                                    </ul>
+                                </div>
+                            </div>
+                            <!-- Lado direito: Formulário de pagamento -->
+                            <div class="col-md-6">
+                                <form id="paymentForm" autocomplete="off">
+                                    <div class="row mb-3" id="payments">
+                                        <div class="col-3 d-grid mx-auto"> <input type="radio" class="btn-check"
+                                                data-payment="PIX" data-testid="radioPix" name="payment-options"
+                                                id="pix-outlined" autocomplete="off" checked>
+                                            <label class="btn btn-outline-primary" for="pix-outlined"><i
+                                                    class="fa-brands fa-pix"></i><br />PIX</label>
+                                        </div>
+                                        <div class="col-3 d-grid mx-auto"><input type="radio" class="btn-check"
+                                                data-payment="CREDITO" data-testid="radioCredit" name="payment-options"
+                                                id="credit-outlined" autocomplete="off">
+                                            <label class="btn btn-outline-primary" for="credit-outlined"><i
+                                                    class="fa-solid fa-credit-card"></i><br />Crédito</label>
+                                        </div>
+                                        <div class="col-3 d-grid mx-auto"> <input type="radio" class="btn-check"
+                                                data-payment="DEBITO" data-testid="radioDebit" name="payment-options"
+                                                id="debit-outlined" autocomplete="off">
+                                            <label class="btn btn-outline-primary" for="debit-outlined"><i
+                                                    class="fa-regular fa-credit-card"></i><br />Débito</label>
+                                        </div>
+                                        <div class="col-3 d-grid mx-auto"> <input type="radio" class="btn-check"
+                                                data-payment="DINHEIRO" data-testid="radioMoney" name="payment-options"
+                                                id="money-outlined" autocomplete="off">
+                                            <label class="btn btn-outline-primary" for="money-outlined"><i
+                                                    class="fa-solid fa-brazilian-real-sign"></i><br />Dinheiro</label>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label for="totalAmount" class="form-label">Total da Compra</label>
+                                            <input type="text" class="form-control form-control-lg" id="totalAmount"
+                                                placeholder="R$ 0,00" data-currency="BRL" disabled autocomplete="off">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="discountAmount" class="form-label">Desconto Aplicado</label>
+                                            <input type="text" class="form-control form-control-lg" id="discountAmount"
+                                                placeholder="R$ 0,00" data-currency="BRL" disabled autocomplete="off">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label for="paymentAmount" class="form-label">Valor Pago</label>
+                                            <input type="text" inputmode="numeric" class="form-control form-control-lg"
+                                                id="paymentAmount" placeholder="R$ 0,00" data-currency="BRL"
+                                                autocomplete="off">
+                                            <div class="alert alert-danger mt-3" role="alert" style="display: none;">
+                                                <p id="paymentError"></p>
+                                                <!-- Error message will be displayed here -->
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="changeAmount" class="form-label">Troco</label>
+                                            <input type="text" class="form-control form-control-lg" id="changeAmount"
+                                                disabled placeholder="R$ 0,00" data-currency="BRL" readonly>
+                                        </div>
+                                        <div class="col-md-12 mt-3">
+                                            <!-- <label class="form-label">Pagamentos Parciais</label> -->
+                                            <ul class="list-group" id="partialPaymentsList">
+                                                <!-- Partial payments will be added here dynamically -->
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger btn-lg" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary btn-lg" id="confirmPayment"
+                            onclick="handlePayment()">Confirmar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Toast -->
+        <div class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 9999">
+            <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header bg-danger text-white">
+                    <strong class="me-auto">Mensagem</strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"
+                        aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    <p id="toastMessage"></p>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="loadingModal" aria-hidden="true" aria-labelledby="loadingModalLabel" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-body text-center">
+                        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <h5 class="mt-3">Carregando...</h5>
+                        <p>Por favor, aguarde enquanto processamos a venda.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Dados de exemplo (substitua por uma chamada de API real)
+        let products = [];
+
+        //Global Variables
+        let cart = [];
+        let payment = {
+            id: Date.now(),
+        }
+        let discount = 0;
+        let totalToPay = 0
+
+        //DOM Elements
+        const paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
+        const toast = new bootstrap.Toast('#liveToast');
+        const toastMessage = document.getElementById('toastMessage');
+        const customSaleModal = new bootstrap.Modal(document.getElementById('customSaleModal'));
+        const modalProductList = document.getElementById('modalProductList');
+
+        //DOM Events
+        // Add event listener for window load
+        window.addEventListener('load', () => {
+            // Inicializar a exibição de produtos
+            displayProducts(products);
+
+            // Check if CART exists in localStorage and update the info
+            const savedCart = localStorage.getItem('CART');
+            if (savedCart) {
+                // Parse the saved cart data
+                const parsedCart = JSON.parse(savedCart);
+
+                // Update the global cart variable
+                cart.length = 0; // Clear the current cart
+                cart.push(...parsedCart); // Add all items from saved cart
+
+                // Update the cart display
+                updateCart();
+
+                // Update the cart badge
+                updateCartBadge();
+
+                console.log('Cart loaded from localStorage');
+            } else {
+                console.log('No saved cart found in localStorage');
+            }
+
+        });
+
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredProducts = products.filter(product =>
+                product.code.toLowerCase().includes(searchTerm) ||
+                product.name.toLowerCase().includes(searchTerm)
+            );
+            displayProducts(filteredProducts);
+        });
+
+        // Adicionar evento para atualizar o desconto
+        document.getElementById('discountInput').addEventListener('blur', (e) => {
+            const discountValue = brazilianCurrencyToNumber(e.target.value);
+            const currentTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+            if (discountValue > currentTotal) {
+                // Exibir toast com mensagem de erro
+                showToast('O desconto não pode ser maior que o total da compra.', 'error');
+                // Resetar o valor do desconto para 0
+                e.target.value = '';
+                e.target.placeholder = 'R$ 0,00';
+                discount = 0;
+            } else {
+                discount = discountValue;
+            }
+            updateCart();
+        });
+
+        // Adicionar evento para formatar inputs com data-currency="BRL"
+        document.querySelectorAll('[data-currency="BRL"]').forEach(input => {
+            input.addEventListener('input', function (e) {
+                let value = e.target.value;
+                value = value.replace(/\D/g, "");
+                value = (value / 100).toFixed(2) // Adiciona casas decimais
+                    .replace(".", ",")           // Substitui ponto por vírgula
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Adiciona separador de milhares
+                e.target.value = value ? `R$ ${value}` : "";
+            });
+        });
+
+        // Add event listener for Ctrl+K shortcut
+        document.addEventListener('keydown', function (event) {
+            if (event.altKey && event.code === 'KeyA') {
+                customSaleModal.show(); // Open the avulsa modal
+            }
+        });
+
+        // Add event listener for change calculation
+        document.getElementById('paymentAmount').addEventListener('input', function (e) {
+            const paymentAmount = brazilianCurrencyToNumber(e.target.value);
+            const totalAmount = brazilianCurrencyToNumber(document.getElementById('totalAmount').value);
+
+            if (paymentAmount > totalAmount) {
+                const change = paymentAmount - totalAmount;
+                document.getElementById('changeAmount').value = numberToBrazilianReal(change);
+            } else {
+                document.getElementById('changeAmount').value = 'R$ 0,00';
+            }
+        });
+
+        function displayProducts(products) {
+            const productList = document.getElementById('productList');
+
+            productList.innerHTML = '';
+            const tableContainer = document.createElement('div');
+            tableContainer.className = 'table-responsive';
+            tableContainer.style.maxHeight = '100%';
+            tableContainer.style.overflow = 'auto';
+            const table = document.createElement('table');
+            table.className = 'table table-hover table-striped';
+            table.innerHTML = `
+                <thead class="sticky-top bg-light">
+                    <tr>
+                        <th>Código</th>
+                        <th>Nome</th>
+                        <th>Preço</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            `;
+            tableContainer.appendChild(table);
+            productList.appendChild(tableContainer);
+            const tbody = table.querySelector('tbody');
+
+            products.forEach(product => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="col-2"><span class="badge bg-secondary">${product.code}</span></td>
+                    <td class="col-6"><span class="text-truncate" style="max-width: 350px; display: inline-block;" data-bs-toggle="tooltip" data-bs-placement="top" title="${product.name}">${product.name}</span></td>
+                    <td class="col-2"><span>${numberToBrazilianReal(product.price)}</span></td>
+                    <td class="col-2">
+                        <button class="btn btn-outline-primary btn-sm" onclick="addToCart('${product.id}')">
+                            Adicionar
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function addToCart(productId) {
+            const product = products.find(product => product.id === Number(productId));
+            if (product) {
+                const existingItem = cart.find(item => item.id === product.id);
+                if (existingItem) {
+                    existingItem.quantity += 1;
+                } else {
+                    cart.push({ ...product, quantity: 1 });
+                }
+                localStorage.setItem('CART', JSON.stringify(cart));
+                updateCart();
+                updateCartBadge();
+            }
+        }
+
+        function updateCart() {
+            const cartList = document.getElementById('cartList');
+            const cartTotal = document.getElementById('cartTotal');
+            cartList.innerHTML = '';
+            let total = 0;
+
+            if (cart.length === 0) {
+                const emptyCartMessage = document.createElement('div');
+                emptyCartMessage.className = 'd-flex flex-column align-items-center justify-content-center h-100 text-center';
+                emptyCartMessage.innerHTML = `
+                    <div class="d-flex justify-content-center w-100 mt-5">
+                        <i class="fas fa-shopping-bag fa-10x text-muted opacity-50 p-5"></i>
+                    </div>
+                    <p class="mt-3 text-muted">Carrinho vazio</p>
+                `;
+                cartList.appendChild(emptyCartMessage);
+            } else {
+                cart.forEach(item => {
+                    const subtotal = item.price * item.quantity;
+                    total += subtotal;
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item list-group-item-action mt-2';
+                    li.innerHTML = `
+                        <div class="w-100">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-truncate me-2">Código: <span class="badge bg-secondary">${item.code}</span></span>
+                                <button class="btn btn-danger btn-sm" onclick="removeFromCart('${item.code}')">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <span class="mb-0 text-truncate me-2">${item.name}</span>
+                                <input type="number" class="form-control form-control-sm" value="${item.quantity}" min="1" onchange="updateQuantity('${item.code}', this.value || 1)" style="width: 80px;">
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <p class="mb-0">Preço: ${numberToBrazilianReal(item.price)}</p>
+                                <span class="fw-bold">Subtotal: ${numberToBrazilianReal(subtotal)}</span>
+                            </div>
+                        </div>
+                    `;
+                    cartList.appendChild(li);
+                });
+            }
+
+            // Atualizar o total com o desconto
+            const finalTotal = Math.max(total - discount, 0);
+            cartTotal.value = numberToBrazilianReal(finalTotal)
+            updateCartBadge();
+
+            // Update localStorage CART
+            localStorage.setItem('CART', JSON.stringify(cart));
+        }
+
+        function updateCartBadge() {
+            const cartItemCount = document.getElementById('cartBadge');
+            cartItemCount.textContent = cart.length;
+        }
+
+        function clearDiscount() {
+            const discountInput = document.getElementById('discountInput');
+            discountInput.value = '';
+            discountInput.placeholder = 'R$ 0,00';
+            discount = 0;
+            updateCart();
+        }
+
+        function updateQuantity(code, newQuantity) {
+            const item = cart.find(item => item.code === code);
+            if (item) {
+                item.quantity = parseInt(newQuantity);
+                updateCart();
+            }
+        }
+
+        function removeFromCart(code) {
+            const index = cart.findIndex(item => item.code === code);
+            if (index !== -1) {
+                cart.splice(index, 1);
+                updateCart();
+                updateCartBadge();
+            }
+        }
+
+        function addCustomProduct() {
+            const customProductName = document.getElementById('customProductName').value.trim();
+            const customProductPrice = brazilianCurrencyToNumber(document.getElementById('customProductPrice').value);
+            let id = Date.now()
+
+            if (customProductName && !isNaN(customProductPrice) && customProductPrice > 0) {
+                const customProduct = {
+                    id,
+                    code: `SEM CADASTRO`, // Generate a unique code
+                    name: customProductName.toUpperCase(),
+                    price: customProductPrice,
+                    quantity: 1
+                };
+
+                cart.push(customProduct);
+                updateCart();
+                updateCartBadge();
+
+                // Clear input fields
+                document.getElementById('customProductName').value = '';
+                document.getElementById('customProductPrice').value = '';
+                customSaleModal.hide()
+            } else {
+                // Show error message
+                showToast('Por favor, insira um nome válido e um preço maior que zero.', 'error');
+            }
+        }
+
+        function showToast(message, type) {
+            toastMessage.textContent = message;
+            const toastHeader = document.querySelector('.toast-header');
+            const toastIcon = document.createElement('i');
+
+            toastHeader.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-info');
+
+            switch (type) {
+                case 'success':
+                    toastHeader.classList.add('bg-success');
+                    toastIcon.className = 'fas fa-check-circle me-2';
+                    break;
+                case 'error':
+                    toastHeader.classList.add('bg-danger');
+                    toastIcon.className = 'fas fa-exclamation-circle me-2';
+                    break;
+                case 'warning':
+                    toastHeader.classList.add('bg-warning');
+                    toastIcon.className = 'fas fa-exclamation-triangle me-2';
+                    break;
+                default:
+                    toastHeader.classList.add('bg-info');
+                    toastIcon.className = 'fas fa-info-circle me-2';
+            }
+
+            // Remove existing icon if present
+            const existingIcon = toastHeader.querySelector('i');
+            if (existingIcon) {
+                existingIcon.remove();
+            }
+
+            toastHeader.prepend(toastIcon);
+            toast.show();
+        }
+
+        function numberToBrazilianReal(number) {
+            return number.toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+            });
+        }
+
+        function brazilianCurrencyToNumber(currency) {
+            if (!currency.includes("R$")) {
+                currency = `R$ ${currency}`
+            }
+
+            let cleanValue = currency.replace("R$", "").trim();
+            cleanValue = cleanValue.replace(/\./g, "");
+            cleanValue = cleanValue.replace(",", ".");
+            return parseFloat(cleanValue);
+        }
+
+        function openPaymentModal() {
+            // Check if cart is empty
+            if (cart.length === 0) {
+                showToast('O carrinho está vazio. Adicione itens antes de prosseguir com o pagamento.', 'error');
+                return;
+            }
+
+            // Reset payment form
+            document.getElementById('paymentForm').reset();
+
+            // Update total amount
+            const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0) - discount;
+            document.getElementById('totalAmount').value = numberToBrazilianReal(total);
+
+            // Update discount amount
+            document.getElementById('discountAmount').value = numberToBrazilianReal(discount);
+
+            // Populate modal product list
+            modalProductList.innerHTML = '';
+            cart.forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                li.innerHTML = `
+                    <div>
+                        <h6 class="my-0 text-truncate" style="max-width: 500px;" title="${item.name}"><small class="badge bg-secondary">${item.code}</small> ${item.name}</h6>
+                        <small class="text-muted">${item.quantity}x ${numberToBrazilianReal(item.price)}</small>
+                    </div>
+                    <span class="text-muted">${numberToBrazilianReal(item.price * item.quantity)}</span>
+                `;
+                modalProductList.appendChild(li);
+            });
+
+            let paymentId = document.getElementById('paymentId');
+            paymentId.innerHTML = payment.id
+
+            // Show the modal
+            paymentModal.show();
+        }
+
+        function alertMessage(message) {
+            const paymentError = document.getElementById('paymentError');
+            paymentError.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+            paymentError.parentElement.style.opacity = '0';
+            paymentError.parentElement.style.display = 'block';
+            paymentError.parentElement.style.transition = 'opacity 0.5s ease-in-out';
+            setTimeout(() => {
+                paymentError.parentElement.style.opacity = '1';
+            }, 10);
+            setTimeout(() => {
+                paymentError.parentElement.style.opacity = '0';
+                setTimeout(() => {
+                    paymentError.parentElement.style.display = 'none';
+                }, 500);
+            }, 2500);
+        }
+
+        function addPaymentMethod() {
+            let paymentoMethods = document.querySelectorAll(`[data-testid*="radio"]`);
+
+            let checkedRadio = Array.from(paymentoMethods).find(radio => radio.checked);
+
+            return checkedRadio ? checkedRadio.dataset.payment : null;
+        }
+
+        async function handlePayment() {
+            const paymentAmountPayed = document.getElementById('paymentAmount');
+            const paymentTotalEl = document.getElementById('totalAmount');
+            const paymentDiscount = document.getElementById('discountAmount');
+
+            let amountPayed = brazilianCurrencyToNumber(paymentAmountPayed.value);
+            totalToPay = brazilianCurrencyToNumber(paymentTotalEl.value);
+
+            if (amountPayed <= 0 || isNaN(amountPayed)) {
+                // Display error message in the alert
+                alertMessage('Informe o valor do pagamento.');
+                paymentAmountPayed.classList.add('border-danger');
+                paymentAmountPayed.classList.add('is-invalid');
+                paymentAmountPayed.style.boxShadow = '0 0 0 0.2rem rgba(220, 53, 69, 0.25)';
+                paymentAmountPayed.focus();
+                return;
+            }
+
+            let paymentType = addPaymentMethod()
+
+            payment = {
+                ...payment,
+                products: cart.map(product => ({
+                    code: product.code,
+                    name: product.name,
+                    quantity: product.quantity,
+                    price: product.price
+                })),
+                paymentType,
+                discount: brazilianCurrencyToNumber(paymentDiscount.value) || 0
+            };
+
+            if (totalToPay > amountPayed) {
+
+                if (!payment.paymentsMethods) {
+                    payment.paymentsMethods = [];
+                }
+
+                payment.paymentsMethods.push({ id: payment.id, paymentType, amountPayed });
+
+                paymentTotalEl.value = numberToBrazilianReal(totalToPay -= amountPayed)
+                paymentAmountPayed.value = ''
+
+                const partialPaymentsList = document.getElementById('partialPaymentsList');
+
+                const listItem = document.createElement('li');
+                listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+                listItem.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center w-100">
+                        <span class="fw-bold">${paymentType}</span>
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-secondary">${numberToBrazilianReal(amountPayed)}</span>
+                           
+                        </div>
+                    </div>
+                `;
+                partialPaymentsList.appendChild(listItem);
+
+                return;
+            }
+
+            if (totalToPay <= amountPayed) {
+                if (!payment.paymentsMethods) {
+                    payment.paymentsMethods = [];
+                }
+                payment.paymentsMethods.push({ id: payment.id, paymentType, amountPayed });
+
+                // Open loading modal
+                const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+                loadingModal.show();
+
+                postPayment(payment)
+                    .then(response => {
+                        if (response.success) {
+                            showToast('Pagamento processado com sucesso', 'success');
+
+                        }
+                    })
+                    .catch(error => {
+                        showToast('Erro ao processar o pagamento: ' + error.message, 'error');
+                    })
+                    .finally(() => {
+                        // Close loading modal
+                        clearCart();
+                        payment = {};
+                        loadingModal.hide();
+                        paymentModal.hide();
+                        modalProductList.innerHTML = '';
+                    });
+                return;
+            }
+        }
+
+        function postPayment(paymentData) {
+            return new Promise((resolve, reject) => {
+                google.script.run
+                    .withSuccessHandler(resolve)
+                    .withFailureHandler(reject)
+                    .postPaymentGAS(paymentData);
+            });
+        }
+
+        function clearCart() {
+            cart = [];
+            localStorage.removeItem('CART');
+            discount = 0; // Reset discount to 0
+            document.getElementById('discountInput').value = ''; // Clear discount input field
+            updateCart();
+            updateCartBadge();
+        }
+
+        // Function to initialize IndexedDB
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('ProductsDB', 2);
+
+                request.onerror = (event) => reject("IndexedDB error: " + event.target.error);
+
+                request.onsuccess = (event) => {
+                    const db = event.target.result;
+                    resolve(db);
+                };
+
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains('products')) {
+                        const objectStore = db.createObjectStore('products', { keyPath: 'id', autoIncrement: true });
+                        objectStore.createIndex('code', 'code', { unique: false });
+                        objectStore.createIndex('name', 'name', { unique: false });
+                        objectStore.createIndex('price', 'price', { unique: false });
+                    }
+                };
+            });
+        }
+
+        // Function to save products to IndexedDB
+        function saveProductsToDB(db, products) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['products'], 'readwrite');
+                const objectStore = transaction.objectStore('products');
+
+                products.forEach(product => {
+                    objectStore.put(product);
+                });
+
+                transaction.oncomplete = () => resolve();
+                transaction.onerror = (event) => reject("Error saving products: " + event.target.error);
+            });
+        }
+
+        // Function to load products from IndexedDB
+        function loadProductsFromDB(db) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['products'], 'readonly');
+                const objectStore = transaction.objectStore('products');
+                const request = objectStore.getAll();
+
+                request.onsuccess = (event) => {
+                    products = event.target.result;
+                    resolve(products);
+                };
+
+                request.onerror = (event) => reject("Error loading products: " + event.target.error);
+            });
+        }
+
+        // Function to fetch products from Google Apps Script
+        function fetchProductsFromGAS() {
+            return new Promise((resolve, reject) => {
+                google.script.run
+                    .withSuccessHandler(resolve)
+                    .withFailureHandler(reject)
+                    .getProductsGS();
+            });
+        }
+
+        // Initialize the database and load or fetch products
+        initDB().then(db => {
+            loadProductsFromDB(db).then(loadedProducts => {
+                if (loadedProducts.length === 0) {
+                    // If no products in DB, fetch them from Google Apps Script
+                    fetchProductsFromGAS().then(fetchedProducts => {
+                        products = fetchedProducts;
+                        console.log("Products fetched from Google Apps Script");
+                        // Save fetched products to DB
+                        saveProductsToDB(db, products).then(() => {
+                            console.log("Products saved to IndexedDB");
+                            displayProducts(products);
+                        });
+                    }).catch(error => {
+                        console.error("Error fetching products from Google Apps Script:", error);
+                    });
+                } else {
+                    console.log("Products loaded from IndexedDB");
+                    displayProducts(loadedProducts);
+                }
+                updateCart(); // Show empty cart icon when loading the page
+            });
+        }).catch(error => console.error("Database initialization error:", error));
+    </script>
+</body>
+
+</html>
