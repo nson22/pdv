@@ -30,10 +30,7 @@
             <div class="container">
                 <div class="d-flex justify-content-between align-items-center w-100">
                     <div class="d-flex align-items-center">
-
-                        <h1 class="navbar-brand fs-4 fw-bold mb-2 mb-lg-0 text-center text-lg-start d-none d-md-block">
-                            Merco Fitness
-                        </h1>
+                        <img src="https://i.imgur.com/iD4JyJal.jpg" alt="Logo" class="me-2" style="height: 80px;">
                     </div>
                     <button id="themeToggle" class="btn btn-outline-primary">
                         <i id="themeIcon" class="bi bi-moon"></i>
@@ -44,53 +41,78 @@
     </header>
 
     <main class="container">
-        <h2 class="mb-3 mb-md-4 text-primary text-center">Controle de Produção | Empresa X</h2>
+        <h2 class="mb-3 mb-md-4 text-primary text-center fs-5 fs-md-4 fs-lg-3">Controle de Produção</h2>
 
-        <div id="productForm" class="bg-body-tertiary p-3 p-md-4 rounded shadow-sm">
+        <form id="productForm" class="bg-body-tertiary p-3 p-md-4 rounded shadow-sm">
             <div class="row g-2 g-md-3 mt-2 mt-md-3">
-                <div class="col-12 col-md-4">
-                    <label for="category" class="form-label text-uppercase fw-bold small">Categoria</label>
-                    <select class="form-select" id="category" required>
+                <div class="col-12 col-md-12 col-lg-4">
+                    <label for="inspectors" class="form-label text-uppercase fw-bold">Operadores</label>
+                    <select class="form-select" id="inspectors" name="inspectors" required>
                         <option>Selecionar</option>
                     </select>
                 </div>
 
-                <div class="col-12 col-md-4">
-                    <label for="area" class="form-label text-uppercase fw-bold small">Área</label>
-                    <select class="form-select" id="area" required>
+                <div class="col-12 col-md-12 col-lg-4">
+                    <label for="category" class="form-label text-uppercase fw-bold">Categoria</label>
+                    <select class="form-select" id="category" name="category" required>
                         <option>Selecionar</option>
                     </select>
                 </div>
 
-                <div class="col-12 col-md-4">
-                    <label for="sector" class="form-label text-uppercase fw-bold small">Setores</label>
-                    <select class="form-select" id="sector" required>
+                <div class="col-12 col-md-12 col-lg-4">
+                    <label for="codeDone" class="form-label text-uppercase fw-bold">Código acabado</label>
+                    <input type="search" class="form-control" id="codeDone" name="codeDone" placeholder="Selecionar"
+                        required disabled list="codeDoneOptions" data-testid="codeDone">
+                    <datalist id="codeDoneOptions" name="codeDone"></datalist>
+                </div>
+            </div>
+
+            <div class="row g-2 g-md-3 mt-2 mt-md-3">
+                <div class="col-12 col-md-12 col-lg-4">
+                    <label for="area" class="form-label text-uppercase fw-bold">Área</label>
+                    <select class="form-select" id="area" required disabled name="area">
                         <option value="">Selecionar</option>
                     </select>
                 </div>
-            </div>
-            <div class="row g-2 g-md-3 mt-2 mt-md-3">
-                <div class="col-12 col-md-4">
-                    <label for="inspectors" class="form-label text-uppercase fw-bold small">Inspetores</label>
-                    <select class="form-select" id="inspectors" required>
-                        <option>Selecionar</option>
+
+                <div class="col-12 col-md-12 col-lg-4">
+                    <label for="sector" class="form-label text-uppercase fw-bold">Setores</label>
+                    <select class="form-select" id="sector" required disabled name="sectors">
+                        <option value="">Selecionar</option>
                     </select>
                 </div>
-                <div class="col-12 col-md-4">
-                    <label for="materials" class="form-label text-uppercase fw-bold small">Materiais</label>
-                    <input class="form-select" id="materials" name="materials" placeholder="Selecionar" required
-                        disabled list="materialsOptions" data-testid="materials">
-                    <datalist id="materialsOptions"></datalist>
+
+                <div class="col-12 col-md-12 col-lg-4">
+                    <label for="items" class="form-label text-uppercase fw-bold">Item</label>
+                    <input type="search" class="form-control" id="items" name="items" placeholder="Selecionar" required
+                        disabled list="itemsOptions" data-testid="items">
+                    <datalist id="itemsOptions" name="items"></datalist>
                 </div>
             </div>
+
+            <div class="row g-2 g-md-3 mt-2 mt-md-3">
+                <div class="col-12 col-md-12 col-lg-4">
+                    <label for="area" class="form-label text-uppercase fw-bold">Horario</label>
+                    <select class="form-select" id="shift" name="shift" required>
+                        <option value="">Selecionar</option>
+                    </select>
+                </div>
+
+                <div class="col-12 col-md-12 col-lg-4">
+                    <label for="production" class="form-label text-uppercase fw-bold">QTD. Produzida</label>
+                    <input class="form-control" id="production" name="production" type="search" inputmode="numeric"
+                        min="1" placeholder="1" required>
+                </div>
+            </div>
+
             <div class="row g-2 g-md-3 mt-2 mt-md-3">
                 <div class="col-12 mt-3 mt-md-4">
-                    <button class="btn btn-primary w-100 w-md-auto text-uppercase fw-bold">
+                    <button type="submit" class="btn btn-primary w-100 w-md-auto text-uppercase fw-bold">
                         <i class="bi bi-send me-2"></i> Enviar
                     </button>
                 </div>
             </div>
-        </div>
+        </form>
     </main>
 
     <div class="modal fade" id="loadingModal" tabindex="-1" aria-labelledby="loadingModalLabel" aria-hidden="true"
@@ -107,10 +129,10 @@
         </div>
     </div>
 
-    <div class="toast-container position-fixed bottom-0 start-50 translate-middle-x p-3 mb-5">
+    <div class="toast-container top-50 start-50 translate-middle p-3 mb-5">
         <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="toast-header">
-                <strong class="me-auto">Notificação</strong>
+                <strong class="me-auto text-uppercase text-muted">Notificação</strong>
                 <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
             <div class="toast-body">
@@ -139,14 +161,16 @@
                 setTheme('light');
             }
 
-            loadingModal.show();
-            Promise.all([loadCategories(), loadAreas(), loadInspectors()])
-                .catch(error => {
-                    showToast("Erro ao carregar dados. Por favor, tente novamente mais tarde.");
-                })
-                .finally(() => {
-                    loadingModal.hide();
-                });
+            loadingModal.show()
+            Promise.all([
+                loadShifts(),
+                loadInspectors(),
+                loadCategories(),
+
+            ]).catch(error => {
+                showToast("Erro ao carregar dados. Por favor, tente novamente mais tarde.", "error");
+            })
+
         });
 
         document.getElementById('themeToggle').addEventListener('click', function () {
@@ -155,14 +179,78 @@
             setTheme(newTheme);
         });
 
-        document.getElementById('area').addEventListener('change', function () {
-            const selectedArea = this.value;
-            loadSectors(selectedArea);
+        document.getElementById('category').addEventListener('change', function () {
+            resetElements([document.getElementById('codeDone'), document.getElementById('area'), document.getElementById('sector'), document.getElementById('items')]);
+            const selectedCategory = this.value;
+            loadDoneCode(selectedCategory)
         });
 
-        document.getElementById('category').addEventListener('change', function () {
-            const selectedCategory = this.value;
-            loadMaterials(selectedCategory);
+        document.getElementById('codeDone').addEventListener('change', function () {
+            resetElements([document.getElementById('area'), document.getElementById('sector'), document.getElementById('items')]);
+            const selectedCodeDone = this.value;
+            loadAreas(selectedCodeDone)
+        })
+
+        document.getElementById('area').addEventListener('change', function () {
+            resetElements([document.getElementById('sector'), document.getElementById('items')]);
+            const selectedArea = this.value;
+            loadSectors(selectedArea)
+        })
+
+        document.getElementById('production').addEventListener('change', function () {
+            if (this.value < 1) {
+                showToast('A quantidade produzida deve ser maior que 0', 'error')
+                this.value = ''
+                return
+            }
+        })
+
+        document.getElementById('sector').addEventListener('change', function () {
+            resetElements([document.getElementById('items')]);
+
+            const payload = new Map()
+            const fields = ['category', 'codeDone', 'area', 'sector', 'items', 'shift', 'production'];
+
+            fields.forEach(field => {
+                const element = document.getElementById(field);
+                if (element) {
+                    payload.set(field, element.value);
+                }
+            });
+
+            loadItems(payload)
+        })
+
+        document.getElementById('productForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            loadingModal.show();
+
+            const formData = new FormData(this);
+
+            fetch("https://script.google.com/macros/s/AKfycbzGZuGuhQwFhCeW6soVB7lWh-3YFFjvyMWTeLWbB_P7AAYF4Y8xkVkpseakn2LKJSvb/exec", {
+                method: "POST",
+                body: formData
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    showToast('Dados enviados com sucesso!', 'success');
+                    resetForm()
+
+                })
+                .catch(error => {
+                    showToast(`Erro ao enviar formulário: ${error.message}`, 'error');
+                })
+                .finally(() => {
+                    loadingModal.hide();
+                    resetForm()
+
+                });
+
         });
 
         function setTheme(theme) {
@@ -176,6 +264,76 @@
             } else {
                 themeIcon.classList.replace('bi-moon', 'bi-sun');
             }
+        }
+
+
+        function loadShifts() {
+            fetchShifts()
+                .then(items => {
+                    const shiftDropdown = document.getElementById('shift');
+                    shiftDropdown.innerHTML = '';
+
+                    const defaultOption = document.createElement('option');
+                    defaultOption.value = '';
+                    defaultOption.textContent = 'Selecionar';
+                    defaultOption.selected = true;
+                    defaultOption.disabled = true;
+                    shiftDropdown.appendChild(defaultOption);
+
+                    items.forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item;
+                        option.textContent = item;
+                        shiftDropdown.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    showToast("Erro ao carregar horários. Por favor, tente novamente mais tarde.");
+                })
+        }
+
+        function fetchShifts() {
+            return new Promise((resolve, reject) => {
+                google.script.run
+                    .withSuccessHandler(resolve)
+                    .withFailureHandler(reject)
+                    .getShiftsFromSheet();
+            });
+        }
+
+
+        function loadInspectors() {
+            fetchInspectors()
+                .then(inspectors => {
+                    const inspectorsDropdown = document.getElementById('inspectors');
+                    inspectorsDropdown.innerHTML = '';
+
+                    const defaultOption = document.createElement('option');
+                    defaultOption.value = '';
+                    defaultOption.textContent = 'Selecionar';
+                    defaultOption.selected = true;
+                    defaultOption.disabled = true;
+                    inspectorsDropdown.appendChild(defaultOption);
+
+                    inspectors.forEach(inspector => {
+                        const option = document.createElement('option');
+                        option.value = inspector;
+                        option.textContent = inspector;
+                        inspectorsDropdown.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    showToast("Erro ao carregar inspetores. Por favor, tente novamente mais tarde.");
+                })
+        }
+
+        function fetchInspectors() {
+            return new Promise((resolve, reject) => {
+                google.script.run
+                    .withSuccessHandler(resolve)
+                    .withFailureHandler(reject)
+                    .getInspectorsFromSheet();
+            });
         }
 
         function loadCategories() {
@@ -199,7 +357,9 @@
                     });
                 })
                 .catch(error => {
-                    showToast("Erro ao carregar categorias. Por favor, tente novamente mais tarde.");
+                    showToast("Erro ao carregar categorias. Por favor, tente novamente mais tarde.", "error");
+                }).finally(() => {
+                    loadingModal.hide()
                 })
         }
 
@@ -212,11 +372,43 @@
             });
         }
 
-        function loadAreas() {
-            fetchAreas()
+        function loadDoneCode(query) {
+            loadingModal.show()
+            fetchDoneCode(query)
+                .then(codeDone => {
+                    const codeDoneList = document.getElementById('codeDoneOptions');
+                    codeDoneList.innerHTML = '';
+                    document.getElementById('codeDone').disabled = false;
+
+                    codeDone.forEach(code => {
+                        const option = document.createElement('option');
+                        option.value = code;
+                        codeDoneList.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    showToast(`Erro ao carregar codigo acabado. Por favor, tente novamente mais tarde. ${error}`);
+                }).finally(() => {
+                    loadingModal.hide()
+                })
+        }
+
+        function fetchDoneCode(query) {
+            return new Promise((resolve, reject) => {
+                google.script.run
+                    .withSuccessHandler(resolve)
+                    .withFailureHandler(reject)
+                    .getCodeDoneFromSheet(query);
+            });
+        }
+
+        function loadAreas(query) {
+            loadingModal.show()
+            fetchAreas(query)
                 .then(areas => {
                     const areaDropdown = document.getElementById('area');
                     areaDropdown.innerHTML = '';
+                    areaDropdown.disabled = false;
 
                     const defaultOption = document.createElement('option');
                     defaultOption.value = '';
@@ -234,15 +426,17 @@
                 })
                 .catch(error => {
                     showToast("Erro ao carregar áreas. Por favor, tente novamente mais tarde.");
+                }).finally(() => {
+                    loadingModal.hide()
                 })
         }
 
-        function fetchAreas() {
+        function fetchAreas(query) {
             return new Promise((resolve, reject) => {
                 google.script.run
                     .withSuccessHandler(resolve)
                     .withFailureHandler(reject)
-                    .getAreasFromSheet();
+                    .getAreasFromSheet(query);
             });
         }
 
@@ -252,6 +446,7 @@
                 .then(sectors => {
                     const sectorDropdown = document.getElementById('sector');
                     sectorDropdown.innerHTML = '';
+                    sectorDropdown.disabled = false;
 
                     const defaultOption = document.createElement('option');
                     defaultOption.value = '';
@@ -266,6 +461,7 @@
                         option.textContent = sector;
                         sectorDropdown.appendChild(option);
                     });
+
                 })
                 .catch(error => {
                     showToast("Erro ao carregar setores. Por favor, tente novamente mais tarde.");
@@ -284,83 +480,90 @@
             });
         }
 
-        function loadInspectors() {
+        function loadItems(payload) {
             loadingModal.show();
-            fetchInspectors()
-                .then(inspectors => {
-                    const inspectorsDropdown = document.getElementById('inspectors');
-                    inspectorsDropdown.innerHTML = '';
+            fetchItems(Object.fromEntries(payload))
+                .then(items => {
+                    const itemsList = document.getElementById('items');
+                    itemsList.disabled = false;
 
-                    const defaultOption = document.createElement('option');
-                    defaultOption.value = '';
-                    defaultOption.textContent = 'Selecionar';
-                    defaultOption.selected = true;
-                    defaultOption.disabled = true;
-                    inspectorsDropdown.appendChild(defaultOption);
+                    const itemsOptions = document.getElementById('itemsOptions');
+                    itemsOptions.innerHTML = '';
 
-                    inspectors.forEach(inspector => {
-                        const option = document.createElement('option');
-                        option.value = inspector;
-                        option.textContent = inspector;
-                        inspectorsDropdown.appendChild(option);
-                    });
-                })
-                .catch(error => {
-                    showToast("Erro ao carregar inspetores. Por favor, tente novamente mais tarde.");
-                })
-                .finally(() => {
-                    loadingModal.hide();
-                });
-        }
-
-        function fetchInspectors() {
-            return new Promise((resolve, reject) => {
-                google.script.run
-                    .withSuccessHandler(resolve)
-                    .withFailureHandler(reject)
-                    .getInspectorsFromSheet();
-            });
-        }
-
-        function loadMaterials(query) {
-            loadingModal.show();
-            fetchMaterials(query)
-                .then(materials => {
-                    const materialsList = document.getElementById('materials');
-                    materialsList.disabled = false;
-
-                    const materialsOptions = document.getElementById('materialsOptions');
-                    materialsOptions.innerHTML = '';
-
-                    materials.forEach(material => {
+                    items.forEach(material => {
                         const option = document.createElement('option');
                         option.value = material;
-                        option.textContent = material;
-                        materialsOptions.appendChild(option);
+                        itemsOptions.appendChild(option);
                     });
                 })
                 .catch(error => {
-                    showToast("Erro ao carregar setores. Por favor, tente novamente mais tarde.");
+                    showToast("Erro ao carregar items. Por favor, tente novamente mais tarde.");
                 })
                 .finally(() => {
                     loadingModal.hide();
                 });
         }
 
-        function fetchMaterials(query) {
+        function fetchItems(payload) {
             return new Promise((resolve, reject) => {
                 google.script.run
                     .withSuccessHandler(resolve)
                     .withFailureHandler(reject)
-                    .getMaterialsFromSheet(query);
+                    .getItemsFromSheet(payload);
             });
         }
 
-        function showToast(message) {
+        function showToast(message, type = 'info') {
             const toast = document.getElementById('liveToast');
             const toastBody = toast.querySelector('.toast-body');
             toastBody.textContent = message;
+
+            // Determine the type of toast
+            const toastHeader = toast.querySelector('.toast-header');
+            toastHeader.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-info');
+
+            switch (type) {
+                case 'success':
+                    toastHeader.classList.add('bg-success');
+                    break;
+                case 'error':
+                    toastHeader.classList.add('bg-danger');
+                    break;
+                case 'warning':
+                    toastHeader.classList.add('bg-warning');
+                    break;
+                case 'info':
+                    toastHeader.classList.add('bg-info');
+                    break;
+                default:
+                    break;
+            }
             new bootstrap.Toast(toast).show();
+        }
+
+        function resetForm() {
+            const fieldsToReset = ['inspectors', 'category', 'codeDone', 'area', 'sector', 'items', 'shift', 'production'];
+            fieldsToReset.forEach(field => {
+                const element = document.getElementById(field);
+                if (element.tagName === 'SELECT') {
+                    element.selectedIndex = 0;
+                } else if (element.tagName === 'INPUT') {
+                    element.value = '';
+                }
+                if (['codeDone', 'area', 'sector', 'items'].includes(field)) {
+                    element.disabled = true;
+                }
+            });
+        }
+
+        function resetElements(elements) {
+            elements.forEach(element => {
+                if(element.tagName === 'select') {
+                    element.selectedIndex = 0;
+                }
+                element.value = '';
+                element.disabled = true;
+            });
         }
     </script>
 </body>

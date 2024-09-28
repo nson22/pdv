@@ -2,284 +2,283 @@
 <html lang="pt-BR">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+    }
 
-        img {
-            max-width: 5%;
-            height: auto;
-        }
-    </style>
+    img {
+      max-width: 5%;
+      height: auto;
+    }
+  </style>
 </head>
 
 <body>
-    <div class="container">
-        <header class="fixed-top bg-light py-3">
-            <div class="container">
-                <div class="mb-0 d-flex align-items-center justify-content-between">
-                    <img src="https://i.postimg.cc/Y9pv6ZLR/pjlogo.jpg" alt="pjlogo">
-                    <span class="navbar-brand text-danger fw-bold fs-1 d-block d-md-inline me-2 text-uppercase"
+  <div class="container">
+    <header class="fixed-top bg-light py-3">
+      <div class="container">
+        <div class="mb-0 d-flex align-items-center justify-content-between">
+          <img src="https://i.postimg.cc/Y9pv6ZLR/pjlogo.jpg" alt="pjlogo">
+          <span class="navbar-brand text-danger fw-bold fs-1 d-block d-md-inline me-2 text-uppercase"
                         style="font-family: 'Montserrat', sans-serif;">
                         PJ
                         <span
                             class="text-secondary fw-semibold text-warning d-md-inline text-uppercase">Variedades</span>
-                    </span>
-                    <button class="btn btn-primary text-uppercase" id="finishPurchaseBtn" onclick="openPaymentModal()">
+          </span>
+          <button class="btn btn-primary text-uppercase" id="finishPurchaseBtn" onclick="openPaymentModal()">
                         <i class="fas fa-shopping-cart"></i>
                         Fechar Venda
                     </button>
-                </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="mt-5 pt-5 d-flex flex-column" style="height: calc(100vh - 0px - 125px); overflow: hidden;">
+      <!-- Lista de Produtos e Carrinho -->
+      <section class="row flex-grow-1 overflow-hidden h-100">
+        <div class="col-lg-8 col-md-7 d-flex flex-column h-100">
+          <div class="row align-items-center mb-3">
+            <div class="col-12 col-md-4 mb-2 mb-md-0">
+              <h2 class="mb-2 text-uppercase p-2">Produtos</h2>
             </div>
-        </header>
-
-        <main class="mt-5 pt-5 d-flex flex-column" style="height: calc(100vh - 0px - 125px); overflow: hidden;">
-            <!-- Lista de Produtos e Carrinho -->
-            <section class="row flex-grow-1 overflow-hidden h-100">
-                <div class="col-lg-8 col-md-7 d-flex flex-column h-100">
-                    <div class="row align-items-center mb-3">
-                        <div class="col-12 col-md-4 mb-2 mb-md-0">
-                            <h2 class="mb-2 text-uppercase p-2">Produtos</h2>
-                        </div>
-                        <div class="col-md-12 d-flex">
-                            <div class="input-group">
-                                <input type="search" id="searchInput" class="form-control" autocomplete="off"
+            <div class="col-md-12 d-flex">
+              <div class="input-group">
+                <input type="search" id="searchInput" class="form-control" autocomplete="off"
                                     placeholder="Pesquisar produto por código ou nome">
-                            </div>
-                            <div class="ms-2 col-md-auto">
-                                <button class="btn btn-primary btn-small text-uppercase" data-bs-toggle="modal"
+              </div>
+              <div class="ms-2 col-md-auto">
+                <button class="btn btn-primary btn-small text-uppercase" data-bs-toggle="modal"
                                     data-bs-target="#customSaleModal">Avulsa</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex-grow-1 overflow-auto" id="productList">
-                        <!-- Produtos serão adicionados aqui dinamicamente -->
-                    </div>
-                </div>
+              </div>
+            </div>
+          </div>
+          <div class="flex-grow-1 overflow-auto" id="productList">
+            <!-- Produtos serão adicionados aqui dinamicamente -->
+          </div>
+        </div>
 
-                <div class="col-lg-4 col-md-5 d-flex flex-column h-100">
-                    <div class="sticky-top bg-white d-flex justify-content-center align-items-center">
-                        <h2 class="mb-0 text-center text-uppercase p-2">
-                            Carrinho<span class="badge bg-secondary ms-3" id="cartBadge">0</span></h2>
-                    </div>
-                    <div class="flex-grow-1 overflow-auto">
-                        <ul id="cartList" class="list-group mb-3">
-                            <!-- Itens do carrinho serão adicionados aqui dinamicamente -->
-                        </ul>
-                    </div>
-                    <div class="sticky-bottom bg-white pt-1 border-top">
-                        <div class="row align-items-center">
-                            <div class="col-12 mt-1 mb-1">
-                                <div class="form-group d-flex align-items-center">
-                                    <div class="input-group">
-                                        <span class="input-group-text fw-bold">Desconto</span>
-                                        <input type="search" id="discountInput" inputmode="decimal"
+        <div class="col-lg-4 col-md-5 d-flex flex-column h-100">
+          <div class="sticky-top bg-white d-flex justify-content-center align-items-center">
+            <h2 class="mb-0 text-center text-uppercase p-2">
+              Carrinho<span class="badge bg-secondary ms-3" id="cartBadge">0</span></h2>
+          </div>
+          <div class="flex-grow-1 overflow-auto">
+            <ul id="cartList" class="list-group mb-3">
+              <!-- Itens do carrinho serão adicionados aqui dinamicamente -->
+            </ul>
+          </div>
+          <div class="sticky-bottom bg-white pt-1 border-top">
+            <div class="row align-items-center">
+              <div class="col-12 mt-1 mb-1">
+                <div class="form-group d-flex align-items-center">
+                  <div class="input-group">
+                    <span class="input-group-text fw-bold">Desconto</span>
+                    <input type="search" id="discountInput" inputmode="decimal"
                                             class="form-control form-control-lg" placeholder="R$ 0,00"
                                             data-currency="BRL" autocomplete="off">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12 mt-1 mb-1">
-                                <div class="form-group d-flex align-items-center">
-                                    <div class="input-group">
-                                        <span class="input-group-text fw-bold text-danger text-uppercase">Total</span>
-                                        <input disabled type="text" id="cartTotal"
-                                            class="form-control form-control-lg text-danger fw-bold"
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 mt-1 mb-1">
+                <div class="form-group d-flex align-items-center">
+                  <div class="input-group">
+                    <span class="input-group-text fw-bold text-danger text-uppercase">Total</span>
+                    <input disabled type="text" id="cartTotal" class="form-control form-control-lg text-danger fw-bold"
                                             placeholder="R$ 0,00" data-currency="BRL">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                  </div>
                 </div>
-            </section>
-        </main>
-        <footer class="fixed-bottom bg-light p4 mt-1">
-            <div class="shortcut-helpers p-4">
-                <div class="container">
-                    <div class="row">
-                        <div class="col">
-                            <kbd>F1</kbd> - <small>Buscar produto</small>
-                        </div>
-                        <div class="col">
-                            <kbd>F2</kbd> - <small>Vanda avulsa</small>
-                        </div>
-                        <div class="col">
-                            <kbd>F3</kbd> - <small>Fechar venda</small>
-                        </div>
-                        <div class="col">
-                            <kbd>F4</kbd> - <small>Desconto</small>
-                        </div>
-                        <div class="col">
-                            <kbd>F11</kbd> - <small>Abrir/Fechar tela cheia</small>
-                        </div>
-                    </div>
-                </div>
-        </footer>
-        <!-- Modal para Venda Avulsa -->
-        <div class="modal fade" id="customSaleModal" tabindex="-1" aria-labelledby="customSaleModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title fw-bold text-uppercase" id="customSaleModalLabel">Venda Avulsa</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="customSaleForm">
-                            <div class="mb-3">
-                                <label for="customProductName" class="form-label">Nome do Produto</label>
-                                <input type="text" class="form-control" id="customProductName" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="customProductPrice" class="form-label">Valor</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">R$</span>
-                                    <input type="text" class="form-control" id="customProductPrice" data-currency="BRL"
-                                        autocomplete="off" required>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-danger me-2" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-success" onclick="addCustomProduct()">Adicionar</button>
-                    </div>
-                </div>
+              </div>
             </div>
+          </div>
         </div>
-        <!-- Modal de Pagamento -->
-        <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-fullscreen">
-                <div class="modal-content p-3">
-                    <div class="modal-header">
-                        <h5 class="modal-title fw-bold" id="paymentModalLabel">Finalizar Venda</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body" style="overflow-y: hidden;">
-                        <div class="row">
-                            <!-- Lado esquerdo: Listagem de produtos -->
-                            <div class="col-md-6">
-                                <div style="overflow-y: auto; max-height: calc(99vh - 200px);">
-                                    <ul id="modalProductList" class="list-group">
-                                        <!-- Os itens serão adicionados dinamicamente aqui -->
-                                    </ul>
-                                </div>
-                            </div>
-                            <!-- Lado direito: Formulário de pagamento -->
-                            <div class="col-md-6">
-                                <form id="paymentForm" autocomplete="off">
-                                    <div class="row mb-3" id="payments">
-                                        <div class="col-3 d-grid mx-auto"> <input type="radio" class="btn-check"
+      </section>
+    </main>
+    <footer class="fixed-bottom bg-light p4 mt-1">
+      <div class="shortcut-helpers p-4">
+        <div class="container">
+          <div class="row">
+            <div class="col">
+              <kbd>F1</kbd> - <small>Buscar produto</small>
+            </div>
+            <div class="col">
+              <kbd>F2</kbd> - <small>Vanda avulsa</small>
+            </div>
+            <div class="col">
+              <kbd>F3</kbd> - <small>Fechar venda</small>
+            </div>
+            <div class="col">
+              <kbd>F4</kbd> - <small>Desconto</small>
+            </div>
+            <div class="col">
+              <kbd>F11</kbd> - <small>Abrir/Fechar tela cheia</small>
+            </div>
+          </div>
+        </div>
+    </footer>
+    <!-- Modal para Venda Avulsa -->
+    <div class="modal fade" id="customSaleModal" tabindex="-1" aria-labelledby="customSaleModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title fw-bold text-uppercase" id="customSaleModalLabel">Venda Avulsa</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="customSaleForm">
+              <div class="mb-3">
+                <label for="customProductName" class="form-label">Nome do Produto</label>
+                <input type="text" class="form-control" id="customProductName" required>
+              </div>
+              <div class="mb-3">
+                <label for="customProductPrice" class="form-label">Valor</label>
+                <div class="input-group">
+                  <span class="input-group-text">R$</span>
+                  <input type="text" class="form-control" id="customProductPrice" data-currency="BRL"
+                                        autocomplete="off" required>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger me-2" data-bs-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-success" onclick="addCustomProduct()">Adicionar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Modal de Pagamento -->
+    <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content p-3">
+          <div class="modal-header">
+            <h5 class="modal-title fw-bold" id="paymentModalLabel">Finalizar Venda</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" style="overflow-y: hidden;">
+            <div class="row">
+              <!-- Lado esquerdo: Listagem de produtos -->
+              <div class="col-md-6">
+                <div style="overflow-y: auto; max-height: calc(99vh - 200px);">
+                  <ul id="modalProductList" class="list-group">
+                    <!-- Os itens serão adicionados dinamicamente aqui -->
+                  </ul>
+                </div>
+              </div>
+              <!-- Lado direito: Formulário de pagamento -->
+              <div class="col-md-6">
+                <form id="paymentForm" autocomplete="off">
+                  <div class="row mb-3" id="payments">
+                    <div class="col-3 d-grid mx-auto"> <input type="radio" class="btn-check"
                                                 data-payment="PIX" data-testid="radioPix" name="payment-options"
                                                 id="pix-outlined" autocomplete="off" checked>
-                                            <label class="btn btn-outline-primary" for="pix-outlined"><i
+                      <label class="btn btn-outline-primary" for="pix-outlined"><i
                                                     class="fa-brands fa-pix"></i><br />PIX</label>
-                                        </div>
-                                        <div class="col-3 d-grid mx-auto"><input type="radio" class="btn-check"
+                    </div>
+                    <div class="col-3 d-grid mx-auto"><input type="radio" class="btn-check"
                                                 data-payment="CREDITO" data-testid="radioCredit" name="payment-options"
                                                 id="credit-outlined" autocomplete="off">
-                                            <label class="btn btn-outline-primary" for="credit-outlined"><i
+                      <label class="btn btn-outline-primary" for="credit-outlined"><i
                                                     class="fa-solid fa-credit-card"></i><br />Crédito</label>
-                                        </div>
-                                        <div class="col-3 d-grid mx-auto"> <input type="radio" class="btn-check"
+                    </div>
+                    <div class="col-3 d-grid mx-auto"> <input type="radio" class="btn-check"
                                                 data-payment="DEBITO" data-testid="radioDebit" name="payment-options"
                                                 id="debit-outlined" autocomplete="off">
-                                            <label class="btn btn-outline-primary" for="debit-outlined"><i
+                      <label class="btn btn-outline-primary" for="debit-outlined"><i
                                                     class="fa-regular fa-credit-card"></i><br />Débito</label>
-                                        </div>
-                                        <div class="col-3 d-grid mx-auto"> <input type="radio" class="btn-check"
+                    </div>
+                    <div class="col-3 d-grid mx-auto"> <input type="radio" class="btn-check"
                                                 data-payment="DINHEIRO" data-testid="radioMoney" name="payment-options"
                                                 id="money-outlined" autocomplete="off">
-                                            <label class="btn btn-outline-primary" for="money-outlined"><i
+                      <label class="btn btn-outline-primary" for="money-outlined"><i
                                                     class="fa-solid fa-brazilian-real-sign"></i><br />Dinheiro</label>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <label for="totalAmount" class="form-label">Total da Compra</label>
-                                            <input type="text" class="form-control form-control-lg" id="totalAmount"
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col-md-6">
+                      <label for="totalAmount" class="form-label">Total da Compra</label>
+                      <input type="text" class="form-control form-control-lg" id="totalAmount"
                                                 placeholder="R$ 0,00" data-currency="BRL" disabled autocomplete="off">
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="discountAmount" class="form-label">Desconto Aplicado</label>
-                                            <input type="text" class="form-control form-control-lg" id="discountAmount"
+                    </div>
+                    <div class="col-md-6">
+                      <label for="discountAmount" class="form-label">Desconto Aplicado</label>
+                      <input type="text" class="form-control form-control-lg" id="discountAmount"
                                                 placeholder="R$ 0,00" data-currency="BRL" disabled autocomplete="off">
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <label for="paymentAmount" class="form-label">Valor Pago</label>
-                                            <input type="text" inputmode="numeric" class="form-control form-control-lg"
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col-md-6">
+                      <label for="paymentAmount" class="form-label">Valor Pago</label>
+                      <input type="text" inputmode="numeric" class="form-control form-control-lg"
                                                 id="paymentAmount" placeholder="R$ 0,00" data-currency="BRL"
                                                 autocomplete="off">
-                                            <div class="alert alert-danger mt-3" role="alert" style="display: none;">
-                                                <p id="paymentError"></p>
-                                                <!-- Error message will be displayed here -->
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="changeAmount" class="form-label">Troco</label>
-                                            <input type="text" class="form-control form-control-lg" id="changeAmount"
+                      <div class="alert alert-danger mt-3" role="alert" style="display: none;">
+                        <p id="paymentError"></p>
+                        <!-- Error message will be displayed here -->
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <label for="changeAmount" class="form-label">Troco</label>
+                      <input type="text" class="form-control form-control-lg" id="changeAmount"
                                                 disabled placeholder="R$ 0,00" data-currency="BRL" readonly>
-                                        </div>
-                                        <div class="col-md-12 mt-3">
-                                            <!-- <label class="form-label">Pagamentos Parciais</label> -->
-                                            <ul class="list-group" id="partialPaymentsList">
-                                                <!-- Partial payments will be added here dynamically -->
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-danger btn-lg" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-primary btn-lg" id="confirmPayment"
+                    <div class="col-md-12 mt-3">
+                      <!-- <label class="form-label">Pagamentos Parciais</label> -->
+                      <ul class="list-group" id="partialPaymentsList">
+                        <!-- Partial payments will be added here dynamically -->
+                      </ul>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger btn-lg" data-bs-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-primary btn-lg" id="confirmPayment"
                             onclick="handlePayment()">Confirmar</button>
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
-        <!-- Toast -->
-        <div class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 9999">
-            <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="toast-header bg-danger text-white">
-                    <strong class="me-auto">Mensagem</strong>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"
-                        aria-label="Close"></button>
-                </div>
-                <div class="toast-body">
-                    <p id="toastMessage"></p>
-                </div>
-            </div>
-        </div>
-        <div class="modal fade" id="loadingModal" aria-hidden="true" aria-labelledby="loadingModalLabel" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-body text-center">
-                        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                        <h5 class="mt-3">Carregando...</h5>
-                        <p>Por favor, aguarde enquanto processamos a venda.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
+    <!-- Toast -->
+    <div class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 9999">
+      <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-danger text-white">
+          <strong class="me-auto">Mensagem</strong>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"
+                        aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+          <p id="toastMessage"></p>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="loadingModal" aria-hidden="true" aria-labelledby="loadingModalLabel" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-body text-center">
+            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <h5 class="mt-3">Carregando...</h5>
+            <p>Por favor, aguarde enquanto processamos a venda.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Dados de exemplo (substitua por uma chamada de API real)
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Dados de exemplo (substitua por uma chamada de API real)
         let products = [];
 
         //Global Variables
@@ -383,7 +382,7 @@
 
         document.getElementById('discountInput').addEventListener('input', function (event) {
             debugger
-            if (cart.length === 0) {
+            if(cart.length === 0) {
                 event.target.value = '';
                 showToast('Não é possível aplicar desconto em um carrinho vazio.', 'error');
                 return
@@ -422,13 +421,6 @@
             }
         });
 
-        document.getElementById('paymentAmount').addEventListener('keydown', function (event) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                handlePayment();
-            }
-        });
-
         // Add event listener for Enter key to blur input fields
         document.querySelectorAll('input').forEach(input => {
             input.addEventListener('keydown', function (event) {
@@ -456,6 +448,13 @@
             if (event.key === 'Enter') {
                 event.preventDefault();
                 addCustomProduct();
+            }
+        });
+
+         document.getElementById('paymentAmount').addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                handlePayment();
             }
         });
 
@@ -517,18 +516,18 @@
             if (product) {
                 const existingItem = cart.find(item => item.id === product.id);
 
-                if (existingItem) {
-                    existingItem.quantity += 1;
+            if (existingItem) {
+                existingItem.quantity += 1;
 
-                } else {
-                    cart.push({ ...product, quantity: 1 });
-                }
-                // Update the inventory
-                product.inventory -= 1;
-                document.getElementById(`inventory-${product.id}`).textContent = product.inventory;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+            // Update the inventory
+            product.inventory -= 1;
+            document.getElementById(`inventory-${product.id}`).textContent = product.inventory;
 
-                localStorage.setItem('CART', JSON.stringify(cart));
-                updateShoppingCart();
+            localStorage.setItem('CART', JSON.stringify(cart));
+            updateShoppingCart();
             }
         }
 
@@ -600,17 +599,17 @@
             const item = cart.find(item => item.code === code);
             const product = products.find(product => product.code === code);
             if (item && product) {
-                const oldQuantity = item.quantity;
-                const quantityDifference = newQuantity - oldQuantity;
+            const oldQuantity = item.quantity;
+            const quantityDifference = newQuantity - oldQuantity;
 
-                // Update the cart item quantity
-                item.quantity = parseInt(newQuantity);
+            // Update the cart item quantity
+            item.quantity = parseInt(newQuantity);
 
-                // Update the product inventory
-                product.inventory -= quantityDifference;
-                document.getElementById(`inventory-${product.id}`).textContent = product.inventory;
+            // Update the product inventory
+            product.inventory -= quantityDifference;
+            document.getElementById(`inventory-${product.id}`).textContent = product.inventory;
 
-                updateShoppingCart();
+            updateShoppingCart();
             }
         }
 
@@ -618,17 +617,17 @@
             const index = cart.findIndex(item => item.code === code);
 
             if (index !== -1) {
-                const removedItem = cart.splice(index, 1)[0];
+            const removedItem = cart.splice(index, 1)[0];
+            
+            // Return the quantity back to the product inventory
+            const product = products.find(product => product.code === code);
+            if (product) {
+                product.inventory += removedItem.quantity;
+                document.getElementById(`inventory-${product.id}`).textContent = product.inventory;
+            }
 
-                // Return the quantity back to the product inventory
-                const product = products.find(product => product.code === code);
-                if (product) {
-                    product.inventory += removedItem.quantity;
-                    document.getElementById(`inventory-${product.id}`).textContent = product.inventory;
-                }
-
-                updateShoppingCart();
-                updateCartBadge();
+            updateShoppingCart();
+            updateCartBadge();
             }
         }
 
@@ -808,17 +807,29 @@
             };
 
             if (totalToPay > amountPayed) {
-                debugger
+
                 if (!payment.paymentsMethods) {
                     payment.paymentsMethods = [];
                 }
-                
+
                 payment.paymentsMethods.push({ id: payment.id, paymentType, amountPayed });
-                
+
                 paymentTotalEl.value = numberToBrazilianReal(totalToPay -= amountPayed)
                 paymentAmountPayed.value = ''
 
-                updatePaymentMethodList(paymentType, amountPayed);
+
+                const listItem = document.createElement('li');
+                listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+                listItem.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center w-100">
+                        <span class="fw-bold">${paymentType}</span>
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-secondary">${numberToBrazilianReal(amountPayed)}</span>
+                           
+                        </div>
+                    </div>
+                `;
+                partialPaymentsList.appendChild(listItem);
 
                 return;
             }
@@ -828,7 +839,6 @@
                     payment.paymentsMethods = [];
                 }
                 payment.paymentsMethods.push({ id: payment.id, paymentType, amountPayed });
-                updatePaymentMethodList(paymentType, amountPayed);
 
                 // Open loading modal
                 const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
@@ -864,21 +874,6 @@
                     .withFailureHandler(reject)
                     .postPaymentGAS(paymentData);
             });
-        }
-
-        function updatePaymentMethodList(paymentType, amountPayed) {
-            const listItem = document.createElement('li');
-            listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
-            listItem.innerHTML = `
-                    <div class="d-flex justify-content-between align-items-center w-100">
-                        <span class="fw-bold">${paymentType}</span>
-                        <div class="d-flex align-items-center">
-                            <span class="badge bg-secondary">${numberToBrazilianReal(amountPayed)}</span>
-                           
-                        </div>
-                    </div>
-                `;
-            partialPaymentsList.appendChild(listItem);
         }
 
         function clearCart() {
@@ -949,24 +944,24 @@
         // Function to fetch products from Google Apps Script
         function fetchProductsFromGAS() {
             return new Promise((resolve, reject) => {
-                const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-
-                if (isLocalhost) {
-                    // Mock 1000 products for localhost
-                    const mockProducts = Array.from({ length: 1000 }, (_, i) => ({
-                        id: i + 1,
-                        code: `CODE${i + 1}`,
-                        name: `Product ${i + 1}`,
-                        price: (Math.random() * 100).toFixed(2),
-                        inventory: Math.floor(Math.random() * 100)
-                    }));
-                    resolve(mockProducts);
-                } else {
-                    google.script.run
-                        .withSuccessHandler(resolve)
-                        .withFailureHandler(reject)
-                        .getProductsGS();
-                }
+            const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+            
+            if (isLocalhost) {
+                // Mock 1000 products for localhost
+                const mockProducts = Array.from({ length: 1000 }, (_, i) => ({
+                id: i + 1,
+                code: `CODE${i + 1}`,
+                name: `Product ${i + 1}`,
+                price: (Math.random() * 100).toFixed(2),
+                inventory: Math.floor(Math.random() * 100)
+                }));
+                resolve(mockProducts);
+            } else {
+                google.script.run
+                .withSuccessHandler(resolve)
+                .withFailureHandler(reject)
+                .getProductsGS();
+            }
             });
         }
 
@@ -993,7 +988,7 @@
                 updateShoppingCart(); // Show empty cart icon when loading the page
             });
         }).catch(error => console.error("Database initialization error:", error));
-    </script>
+  </script>
 </body>
 
 </html>
