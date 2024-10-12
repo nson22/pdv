@@ -1,993 +1,524 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 
 <head>
+  <base target="_top">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Roboto', sans-serif;
-    }
-
-    img {
-      max-width: 5%;
-      height: auto;
-    }
-  </style>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/quagga@0.12.1/dist/quagga.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/date-fns@4.1.0/cdn.min.js"
+    integrity="sha256-bDgRIzo3i6VHqJMlDwUcu/g1mnxCoS6B1sNW3269kJY=" crossorigin="anonymous"></script>
 </head>
 
 <body>
-  <div class="container">
-    <header class="fixed-top bg-light py-3">
-      <div class="container">
-        <div class="mb-0 d-flex align-items-center justify-content-between">
-          <img src="https://i.postimg.cc/Y9pv6ZLR/pjlogo.jpg" alt="pjlogo">
-          <span class="navbar-brand text-danger fw-bold fs-1 d-block d-md-inline me-2 text-uppercase"
-                        style="font-family: 'Montserrat', sans-serif;">
-                        PJ
-                        <span
-                            class="text-secondary fw-semibold text-warning d-md-inline text-uppercase">Variedades</span>
-          </span>
-          <button class="btn btn-primary text-uppercase" id="finishPurchaseBtn" onclick="openPaymentModal()">
-                        <i class="fas fa-shopping-cart"></i>
-                        Fechar Venda
-                    </button>
-        </div>
-      </div>
-    </header>
-
-    <main class="mt-5 pt-5 d-flex flex-column" style="height: calc(100vh - 0px - 125px); overflow: hidden;">
-      <!-- Lista de Produtos e Carrinho -->
-      <section class="row flex-grow-1 overflow-hidden h-100">
-        <div class="col-lg-8 col-md-7 d-flex flex-column h-100">
-          <div class="row align-items-center mb-3">
-            <div class="col-12 col-md-4 mb-2 mb-md-0">
-              <h2 class="mb-2 text-uppercase p-2">Produtos</h2>
-            </div>
-            <div class="col-md-12 d-flex">
-              <div class="input-group">
-                <input type="search" id="searchInput" class="form-control" autocomplete="off"
-                                    placeholder="Pesquisar produto por código ou nome">
-              </div>
-              <div class="ms-2 col-md-auto">
-                <button class="btn btn-primary btn-small text-uppercase" data-bs-toggle="modal"
-                                    data-bs-target="#customSaleModal">Avulsa</button>
-              </div>
-            </div>
-          </div>
-          <div class="flex-grow-1 overflow-auto" id="productList">
-            <!-- Produtos serão adicionados aqui dinamicamente -->
-          </div>
+  <header class="sticky-top">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container-fluid">
+        <div class="d-flex justify-content-between align-items-center w-100">
+          <img class="img-fluid"
+            src="https://media.licdn.com/dms/image/C4D0BAQH9wt7D8VAgPQ/company-logo_200_200/0/1630004356077?e=2147483647&v=beta&t=Uo0snLYC-0tV095iir9SdTC660uRkqVOLRwliLCpM7c"
+            alt="Logo" style="max-width: 60px;">
+          <h1 class="navbar-brand m-0 text-center fw-bold fs-4">YAMADA Brasil</h1>
+          <button class="btn btn-primary btn-lg fw-semibold" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu">
+            <i class="bi bi-list"></i>
+          </button>
         </div>
 
-        <div class="col-lg-4 col-md-5 d-flex flex-column h-100">
-          <div class="sticky-top bg-white d-flex justify-content-center align-items-center">
-            <h2 class="mb-0 text-center text-uppercase p-2">
-              Carrinho<span class="badge bg-secondary ms-3" id="cartBadge">0</span></h2>
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasMenu" aria-labelledby="offcanvasExampleLabel">
+          <div class="offcanvas-header bg-light">
+            <h5 class="offcanvas-title" id="offcanvasExampleLabel">Menu</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
           </div>
-          <div class="flex-grow-1 overflow-auto">
-            <ul id="cartList" class="list-group mb-3">
-              <!-- Itens do carrinho serão adicionados aqui dinamicamente -->
+          <div class="offcanvas-body">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">
+                <button class="btn btn-primary btn-lg fw-semibold w-100" data-bs-toggle="modal"
+                  data-bs-target="#serviceOrderModal">
+                  Criar OS
+                </button>
+              </li>
+              <li class="list-group-item">
+                <button class="btn btn-primary btn-lg fw-semibold w-100" disabled>
+                  Concluídas (TBD)
+                </button>
+              </li>
+              <li class="list-group-item">
+                <button class="btn btn-primary btn-lg fw-semibold w-100" disabled>
+                  Em progresso (TBD)
+                </button>
+              </li>
+              <li class="list-group-item">
+                <button class="btn btn-primary btn-lg fw-semibold w-100" disabled>
+                  Canceladas (TBD)
+                </button>
+              </li>
             </ul>
           </div>
-          <div class="sticky-bottom bg-white pt-1 border-top">
-            <div class="row align-items-center">
-              <div class="col-12 mt-1 mb-1">
-                <div class="form-group d-flex align-items-center">
-                  <div class="input-group">
-                    <span class="input-group-text fw-bold">Desconto</span>
-                    <input type="search" id="discountInput" inputmode="decimal"
-                                            class="form-control form-control-lg" placeholder="R$ 0,00"
-                                            data-currency="BRL" autocomplete="off">
-                  </div>
-                </div>
-              </div>
-              <div class="col-12 mt-1 mb-1">
-                <div class="form-group d-flex align-items-center">
-                  <div class="input-group">
-                    <span class="input-group-text fw-bold text-danger text-uppercase">Total</span>
-                    <input disabled type="text" id="cartTotal" class="form-control form-control-lg text-danger fw-bold"
-                                            placeholder="R$ 0,00" data-currency="BRL">
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
-      </section>
-    </main>
-    <footer class="fixed-bottom bg-light p4 mt-1">
-      <div class="shortcut-helpers p-4">
-        <div class="container">
-          <div class="row">
-            <div class="col">
-              <kbd>F1</kbd> - <small>Buscar produto</small>
-            </div>
-            <div class="col">
-              <kbd>F2</kbd> - <small>Vanda avulsa</small>
-            </div>
-            <div class="col">
-              <kbd>F3</kbd> - <small>Fechar venda</small>
-            </div>
-            <div class="col">
-              <kbd>F4</kbd> - <small>Desconto</small>
-            </div>
-            <div class="col">
-              <kbd>F11</kbd> - <small>Abrir/Fechar tela cheia</small>
-            </div>
-          </div>
+      </div>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container p-1 mt-3">
+    <div class="row" id="orders"></div>
+
+    <!-- Toast message -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+      <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+          <strong class="me-auto">Mensagem</strong>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
-    </footer>
-    <!-- Modal para Venda Avulsa -->
-    <div class="modal fade" id="customSaleModal" tabindex="-1" aria-labelledby="customSaleModalLabel"
+        <div class="toast-body" id="toastMessage"></div>
+      </div>
+    </div>
+
+    <!-- Service orders modal -->
+    <div class="modal fade" id="serviceOrderModal" tabindex="-1" aria-labelledby="serviceOrderModalLabel"
       aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-dialog modal-fullscreen">
         <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title fw-bold text-uppercase" id="customSaleModalLabel">Venda Avulsa</h5>
+          <div class="modal-header bg-light">
+            <h5 class="modal-title" id="serviceOrderModalLabel">Criar OS</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <form id="customSaleForm">
-              <div class="mb-3">
-                <label for="customProductName" class="form-label">Nome do Produto</label>
-                <input type="text" class="form-control" id="customProductName" required>
+            <form>
+              <div class="row">
+                <div class="mb-3 col-12 col-lg-12">
+                  <i class="bi bi-calendar3 me-2"></i> Data:
+                  <span id="currentDate" class="text-uppercase fw-semibold"></span>
+                </div>
               </div>
-              <div class="mb-3">
-                <label for="customProductPrice" class="form-label">Valor</label>
-                <div class="input-group">
-                  <span class="input-group-text">R$</span>
-                  <input type="text" class="form-control" id="customProductPrice" data-currency="BRL"
-                                        autocomplete="off" required>
+              <div class="row">
+                <div class="mb-3 col-12 col-lg-3">
+                  <label for="collaborator" class="form-label text-uppercase fw-semibold">Responsável</label>
+                  <select class="form-select" id="collaborator" required>
+                    <option value="" disabled selected>Selecionar</option>
+                  </select>
+                </div>
+                <div class="mb-3 col-12 col-lg-3">
+                  <label for="equipmentStatus" class="form-label text-uppercase fw-semibold">Status do
+                    Equipamento</label>
+                  <select class="form-select" id="equipmentStatus" required>
+                    <option value="" disabled selected>Selecionar</option>
+                  </select>
+                </div>
+                <div class="mb-3 col-12 col-lg-3">
+                  <label for="equipment" class="form-label text-uppercase fw-semibold">Equipamento</label>
+                  <select class="form-select" id="equipment" required>
+                    <option value="" disabled selected>Selecionar</option>
+                  </select>
+                </div>
+                <div class="mb-3 col-12 col-lg-3">
+                  <label for="maintainceType" class="form-label text-uppercase fw-semibold">Tipo de Manutenção</label>
+                  <select class="form-select" id="maintainceType" required>
+                    <option value="" disabled selected>Selecionar</option>
+                  </select>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <div class="mb-3 col-12 col-lg-12">
+                  <button type="submit" class="btn btn-primary text-uppercase fw-semibold w-100">
+                    </i> Salvar
+                  </button>
                 </div>
               </div>
             </form>
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-danger me-2" data-bs-dismiss="modal">Cancelar</button>
-            <button type="button" class="btn btn-success" onclick="addCustomProduct()">Adicionar</button>
-          </div>
         </div>
       </div>
     </div>
-    <!-- Modal de Pagamento -->
-    <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+
+    <!-- Service orders modal history -->
+    <div class="modal fade" id="serviceOrderModalHistory" tabindex="-1" aria-labelledby="serviceOrderModalHistoryLabel"
+      aria-hidden="true">
       <div class="modal-dialog modal-fullscreen">
-        <div class="modal-content p-3">
-          <div class="modal-header">
-            <h5 class="modal-title fw-bold" id="paymentModalLabel">Finalizar Venda</h5>
+        <div class="modal-content">
+          <div class="modal-header bg-light">
+            <h5 class="modal-title" id="serviceOrderModalHistoryLabel">Histórico da OS</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <div class="modal-body" style="overflow-y: hidden;">
-            <div class="row">
-              <!-- Lado esquerdo: Listagem de produtos -->
-              <div class="col-md-6">
-                <div style="overflow-y: auto; max-height: calc(99vh - 200px);">
-                  <ul id="modalProductList" class="list-group">
-                    <!-- Os itens serão adicionados dinamicamente aqui -->
-                  </ul>
-                </div>
-              </div>
-              <!-- Lado direito: Formulário de pagamento -->
-              <div class="col-md-6">
-                <form id="paymentForm" autocomplete="off">
-                  <div class="row mb-3" id="payments">
-                    <div class="col-3 d-grid mx-auto"> <input type="radio" class="btn-check"
-                                                data-payment="PIX" data-testid="radioPix" name="payment-options"
-                                                id="pix-outlined" autocomplete="off" checked>
-                      <label class="btn btn-outline-primary" for="pix-outlined"><i
-                                                    class="fa-brands fa-pix"></i><br />PIX</label>
-                    </div>
-                    <div class="col-3 d-grid mx-auto"><input type="radio" class="btn-check"
-                                                data-payment="CREDITO" data-testid="radioCredit" name="payment-options"
-                                                id="credit-outlined" autocomplete="off">
-                      <label class="btn btn-outline-primary" for="credit-outlined"><i
-                                                    class="fa-solid fa-credit-card"></i><br />Crédito</label>
-                    </div>
-                    <div class="col-3 d-grid mx-auto"> <input type="radio" class="btn-check"
-                                                data-payment="DEBITO" data-testid="radioDebit" name="payment-options"
-                                                id="debit-outlined" autocomplete="off">
-                      <label class="btn btn-outline-primary" for="debit-outlined"><i
-                                                    class="fa-regular fa-credit-card"></i><br />Débito</label>
-                    </div>
-                    <div class="col-3 d-grid mx-auto"> <input type="radio" class="btn-check"
-                                                data-payment="DINHEIRO" data-testid="radioMoney" name="payment-options"
-                                                id="money-outlined" autocomplete="off">
-                      <label class="btn btn-outline-primary" for="money-outlined"><i
-                                                    class="fa-solid fa-brazilian-real-sign"></i><br />Dinheiro</label>
-                    </div>
-                  </div>
-                  <div class="row mb-3">
-                    <div class="col-md-6">
-                      <label for="totalAmount" class="form-label">Total da Compra</label>
-                      <input type="text" class="form-control form-control-lg" id="totalAmount"
-                                                placeholder="R$ 0,00" data-currency="BRL" disabled autocomplete="off">
-                    </div>
-                    <div class="col-md-6">
-                      <label for="discountAmount" class="form-label">Desconto Aplicado</label>
-                      <input type="text" class="form-control form-control-lg" id="discountAmount"
-                                                placeholder="R$ 0,00" data-currency="BRL" disabled autocomplete="off">
-                    </div>
-                  </div>
-                  <div class="row mb-3">
-                    <div class="col-md-6">
-                      <label for="paymentAmount" class="form-label">Valor Pago</label>
-                      <input type="text" inputmode="numeric" class="form-control form-control-lg"
-                                                id="paymentAmount" placeholder="R$ 0,00" data-currency="BRL"
-                                                autocomplete="off">
-                      <div class="alert alert-danger mt-3" role="alert" style="display: none;">
-                        <p id="paymentError"></p>
-                        <!-- Error message will be displayed here -->
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <label for="changeAmount" class="form-label">Troco</label>
-                      <input type="text" class="form-control form-control-lg" id="changeAmount"
-                                                disabled placeholder="R$ 0,00" data-currency="BRL" readonly>
-                    </div>
-                    <div class="col-md-12 mt-3">
-                      <!-- <label class="form-label">Pagamentos Parciais</label> -->
-                      <ul class="list-group" id="partialPaymentsList">
-                        <!-- Partial payments will be added here dynamically -->
-                      </ul>
-                    </div>
-                  </div>
-                </form>
-              </div>
+          <div class="modal-body">
+            <div id="historyHeader" class="mb-3">
+
+            </div>
+            <div class="accordion" id="orderHistoryAccordion">
+
             </div>
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-danger btn-lg" data-bs-dismiss="modal">Cancelar</button>
-            <button type="button" class="btn btn-primary btn-lg" id="confirmPayment"
-                            onclick="handlePayment()">Confirmar</button>
-          </div>
         </div>
       </div>
     </div>
-    <!-- Toast -->
-    <div class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 9999">
-      <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="toast-header bg-danger text-white">
-          <strong class="me-auto">Mensagem</strong>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"
-                        aria-label="Close"></button>
-        </div>
-        <div class="toast-body">
-          <p id="toastMessage"></p>
-        </div>
-      </div>
-    </div>
-    <div class="modal fade" id="loadingModal" aria-hidden="true" aria-labelledby="loadingModalLabel" tabindex="-1">
+
+    <!-- Service in progress modal -->
+    <div class="modal fade" id="orderStatusModal" tabindex="-1" aria-labelledby="orderStatusModalLabel"
+      aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-          <div class="modal-body text-center">
-            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
-              <span class="visually-hidden">Loading...</span>
-            </div>
-            <h5 class="mt-3">Carregando...</h5>
-            <p>Por favor, aguarde enquanto processamos a venda.</p>
+          <div class="modal-header">
+            <h5 class="modal-title" id="orderStatusModalLabel">Atualizar OS</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="orderStatusForm">
+              <div class="mb-3">
+                <label for="orderId" class="form-label text-uppercase fw-semibold">ID da Ordem de Serviço</label>
+                <input type="text" class="form-control" id="orderId" readonly disabled>
+              </div>
+              <div class="mb-3">
+                <label for="collaboratorModal" class="form-label text-uppercase fw-semibold">Responsável</label>
+                <select class="form-select" id="collaboratorModal" required>
+                  <option value="" disabled selected>Selecionar</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="anomaly" class="form-label text-uppercase fw-semibold">Anomalia</label>
+                <input type="search" class="form-control" id="anomaly" list="anomalies" required>
+                <datalist id="anomalies">
+                  <option value="Pms entrando em modo stand by">
+                  <option value="setup">
+                  <option value="Falha na cortina de segurança">
+                  <option value="Agulha quebrada">
+              </div>
+              <div class="mb-3">
+                <label for="action" class="form-label text-uppercase fw-semibold">Ação</label>
+                <input type="search" class="form-control" id="action" list="anomalies" required>
+                <datalist id="actions">
+                  <option value="Preenchido todos os parâmetros">
+                  <option
+                    value="Após dariedson entregar um conjuto de lamina feito teste em máquina e ajuste liberado para produção">
+                  <option value="acompanhamento de linha">
+                  <option value="Organização dos documentos das preventivas">
+              </div>
+              <div class="mb-3">
+                <label for="orderStatus" class="form-label text-uppercase fw-semibold">Status</label>
+                <select class="form-select" id="orderStatus" required>
+                  <option value="" disabled selected>Selecionar</option>
+                  <option value="Em progresso">Em progresso</option>
+                  <option value="Concluído">Concluído</option>
+                  <option value="Cancelar">Cancelar</option>
+                </select>
+              </div>
+              <div class="modal-footer mt-3">
+                <button type="submit" class="btn btn-primary w-100 text-uppercase">Atualizar</button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // Dados de exemplo (substitua por uma chamada de API real)
-        let products = [];
-
-        //Global Variables
-        let cart = [];
-        let payment = {
-            id: Date.now(),
-        }
-        let discount = 0;
-        let totalToPay = 0
-
-        //DOM Elements
-        const paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
-        const toast = new bootstrap.Toast('#liveToast');
-        const toastMessage = document.getElementById('toastMessage');
-        const customSaleModal = new bootstrap.Modal(document.getElementById('customSaleModal'));
-        const modalProductList = document.getElementById('modalProductList');
-
-        //DOM Events
-        document.addEventListener('keydown', function (event) {
-            switch (event.key) {
-                case 'F1':
-                    event.preventDefault();
-                    document.getElementById('searchInput').focus();
-                    break;
-                case 'F2':
-                    event.preventDefault();
-                    customSaleModal.show()
-                    break;
-                case 'F3':
-                    event.preventDefault();
-                    if (document.activeElement === document.getElementById("discountInput")) {
-                        document.getElementById("discountInput").blur();
-                    }
-                    openPaymentModal();
-                    break;
-                case 'F4':
-                    event.preventDefault();
-                    document.getElementById("discountInput").focus()
-                    break;
-                default:
-                    break;
-            }
-
-        });
-
-        // Add event listener for window load
-        window.addEventListener('load', () => {
-            // Inicializar a exibição de produtos
-            displayProducts(products);
-
-            // Check if CART exists in localStorage and update the info
-            const savedCart = localStorage.getItem('CART');
-            if (savedCart) {
-                // Parse the saved cart data
-                const parsedCart = JSON.parse(savedCart);
-
-                // Update the global cart variable
-                cart.length = 0; // Clear the current cart
-                cart.push(...parsedCart); // Add all items from saved cart
-
-                // Update the cart display
-                updateShoppingCart();
-
-                // Update the cart badge
-                updateCartBadge();
-
-                console.log('Cart loaded from localStorage');
-            } else {
-                console.log('No saved cart found in localStorage');
-            }
-
-        });
-
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            const filteredProducts = products.filter(product =>
-                product.code.toLowerCase().includes(searchTerm) ||
-                product.name.toLowerCase().includes(searchTerm)
-            );
-            displayProducts(filteredProducts);
-        });
-
-        // Adicionar evento para atualizar o desconto
-        document.getElementById('discountInput').addEventListener('blur', (e) => {
-
-            const discountValue = brazilianCurrencyToNumber(e.target.value);
-            const currentTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
-            if (discountValue > currentTotal) {
-                // Exibir toast com mensagem de erro
-                showToast('O desconto não pode ser maior que o total da compra.', 'error');
-                // Resetar o valor do desconto para 0
-                e.target.value = '';
-                e.target.placeholder = 'R$ 0,00';
-                discount = 0;
-            } else {
-                discount = discountValue;
-            }
-            updateShoppingCart();
-        });
-
-        document.getElementById('discountInput').addEventListener('input', function (event) {
-            debugger
-            if(cart.length === 0) {
-                event.target.value = '';
-                showToast('Não é possível aplicar desconto em um carrinho vazio.', 'error');
-                return
-            }
-        });
-
-        // Adicionar evento para formatar inputs com data-currency="BRL"
-        document.querySelectorAll('[data-currency="BRL"]').forEach(input => {
-            input.addEventListener('input', function (e) {
-                let value = e.target.value;
-                value = value.replace(/\D/g, "");
-                value = (value / 100).toFixed(2) // Adiciona casas decimais
-                    .replace(".", ",")           // Substitui ponto por vírgula
-                    .replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Adiciona separador de milhares
-                e.target.value = value ? `R$ ${value}` : "";
-            });
-        });
-
-        // Add event listener for Ctrl+K shortcut
-        document.addEventListener('keydown', function (event) {
-            if (event.altKey && event.code === 'KeyA') {
-                customSaleModal.show(); // Open the avulsa modal
-            }
-        });
-
-        // Add event listener for change calculation
-        document.getElementById('paymentAmount').addEventListener('input', function (e) {
-            const paymentAmount = brazilianCurrencyToNumber(e.target.value);
-            const totalAmount = brazilianCurrencyToNumber(document.getElementById('totalAmount').value);
-
-            if (paymentAmount > totalAmount) {
-                const change = paymentAmount - totalAmount;
-                document.getElementById('changeAmount').value = numberToBrazilianReal(change);
-            } else {
-                document.getElementById('changeAmount').value = 'R$ 0,00';
-            }
-        });
-
-        // Add event listener for Enter key to blur input fields
-        document.querySelectorAll('input').forEach(input => {
-            input.addEventListener('keydown', function (event) {
-                if (event.key === 'Enter') {
-                    event.preventDefault();
-                    input.blur();
-                }
-            });
-        });
-
-        // Add event listener to focus on customProductName when customSaleModal is shown
-        document.getElementById('customSaleModal').addEventListener('shown.bs.modal', function () {
-            document.getElementById('customProductName').focus();
-        });
-
-        document.getElementById('customProductName').addEventListener('keydown', function (event) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                this.blur();
-                document.getElementById('customProductPrice').focus();
-            }
-        });
-
-        document.getElementById('customProductPrice').addEventListener('keydown', function (event) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                addCustomProduct();
-            }
-        });
-
-         document.getElementById('paymentAmount').addEventListener('keydown', function (event) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                handlePayment();
-            }
-        });
-
-        function displayProducts(products) {
-            const productList = document.getElementById('productList');
-
-            productList.innerHTML = '';
-            const tableContainer = document.createElement('div');
-            tableContainer.className = 'table-responsive';
-            tableContainer.style.maxHeight = '100%';
-            tableContainer.style.overflow = 'auto';
-            const table = document.createElement('table');
-            table.className = 'table table-hover table-striped';
-            table.innerHTML = `
-                <thead class="sticky-top bg-light">
-                    <tr>
-                        <th>Produto</th>
-                        <th>Preço</th>
-                        <th>Estoque</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            `;
-            tableContainer.appendChild(table);
-            productList.appendChild(tableContainer);
-            const tbody = table.querySelector('tbody');
-
-            products.forEach(product => {
-
-                let badgeBgColor = 'bg-secondary';
-
-                if (product.code === 'SEM CADASTRO') {
-                    badgeBgColor = 'bg-danger';
-                }
-
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="col-3" style="width: 400px; max-width: 400px;">
-                      <small class="badge ${badgeBgColor}">${product.code}</small>
-                      <p class="text-truncate mt-2">${product.name}</p>
-                    </td>
-                    <td class="col-auto"><span>${numberToBrazilianReal(product.price)}</span></td>
-                    <td class="col-auto"><span id="inventory-${product.id}">${product.inventory}</span></td>
-                    <td class="col-auto">
-                        <button class="btn btn-outline-primary btn-sm" onclick="addToCart('${product.id}')">
-                            Adicionar
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function addToCart(productId) {
-            const product = products.find(product => product.id === Number(productId));
-
-            if (product) {
-                const existingItem = cart.find(item => item.id === product.id);
-
-            if (existingItem) {
-                existingItem.quantity += 1;
-
-            } else {
-                cart.push({ ...product, quantity: 1 });
-            }
-            // Update the inventory
-            product.inventory -= 1;
-            document.getElementById(`inventory-${product.id}`).textContent = product.inventory;
-
-            localStorage.setItem('CART', JSON.stringify(cart));
-            updateShoppingCart();
-            }
-        }
-
-        function updateShoppingCart() {
-            const cartList = document.getElementById('cartList');
-            const cartTotal = document.getElementById('cartTotal');
-            cartList.innerHTML = '';
-            let total = 0;
-
-            if (cart.length === 0) {
-                const emptyCartMessage = document.createElement('div');
-                emptyCartMessage.className = 'd-flex flex-column align-items-center justify-content-center h-100 text-center';
-                emptyCartMessage.innerHTML = `
-                    <div class="d-flex justify-content-center w-100 mt-5">
-                        <i class="fas fa-shopping-bag fa-10x opacity-50 p-5 text-danger"></i>
-                    </div>
-                    <p class="mt-3 text-muted">Carrinho vazio</p>
-                `;
-                cartList.appendChild(emptyCartMessage);
-            } else {
-                cart.forEach(product => {
-                    let badgeBgColor = 'bg-secondary';
-
-                    if (product.code === 'SEM CADASTRO') {
-                        badgeBgColor = 'bg-danger';
-                    }
-                    const subtotal = product.price * product.quantity;
-                    total += subtotal;
-                    const li = document.createElement('li');
-                    li.className = 'list-group-item list-group-item-action mt-2';
-                    li.innerHTML = `
-                        <div class="w-100">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="text-truncate me-2">Código: <span class="badge ${badgeBgColor}">${product.code}</span></span>
-                                <button class="btn btn-danger btn-sm" onclick="removeFromCart('${product.code}')">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center mt-2">
-                                <span class="mb-0 text-truncate me-2">${product.name}</span>
-                                <input type="number" class="form-control form-control-sm" value="${product.quantity}" min="1" onchange="updateQuantity('${product.code}', this.value || 1)" style="width: 80px;">
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center mt-2">
-                                <p class="mb-0">Preço: ${numberToBrazilianReal(product.price)}</p>
-                                <span class="fw-bold">Subtotal: ${numberToBrazilianReal(subtotal)}</span>
-                            </div>
-                        </div>
-                    `;
-                    cartList.appendChild(li);
-                });
-                updateCartBadge();
-            }
-
-            // Atualizar o total com o desconto
-            const finalTotal = Math.max(total - discount, 0);
-            cartTotal.value = numberToBrazilianReal(finalTotal)
-            updateCartBadge();
-
-            // Update localStorage CART
-            localStorage.setItem('CART', JSON.stringify(cart));
-        }
-
-        function updateCartBadge() {
-            const cartItemCount = document.getElementById('cartBadge');
-            cartItemCount.textContent = cart.length;
-        }
-
-        function updateQuantity(code, newQuantity) {
-            const item = cart.find(item => item.code === code);
-            const product = products.find(product => product.code === code);
-            if (item && product) {
-            const oldQuantity = item.quantity;
-            const quantityDifference = newQuantity - oldQuantity;
-
-            // Update the cart item quantity
-            item.quantity = parseInt(newQuantity);
-
-            // Update the product inventory
-            product.inventory -= quantityDifference;
-            document.getElementById(`inventory-${product.id}`).textContent = product.inventory;
-
-            updateShoppingCart();
-            }
-        }
-
-        function removeFromCart(code) {
-            const index = cart.findIndex(item => item.code === code);
-
-            if (index !== -1) {
-            const removedItem = cart.splice(index, 1)[0];
-            
-            // Return the quantity back to the product inventory
-            const product = products.find(product => product.code === code);
-            if (product) {
-                product.inventory += removedItem.quantity;
-                document.getElementById(`inventory-${product.id}`).textContent = product.inventory;
-            }
-
-            updateShoppingCart();
-            updateCartBadge();
-            }
-        }
-
-        function addCustomProduct() {
-            const customProductName = document.getElementById('customProductName').value.trim();
-            const customProductPrice = brazilianCurrencyToNumber(document.getElementById('customProductPrice').value);
-            let id = Date.now()
-
-            if (customProductName && !isNaN(customProductPrice) && customProductPrice > 0) {
-                const customProduct = {
-                    id,
-                    code: `SEM CADASTRO`, // Generate a unique code
-                    name: customProductName.toUpperCase(),
-                    price: customProductPrice,
-                    quantity: 1
-                };
-
-                cart.push(customProduct);
-                updateShoppingCart();
-                updateCartBadge();
-
-                // Clear input fields
-                document.getElementById('customProductName').value = '';
-                document.getElementById('customProductPrice').value = '';
-                customSaleModal.hide()
-            } else {
-                // Show error message
-                showToast('Por favor, insira um nome válido e um preço maior que zero.', 'error');
-            }
-        }
-
-        function showToast(message, type) {
-            toastMessage.textContent = message;
-            const toastHeader = document.querySelector('.toast-header');
-            const toastIcon = document.createElement('i');
-
-            toastHeader.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-info');
-
-            switch (type) {
-                case 'success':
-                    toastHeader.classList.add('bg-success');
-                    toastIcon.className = 'fas fa-check-circle me-2';
-                    break;
-                case 'error':
-                    toastHeader.classList.add('bg-danger');
-                    toastIcon.className = 'fas fa-exclamation-circle me-2';
-                    break;
-                case 'warning':
-                    toastHeader.classList.add('bg-warning');
-                    toastIcon.className = 'fas fa-exclamation-triangle me-2';
-                    break;
-                default:
-                    toastHeader.classList.add('bg-info');
-                    toastIcon.className = 'fas fa-info-circle me-2';
-            }
-
-            // Remove existing icon if present
-            const existingIcon = toastHeader.querySelector('i');
-            if (existingIcon) {
-                existingIcon.remove();
-            }
-
-            toastHeader.prepend(toastIcon);
-            toast.show();
-        }
-
-        function numberToBrazilianReal(number) {
-            return number.toLocaleString("pt-BR", {
-                style: "currency",
-                currency: "BRL",
-            });
-        }
-
-        function brazilianCurrencyToNumber(currency) {
-            if (!currency.includes("R$")) {
-                currency = `R$ ${currency}`
-            }
-
-            let cleanValue = currency.replace("R$", "").trim();
-            cleanValue = cleanValue.replace(/\./g, "");
-            cleanValue = cleanValue.replace(",", ".");
-            return parseFloat(cleanValue);
-        }
-
-        function openPaymentModal() {
-            // Check if cart is empty
-            if (cart.length === 0) {
-                showToast('O carrinho está vazio. Adicione itens antes de prosseguir com a venda.', 'error');
-                return;
-            }
-
-            if (toast._element.classList.contains('show')) return;
-
-            // Reset payment form
-            document.getElementById('paymentForm').reset();
-
-            // Update total amount
-            const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0) - discount;
-            document.getElementById('totalAmount').value = numberToBrazilianReal(total);
-
-            // Update discount amount
-            document.getElementById('discountAmount').value = numberToBrazilianReal(discount);
-
-            // Populate modal product list
-            modalProductList.innerHTML = '';
-            cart.forEach(item => {
-                const li = document.createElement('li');
-                li.className = 'list-group-item d-flex justify-content-between align-items-center';
-                li.innerHTML = `
-                    <div class="d-flex flex-column">
-                        <h6 class="my-0 text-truncate" style="max-width: 500px;" title="${item.name}"><small class="badge bg-secondary">${item.code}</small> ${item.name}</h6>
-                        <small class="text-muted">${item.quantity}x ${numberToBrazilianReal(item.price)}</small>
-                    </div>
-                    <span class="text-muted">${numberToBrazilianReal(item.price * item.quantity)}</span>
-                `;
-                modalProductList.appendChild(li);
-            });
-
-            // Show the modal
-            paymentModal.show();
-        }
-
-        function alertMessage(message) {
-            const paymentError = document.getElementById('paymentError');
-            paymentError.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
-            paymentError.parentElement.style.opacity = '0';
-            paymentError.parentElement.style.display = 'block';
-            paymentError.parentElement.style.transition = 'opacity 0.5s ease-in-out';
-            setTimeout(() => {
-                paymentError.parentElement.style.opacity = '1';
-            }, 10);
-            setTimeout(() => {
-                paymentError.parentElement.style.opacity = '0';
-                setTimeout(() => {
-                    paymentError.parentElement.style.display = 'none';
-                }, 500);
-            }, 2500);
-        }
-
-        function addPaymentMethod() {
-            let paymentoMethods = document.querySelectorAll(`[data-testid*="radio"]`);
-
-            let checkedRadio = Array.from(paymentoMethods).find(radio => radio.checked);
-
-            return checkedRadio ? checkedRadio.dataset.payment : null;
-        }
-
-        async function handlePayment() {
-            const paymentAmountPayed = document.getElementById('paymentAmount');
-            const paymentTotalEl = document.getElementById('totalAmount');
-            const paymentDiscount = document.getElementById('discountAmount');
-            const partialPaymentsList = document.getElementById('partialPaymentsList');
-
-
-            let amountPayed = brazilianCurrencyToNumber(paymentAmountPayed.value);
-            totalToPay = brazilianCurrencyToNumber(paymentTotalEl.value);
-
-            if (amountPayed <= 0 || isNaN(amountPayed)) {
-                // Display error message in the alert
-                showToast("Informe o valor do pagamento.", "error")
-                paymentAmountPayed.focus();
-                return;
-            }
-
-            let paymentType = addPaymentMethod()
-
-            payment = {
-                ...payment,
-                products: cart.map(product => ({
-                    code: product.code,
-                    name: product.name,
-                    quantity: product.quantity,
-                    price: product.price
-                })),
-                paymentType,
-                discount: brazilianCurrencyToNumber(paymentDiscount.value) || 0
-            };
-
-            if (totalToPay > amountPayed) {
-
-                if (!payment.paymentsMethods) {
-                    payment.paymentsMethods = [];
-                }
-
-                payment.paymentsMethods.push({ id: payment.id, paymentType, amountPayed });
-
-                paymentTotalEl.value = numberToBrazilianReal(totalToPay -= amountPayed)
-                paymentAmountPayed.value = ''
-
-
-                const listItem = document.createElement('li');
-                listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
-                listItem.innerHTML = `
-                    <div class="d-flex justify-content-between align-items-center w-100">
-                        <span class="fw-bold">${paymentType}</span>
-                        <div class="d-flex align-items-center">
-                            <span class="badge bg-secondary">${numberToBrazilianReal(amountPayed)}</span>
-                           
-                        </div>
-                    </div>
-                `;
-                partialPaymentsList.appendChild(listItem);
-
-                return;
-            }
-
-            if (totalToPay <= amountPayed) {
-                if (!payment.paymentsMethods) {
-                    payment.paymentsMethods = [];
-                }
-                payment.paymentsMethods.push({ id: payment.id, paymentType, amountPayed });
-
-                // Open loading modal
-                const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
-                loadingModal.show();
-
-                postPayment(payment)
-                    .then(response => {
-                        if (response.success) {
-                            showToast('Venda processada com sucesso', 'success');
-
-                        }
-                    })
-                    .catch(error => {
-                        showToast('Erro ao processar a venda: ' + error.message, 'error');
-                    })
-                    .finally(() => {
-                        // Close loading modal
-                        clearCart();
-                        payment = {};
-                        loadingModal.hide();
-                        paymentModal.hide();
-                        modalProductList.innerHTML = '';
-                        partialPaymentsList.innerHTML = '';
-                    });
-                return;
-            }
-        }
-
-        function postPayment(paymentData) {
-            return new Promise((resolve, reject) => {
-                google.script.run
-                    .withSuccessHandler(resolve)
-                    .withFailureHandler(reject)
-                    .postPaymentGAS(paymentData);
-            });
-        }
-
-        function clearCart() {
-            cart = [];
-            localStorage.removeItem('CART');
-            discount = 0; // Reset discount to 0
-            document.getElementById('discountInput').value = ''; // Clear discount input field
-            updateShoppingCart();
-            updateCartBadge();
-        }
-
-        // Function to initialize IndexedDB
-        function initDB() {
-            return new Promise((resolve, reject) => {
-                const request = indexedDB.open('ProductsDB', 3);
-
-                request.onerror = (event) => reject("IndexedDB error: " + event.target.error);
-
-                request.onsuccess = (event) => {
-                    const db = event.target.result;
-                    resolve(db);
-                };
-
-                request.onupgradeneeded = (event) => {
-                    const db = event.target.result;
-                    if (!db.objectStoreNames.contains('products')) {
-                        const objectStore = db.createObjectStore('products', { keyPath: 'id', autoIncrement: true });
-                        objectStore.createIndex('code', 'code', { unique: false });
-                        objectStore.createIndex('name', 'name', { unique: false });
-                        objectStore.createIndex('inventory', 'inventory', { unique: false });
-                        objectStore.createIndex('price', 'price', { unique: false });
-                    }
-                };
-            });
-        }
-
-        // Function to save products to IndexedDB
-        function saveProductsToDB(db, products) {
-            return new Promise((resolve, reject) => {
-                const transaction = db.transaction(['products'], 'readwrite');
-                const objectStore = transaction.objectStore('products');
-
-                products.forEach(product => {
-                    objectStore.put(product);
-                });
-
-                transaction.oncomplete = () => resolve();
-                transaction.onerror = (event) => reject("Error saving products: " + event.target.error);
-            });
-        }
-
-        // Function to load products from IndexedDB
-        function loadProductsFromDB(db) {
-            return new Promise((resolve, reject) => {
-                const transaction = db.transaction(['products'], 'readonly');
-                const objectStore = transaction.objectStore('products');
-                const request = objectStore.getAll();
-
-                request.onsuccess = (event) => {
-                    products = event.target.result;
-                    resolve(products);
-                };
-
-                request.onerror = (event) => reject("Error loading products: " + event.target.error);
-            });
-        }
-
-        // Function to fetch products from Google Apps Script
-        function fetchProductsFromGAS() {
-            return new Promise((resolve, reject) => {
-            const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-            
-            if (isLocalhost) {
-                // Mock 1000 products for localhost
-                const mockProducts = Array.from({ length: 1000 }, (_, i) => ({
-                id: i + 1,
-                code: `CODE${i + 1}`,
-                name: `Product ${i + 1}`,
-                price: (Math.random() * 100).toFixed(2),
-                inventory: Math.floor(Math.random() * 100)
-                }));
-                resolve(mockProducts);
-            } else {
-                google.script.run
-                .withSuccessHandler(resolve)
-                .withFailureHandler(reject)
-                .getProductsGS();
-            }
-            });
-        }
-
-        // Initialize the database and load or fetch products
-        initDB().then(db => {
-            loadProductsFromDB(db).then(loadedProducts => {
-                if (loadedProducts.length === 0) {
-                    // If no products in DB, fetch them from Google Apps Script
-                    fetchProductsFromGAS().then(fetchedProducts => {
-                        products = fetchedProducts;
-                        console.log("Products fetched from Google Apps Script");
-                        // Save fetched products to DB
-                        saveProductsToDB(db, products).then(() => {
-                            console.log("Products saved to IndexedDB");
-                            displayProducts(products);
-                        });
-                    }).catch(error => {
-                        console.error("Error fetching products from Google Apps Script:", error);
-                    });
-                } else {
-                    console.log("Products loaded from IndexedDB");
-                    displayProducts(loadedProducts);
-                }
-                updateShoppingCart(); // Show empty cart icon when loading the page
-            });
-        }).catch(error => console.error("Database initialization error:", error));
+    const maintainceType = ['Corretiva', 'Preventiva', 'Setup', 'Melhoria'];
+    const equipments = ['Hot Stamp', 'USW 03/350', 'Máquina 21', 'Wire Aut 04', 'Assembly'];
+    const equipmentStatus = ['Não programado', 'Programado', 'Setup'];
+    const collaborators = ['Reiciane', 'Pedro', 'Eric', 'Vitor Gabriel'];
+    const serviceOrderModal = new bootstrap.Modal(document.getElementById('serviceOrderModal'));
+    const orderStatusModal = new bootstrap.Modal(document.getElementById('orderStatusModal'));
+
+    const serviceOrders = new Map();
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // const mockOrder = {
+      //   id: '000000001',
+      //   date: new Date().toLocaleString(),
+      //   type: 'Corretiva',
+      //   status: [{ orderStatus: 'Aberto', date: new Date().toLocaleString() }],
+      //   collaborators: ['Reiciane'],
+      //   equipment: 'Hot Stamp',
+      //   maintainceType: 'Corretiva',
+      //   equipmentStatus: 'Não programado',
+      //   anomaly: '',
+      //   action: ''
+      // };
+      // serviceOrders.set(mockOrder.id, mockOrder);
+      displayOrders();
+    });
+
+    document.getElementById('serviceOrderModal').addEventListener('show.bs.modal', () => {
+      populateSelectOptions('collaborator', collaborators);
+      populateSelectOptions('equipmentStatus', equipmentStatus);
+      populateSelectOptions('equipment', equipments);
+      populateSelectOptions('maintainceType', maintainceType);
+      document.getElementById('currentDate').textContent = new Date().toLocaleString();
+    });
+
+    document.getElementById('serviceOrderModal').addEventListener('hide.bs.modal', resetModal);
+
+    document.querySelector('form').addEventListener('submit', (event) => {
+      event.preventDefault();
+      const newOrder = createNewOrder();
+      serviceOrders.set(newOrder.id, newOrder);
+      document.querySelector('form').reset();
+      displayOrders();
+      serviceOrderModal.hide();
+    });
+
+    document.getElementById('orderStatusForm').addEventListener('submit', (event) => {
+      event.preventDefault();
+      updateOrderStatus();
+    });
+
+    function populateSelectOptions(selectId, options) {
+      const selectElement = document.getElementById(selectId);
+      selectElement.innerHTML = '<option value="" disabled selected>Selecionar</option>';
+      options.forEach(option => {
+        selectElement.innerHTML += `<option value="${option}">${option}</option>`;
+      });
+    }
+
+    function resetModal() {
+      ['collaborator', 'equipmentStatus', 'equipment', 'maintainceType'].forEach(id => {
+        document.getElementById(id).innerHTML = '<option value="" disabled selected>Selecionar</option>';
+      });
+      document.getElementById('currentDate').textContent = '';
+    }
+
+    function createNewOrder() {
+      const collaborator = document.getElementById('collaborator').value;
+      const equipmentStatus = document.getElementById('equipmentStatus').value;
+      const equipment = document.getElementById('equipment').value;
+      const maintainceType = document.getElementById('maintainceType').value;
+      const currentDate = document.getElementById('currentDate').textContent;
+
+      const orderId = (serviceOrders.size + 1).toString().padStart(9, '0');
+
+      return {
+        id: orderId,
+        date: currentDate,
+        type: maintainceType,
+        status: [{ orderStatus: 'Aberto', date: new Date().toLocaleString() }],
+        collaborators: [collaborator],
+        equipment,
+        maintainceType,
+        equipmentStatus,
+      };
+    }
+
+    function updateOrderStatus() {
+      document.getElementById("anomaly").value = ''
+      document.getElementById("action").value = ''
+
+      const orderId = document.getElementById('orderId').value;
+      const newStatus = document.getElementById('orderStatus').value;
+      const collaborator = document.getElementById('collaboratorModal').value;
+      const order = serviceOrders.get(orderId);
+
+      order.collaborators.push(collaborator);
+      order.status.push({ orderStatus: newStatus, date: new Date().toLocaleString() });
+      order.anomaly = document.getElementById('anomaly').value;
+      order.action = document.getElementById('action').value;
+
+      serviceOrders.set(orderId, order);
+      orderStatusModal.hide();
+      displayOrders();
+    }
+
+    function openOrder(orderId) {
+      populateSelectOptions('collaboratorModal', collaborators);
+      const order = serviceOrders.get(orderId);
+      document.getElementById('orderId').value = order.id;
+      document.getElementById('orderStatus').value = order.status;
+      orderStatusModal.show();
+    }
+
+    function displayOrders() {
+      const ordersList = document.querySelector('#orders');
+      ordersList.innerHTML = "";
+
+      if (serviceOrders.size === 0) {
+        ordersList.innerHTML = '<div class="col-12 d-flex justify-content-center align-items-center mt-5 pt-5"><span class="fw-semibold pt-5 mt-5">Nenhuma ordem de serviço encontrada</span></div>';
+        return;
+      }
+
+      serviceOrders.forEach((order) => {
+        console.log(order);
+
+        ordersList.innerHTML += `
+          <div class="col-12 col-lg-6">
+            <div class="card mb-2">
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-6 col-lg-8">
+                    <h5 class="card-title"><span class="badge bg-primary">OS ${order.id}</span></h5>
+                  </div>
+                  <div class="col-6 col-lg-4 text-end mb-3">
+                    <button type="button" class="text-white btn btn-${changeOrderStatusColor(order.status[order.status.length - 1].orderStatus)} btn-sm" onclick="openOrder('${order.id}')">
+                      <i class="bi bi-sliders"></i>
+                     ${order.status[order.status.length - 1].orderStatus}
+                    </button>
+                  </div>
+                  <div class="col-8 col-lg-8">
+                    <span class="fw-semibold">
+                      <i class="bi bi-calendar3 me-2"></i>${order.status[0].date}
+                    </span>
+                  </div>
+                  <div class="col-4 col-lg-4 text-end mb-2">
+                    <span class="fw-semibold">${order.type}</span>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <button class="btn btn-outline-secondary mt-2 w-100" type="button" data-bs-toggle="modal" data-bs-target="#serviceOrderModalHistory" onclick=orderServiceHistory("${order.id}")>
+                     <span class="fw-semibold">Atividades</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>`;
+      });
+    }
+
+    function orderServiceHistory(orderId) {
+      const order = serviceOrders.get(orderId);
+      const modalTitle = document.querySelector('#serviceOrderModalHistoryLabel');
+      const accordion = document.querySelector('#orderHistoryAccordion');
+      const historyHeader = document.querySelector('#historyHeader');
+
+      modalTitle.innerHTML = `
+        <div class="d-flex align-items-center">
+          <h5 class="me-2 mb-0"><span class="badge bg-primary">OS ${order.id}</span></h5>
+          </div>
+          `;
+          
+      historyHeader.innerHTML = `
+        <ul class="list-group">
+          <li class="list-group-item d-flex align-items-center">
+            <strong>Ação</strong><span class="ms-2">${order.type}</span>
+          </li>
+          <li class="list-group-item d-flex align-items-center">
+            <strong>Equipamento</strong><span class="ms-2">${order.equipment}</span>
+          </li>
+          <li class="list-group-item d-flex align-items-center">
+            <strong>Tipo</strong><span class="ms-2">${order.maintainceType}</span>
+          </li>
+          <li class="list-group-item d-flex align-items-center">
+            <strong>Status</strong><span class="ms-2">${order.equipmentStatus}</span>
+          </li>
+        </ul>
+      `
+
+      order.status.forEach((status, index) => {
+        const isOpen = status.orderStatus.toLowerCase() === 'aberto';
+
+        accordion.innerHTML += `
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="heading${index}">
+              <button class="accordion-button ${index !== 0 ? 'collapsed' : ''}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${index}" aria-expanded="${index === 0}" aria-controls="collapse${index}">
+                <span class="badge bg-${changeOrderStatusColor(status.orderStatus)} me-2">${status.orderStatus}</span>
+                <small class="text-muted">${order.date}</small>
+              </button>
+            </h2>
+            <div id="collapse${index}" class="accordion-collapse collapse ${index === 0 ? 'show' : ''}" aria-labelledby="heading${index}" data-bs-parent="#orderHistoryAccordion">
+              <div class="accordion-body">
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item d-flex align-items-center">
+                    <i class="bi bi-person me-2"></i>
+                    <strong class="me-2">Responsável:</strong> ${order.collaborators[index]}
+                  </li>
+                  ${!isOpen && order.anomaly ? `
+                    <li class="list-group-item d-flex align-items-center">
+                      <i class="bi bi-exclamation-triangle me-2"></i>
+                      <strong class="me-2">Anomalia:</strong> ${order.anomaly}
+                    </li>
+                  ` : ''}
+                  ${!isOpen && order.action ? `
+                    <li class="list-group-item d-flex align-items-center">
+                      <i class="bi bi-tools me-2"></i>
+                      <strong class="me-2">Ação:</strong> ${order.action}
+                    </li>
+                  ` : ''}
+                </ul>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+
+      //   let historyHTML = '<div class="accordion" id="orderHistoryAccordion">';
+
+      //   order.status.forEach((status, index) => {
+      //     const isOpen = status.orderStatus.toLowerCase() === 'aberto';
+
+      //   historyHTML += `
+      //   <div class="accordion-item">
+      //     <h2 class="accordion-header" id="heading${index}">
+      //       <button class="accordion-button ${index !== 0 ? 'collapsed' : ''}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${index}" aria-expanded="${index === 0}" aria-controls="collapse${index}">
+      //         <span class="badge bg-${changeOrderStatusColor(status.orderStatus)} me-2">${status.orderStatus}</span>
+      //         <small class="text-muted">${order.date}</small>
+      //       </button>
+      //     </h2>
+      //     <div id="collapse${index}" class="accordion-collapse collapse ${index === 0 ? 'show' : ''}" aria-labelledby="heading${index}" data-bs-parent="#orderHistoryAccordion">
+      //       <div class="accordion-body">
+      //         <ul class="list-group list-group-flush">
+      //           <li class="list-group-item d-flex align-items-center">
+      //             <i class="bi bi-clock me-2"></i>
+      //             <strong class="me-2">Tipo:</strong> ${order.type}
+      //           </li>
+      //           <li class="list-group-item d-flex align-items-center">
+      //             <i class="bi bi-person me-2"></i>
+      //             <strong class="me-2">Responsável:</strong> ${order.collaborators[index]}
+      //           </li>
+      //           <li class="list-group-item d-flex align-items-center">
+      //             <i class="bi bi-person me-2"></i>
+      //             <strong class="me-2">Equipamento:</strong> ${order.equipment}
+      //           </li>
+      //           <li class="list-group-item d-flex align-items-center">
+      //             <i class="bi bi-person me-2"></i>
+      //             <strong class="me-2">Equipamento status:</strong> ${order.equipmentStatus}
+      //           </li>
+      //           ${!isOpen && order.anomaly ? `
+      //             <li class="list-group-item d-flex align-items-center">
+      //               <i class="bi bi-exclamation-triangle me-2"></i>
+      //               <strong class="me-2">Anomalia:</strong> ${order.anomaly}
+      //             </li>
+      //           ` : ''}
+      //           ${!isOpen && order.action ? `
+      //             <li class="list-group-item d-flex align-items-center">
+      //               <i class="bi bi-tools me-2"></i>
+      //               <strong class="me-2">Ação:</strong> ${order.action}
+      //             </li>
+      //           ` : ''}
+      //         </ul>
+      //       </div>
+      //     </div>
+      //   </div>
+      // `;
+      //   });
+
+      //   historyHTML += '</div>';
+      //   modalBody.innerHTML = historyHTML;
+    }
+
+    function showToast(message, status) {
+      const toast = document.getElementById('liveToast');
+      const toastInstance = new bootstrap.Toast(toast);
+      const toastMessage = document.getElementById('toastMessage');
+      const toastHeader = toast.querySelector('.toast-header');
+      toastMessage.textContent = message;
+      toastHeader.className = 'toast-header';
+      toastHeader.classList.add(`bg-${status}`, 'text-white');
+      toastInstance.show();
+    }
+
+    function changeOrderStatusColor(status) {
+      switch (status) {
+        case 'Em progresso':
+          return 'warning';
+        case 'Concluído':
+          return 'success';
+        case 'Cancelar':
+          return 'danger';
+        default:
+          return 'primary';
+      }
+    }
   </script>
 </body>
 
