@@ -22,40 +22,51 @@
             src="https://media.licdn.com/dms/image/C4D0BAQH9wt7D8VAgPQ/company-logo_200_200/0/1630004356077?e=2147483647&v=beta&t=Uo0snLYC-0tV095iir9SdTC660uRkqVOLRwliLCpM7c"
             alt="Logo" style="max-width: 60px;">
           <h1 class="navbar-brand m-0 text-center fw-bold fs-4">YAMADA Brasil</h1>
-          <button class="btn btn-primary btn-lg fw-semibold" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu">
-            <i class="bi bi-list"></i>
+          <button class="btn btn-outline-primary btn-sm fw-semibold" data-bs-toggle="offcanvas"
+            data-bs-target="#offcanvasMenu">
+            <i class="bi bi-filter"></i>
           </button>
         </div>
 
         <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasMenu" aria-labelledby="offcanvasExampleLabel">
           <div class="offcanvas-header bg-light">
-            <h5 class="offcanvas-title" id="offcanvasExampleLabel">Menu</h5>
+            <h5 class="offcanvas-title" id="offcanvasExampleLabel">Filtrar OS</h5>
             <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
           </div>
           <div class="offcanvas-body">
-            <ul class="list-group list-group-flush">
-              <li class="list-group-item">
-                <button class="btn btn-primary btn-lg fw-semibold w-100" data-bs-toggle="modal"
-                  data-bs-target="#serviceOrderModal">
-                  Criar OS
-                </button>
-              </li>
-              <li class="list-group-item">
-                <button class="btn btn-primary btn-lg fw-semibold w-100" disabled>
-                  Concluídas (TBD)
-                </button>
-              </li>
-              <li class="list-group-item">
-                <button class="btn btn-primary btn-lg fw-semibold w-100" disabled>
-                  Em progresso (TBD)
-                </button>
-              </li>
-              <li class="list-group-item">
-                <button class="btn btn-primary btn-lg fw-semibold w-100" disabled>
-                  Canceladas (TBD)
-                </button>
-              </li>
-            </ul>
+            <form id="filterForm">
+              <div class="mb-3">
+                <label for="filterStartDate" class="form-label">Data Inicial</label>
+                <input type="date" class="form-control" id="filterStartDate" required>
+              </div>
+              <div class="mb-3">
+                <label for="filterEndDate" class="form-label">Data Final</label>
+                <input type="date" class="form-control" id="filterEndDate">
+              </div>
+              <div class="mb-3">
+                <label for="filterStatus" class="form-label">Status</label>
+                <select class="form-select" id="filterStatus" required>
+                  <option value="" disabled selected>Selecionar</option>
+                  <option value="Todos">Todos</option>
+                  <option value="Aberto">Aberto</option>
+                  <option value="Em progresso">Em progresso</option>
+                  <option value="Concluído">Concluído</option>
+                  <option value="Cancelado">Cancelado</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="filterLimitDate" class="form-label">Quantidade</label>
+                <select class="form-select" id="filterLimitDate" required>
+                  <option value="" disabled selected>Selecionar</option>
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+              </div>
+              <button type="button" class="btn btn-outline-primary w-100 fw-semibold text-uppercase"
+                onclick="applyFilters()">Aplicar Filtros</button>
+            </form>
           </div>
         </div>
       </div>
@@ -123,7 +134,7 @@
               </div>
               <div class="modal-footer">
                 <div class="mb-3 col-12 col-lg-12">
-                  <button type="submit" class="btn btn-primary text-uppercase fw-semibold w-100">
+                  <button type="submit" class="btn btn-outline-primary text-uppercase fw-semibold w-100">
                     </i> Salvar
                   </button>
                 </div>
@@ -201,51 +212,68 @@
                   <option value="" disabled selected>Selecionar</option>
                   <option value="Em progresso">Em progresso</option>
                   <option value="Concluído">Concluído</option>
-                  <option value="Cancelar">Cancelar</option>
+                  <option value="Cancelado">Cancelado</option>
                 </select>
               </div>
               <div class="modal-footer mt-3">
-                <button type="submit" class="btn btn-primary w-100 text-uppercase">Atualizar</button>
+                <button type="submit"
+                  class="btn btn-outline-primary w-100 fw-semibold text-uppercase">Atualizar</button>
               </div>
             </form>
           </div>
         </div>
       </div>
     </div>
+
   </main>
+  <button class="btn btn-primary btn-lg rounded-circle position-fixed" style="bottom: 20px; right: 20px;"
+    data-bs-toggle="modal" data-bs-target="#serviceOrderModal">
+    <i class="bi bi-plus-lg"></i>
+  </button>
 
   <script>
-    const maintainceType = ['Corretiva', 'Preventiva', 'Setup', 'Melhoria'];
-    const equipments = ['Hot Stamp', 'USW 03/350', 'Máquina 21', 'Wire Aut 04', 'Assembly'];
-    const equipmentStatus = ['Não programado', 'Programado', 'Setup'];
-    const collaborators = ['Reiciane', 'Pedro', 'Eric', 'Vitor Gabriel'];
+    const mockTypes = ['Corretiva', 'Preventiva', 'Setup', 'Melhoria'];
+    const mockEquipments = ['Hot Stamp', 'USW 03/350', 'Máquina 21', 'Wire Aut 04', 'Assembly'];
+    const mockEquipmentStatus = ['Não programado', 'Programado', 'Setup'];
+    const mockCollaborators = ['Reiciane', 'Pedro', 'Eric', 'Vitor Gabriel'];
+    const mockOrderStatus = ['Aberto', 'Em progresso', 'Concluído', 'Cancelado'];
+    const mockAnomalies = ['Pms entrando em modo stand by', 'setup', 'Falha na cortina de segurança', 'Agulha quebrada'];
+    const mockActions = ['Preenchido todos os parâmetros', 'Após dariedson entregar um conjuto de lamina', 'acompanhamento de linha', 'Organização dos documentos das preventivas'];
+
     const serviceOrderModal = new bootstrap.Modal(document.getElementById('serviceOrderModal'));
     const orderStatusModal = new bootstrap.Modal(document.getElementById('orderStatusModal'));
 
     const serviceOrders = new Map();
 
     document.addEventListener('DOMContentLoaded', () => {
-      // const mockOrder = {
-      //   id: '000000001',
-      //   date: new Date().toLocaleString(),
-      //   type: 'Corretiva',
-      //   status: [{ orderStatus: 'Aberto', date: new Date().toLocaleString() }],
-      //   collaborators: ['Reiciane'],
-      //   equipment: 'Hot Stamp',
-      //   maintainceType: 'Corretiva',
-      //   equipmentStatus: 'Não programado',
-      //   anomaly: '',
-      //   action: ''
-      // };
-      // serviceOrders.set(mockOrder.id, mockOrder);
+      for (let i = 0; i < 20; i++) {
+        const newOrder = {
+          id: (i + 1).toString().padStart(9, '0'),
+          date: new Date().toLocaleString(),
+          type: mockTypes[Math.floor(Math.random() * mockTypes.length)],
+          status: [{ orderStatus: 'Aberto', date: new Date().toLocaleString() }],
+          collaborators: [mockCollaborators[Math.floor(Math.random() * mockCollaborators.length)]],
+          equipment: mockEquipments[Math.floor(Math.random() * mockEquipments.length)],
+          maintainceType: mockTypes[Math.floor(Math.random() * mockTypes.length)],
+          equipmentStatus: mockEquipmentStatus[Math.floor(Math.random() * mockEquipmentStatus.length)],
+        };
+        serviceOrders.set(newOrder.id, newOrder);
+      }
+      const today = new Date();
+      document.getElementById('filterEndDate').value = today.toISOString().split('T')[0];
+
+      const sevenDaysAgo = new Date(today);
+      sevenDaysAgo.setDate(today.getDate() - 7);
+
+      document.getElementById('filterStartDate').value = sevenDaysAgo.toISOString().split('T')[0];
       displayOrders();
     });
 
     document.getElementById('serviceOrderModal').addEventListener('show.bs.modal', () => {
-      populateSelectOptions('collaborator', collaborators);
-      populateSelectOptions('equipmentStatus', equipmentStatus);
-      populateSelectOptions('equipment', equipments);
-      populateSelectOptions('maintainceType', maintainceType);
+      populateSelectOptions('collaborator', mockCollaborators);
+      populateSelectOptions('equipmentStatus', mockEquipmentStatus);
+      populateSelectOptions('equipment', mockEquipments);
+      populateSelectOptions('maintainceType', mockTypes);
       document.getElementById('currentDate').textContent = new Date().toLocaleString();
     });
 
@@ -302,8 +330,6 @@
     }
 
     function updateOrderStatus() {
-      document.getElementById("anomaly").value = ''
-      document.getElementById("action").value = ''
 
       const orderId = document.getElementById('orderId').value;
       const newStatus = document.getElementById('orderStatus').value;
@@ -314,14 +340,15 @@
       order.status.push({ orderStatus: newStatus, date: new Date().toLocaleString() });
       order.anomaly = document.getElementById('anomaly').value;
       order.action = document.getElementById('action').value;
-
       serviceOrders.set(orderId, order);
+      document.getElementById("anomaly").value = ''
+      document.getElementById("action").value = ''
       orderStatusModal.hide();
       displayOrders();
     }
 
     function openOrder(orderId) {
-      populateSelectOptions('collaboratorModal', collaborators);
+      populateSelectOptions('collaboratorModal', mockCollaborators);
       const order = serviceOrders.get(orderId);
       document.getElementById('orderId').value = order.id;
       document.getElementById('orderStatus').value = order.status;
@@ -338,39 +365,53 @@
       }
 
       serviceOrders.forEach((order) => {
-        console.log(order);
-
+        const status = order.status[order.status.length - 1].orderStatus;
         ordersList.innerHTML += `
-          <div class="col-12 col-lg-6">
-            <div class="card mb-2">
-              <div class="card-body">
-                <div class="row">
-                  <div class="col-6 col-lg-8">
-                    <h5 class="card-title"><span class="badge bg-primary">OS ${order.id}</span></h5>
-                  </div>
-                  <div class="col-6 col-lg-4 text-end mb-3">
-                    <button type="button" class="text-white btn btn-${changeOrderStatusColor(order.status[order.status.length - 1].orderStatus)} btn-sm" onclick="openOrder('${order.id}')">
-                      <i class="bi bi-sliders"></i>
-                     ${order.status[order.status.length - 1].orderStatus}
-                    </button>
-                  </div>
-                  <div class="col-8 col-lg-8">
-                    <span class="fw-semibold">
-                      <i class="bi bi-calendar3 me-2"></i>${order.status[0].date}
-                    </span>
-                  </div>
-                  <div class="col-4 col-lg-4 text-end mb-2">
-                    <span class="fw-semibold">${order.type}</span>
-                  </div>
+        <div class="col-12 col-lg-6 mb-4">
+          <div class="card shadow-sm border-0">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start mb-3">
+                <h5 class="card-title">
+                  <span class="badge bg-primary">OS ${order.id}</span>
+                </h5>
+                <button 
+                  type="button" 
+                  ${status === 'Cancelado' || status === 'Concluído' ? 'disabled' : ''} 
+                  class="btn btn-outline-primary btn-sm" 
+                  onclick="openOrder('${order.id}')">
+                  Atualizar
+                </button>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="text-start">
+                  <span>Status:</span>
+                  <span class="mx-2 badge py-2 bg-${changeOrderStatusColor(status)}">${status}</span>
                 </div>
-                <div class="col-12">
-                  <button class="btn btn-outline-secondary mt-2 w-100" type="button" data-bs-toggle="modal" data-bs-target="#serviceOrderModalHistory" onclick=orderServiceHistory("${order.id}")>
-                     <span class="fw-semibold">Atividades</span>
-                  </button>
+                <div class="text-end">
+                  <span class="fw-semibold">Ação: ${order.type}</span>
                 </div>
               </div>
+
+              <div class="d-flex justify-content-between mb-3">
+                <div class="fw-semibold">
+                  <i class="bi bi-calendar3 me-2"></i>${order.status[0].date}
+                </div>
+              </div>
+
+              <div>
+                <button 
+                  class="btn btn-outline-secondary w-100" 
+                  type="button" 
+                  data-bs-toggle="modal" 
+                  data-bs-target="#serviceOrderModalHistory" 
+                  onclick="orderServiceHistory('${order.id}')">
+                  <span class="fw-semibold">Atividades</span>
+                </button>
+              </div>
             </div>
-          </div>`;
+          </div>
+        </div>`;
       });
     }
 
@@ -381,120 +422,84 @@
       const historyHeader = document.querySelector('#historyHeader');
 
       modalTitle.innerHTML = `
-        <div class="d-flex align-items-center">
-          <h5 class="me-2 mb-0"><span class="badge bg-primary">OS ${order.id}</span></h5>
-          </div>
-          `;
-          
-      historyHeader.innerHTML = `
-        <ul class="list-group">
-          <li class="list-group-item d-flex align-items-center">
-            <strong>Ação</strong><span class="ms-2">${order.type}</span>
-          </li>
-          <li class="list-group-item d-flex align-items-center">
-            <strong>Equipamento</strong><span class="ms-2">${order.equipment}</span>
-          </li>
-          <li class="list-group-item d-flex align-items-center">
-            <strong>Tipo</strong><span class="ms-2">${order.maintainceType}</span>
-          </li>
-          <li class="list-group-item d-flex align-items-center">
-            <strong>Status</strong><span class="ms-2">${order.equipmentStatus}</span>
-          </li>
-        </ul>
-      `
+    <div class="d-flex align-items-center">
+      <h5 class="me-2 mb-0"><span class="badge bg-primary">OS ${order.id}</span></h5>
+    </div>
+  `;
 
-      order.status.forEach((status, index) => {
+      historyHeader.innerHTML = `
+    <ul class="list-group">
+      <li class="list-group-item d-flex align-items-center">
+        <strong>Ação</strong><span class="ms-2">${order.type}</span>
+      </li>
+      <li class="list-group-item d-flex align-items-center">
+        <strong>Equipamento</strong><span class="ms-2">${order.equipment}</span>
+      </li>
+      <li class="list-group-item d-flex align-items-center">
+        <strong>Tipo</strong><span class="ms-2">${order.maintainceType}</span>
+      </li>
+      <li class="list-group-item d-flex align-items-center">
+        <strong>Status</strong><span class="ms-2">${order.equipmentStatus}</span>
+      </li>
+    </ul>
+  `;
+
+      // Sort the statuses based on the defined order
+      const statusOrder = ['aberto', 'em progresso', 'concluido', 'cancelado'];
+      const sortedStatuses = order.status.sort((a, b) => {
+        return statusOrder.indexOf(a.orderStatus.toLowerCase()) - statusOrder.indexOf(b.orderStatus.toLowerCase());
+      });
+
+      sortedStatuses.forEach((status, index) => {
         const isOpen = status.orderStatus.toLowerCase() === 'aberto';
 
         accordion.innerHTML += `
-          <div class="accordion-item">
-            <h2 class="accordion-header" id="heading${index}">
-              <button class="accordion-button ${index !== 0 ? 'collapsed' : ''}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${index}" aria-expanded="${index === 0}" aria-controls="collapse${index}">
-                <span class="badge bg-${changeOrderStatusColor(status.orderStatus)} me-2">${status.orderStatus}</span>
-                <small class="text-muted">${order.date}</small>
-              </button>
-            </h2>
-            <div id="collapse${index}" class="accordion-collapse collapse ${index === 0 ? 'show' : ''}" aria-labelledby="heading${index}" data-bs-parent="#orderHistoryAccordion">
-              <div class="accordion-body">
-                <ul class="list-group list-group-flush">
-                  <li class="list-group-item d-flex align-items-center">
-                    <i class="bi bi-person me-2"></i>
-                    <strong class="me-2">Responsável:</strong> ${order.collaborators[index]}
-                  </li>
-                  ${!isOpen && order.anomaly ? `
-                    <li class="list-group-item d-flex align-items-center">
-                      <i class="bi bi-exclamation-triangle me-2"></i>
-                      <strong class="me-2">Anomalia:</strong> ${order.anomaly}
-                    </li>
-                  ` : ''}
-                  ${!isOpen && order.action ? `
-                    <li class="list-group-item d-flex align-items-center">
-                      <i class="bi bi-tools me-2"></i>
-                      <strong class="me-2">Ação:</strong> ${order.action}
-                    </li>
-                  ` : ''}
-                </ul>
-              </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="heading${index}">
+          <button 
+            class="accordion-button ${index !== 0 ? 'collapsed' : ''} d-flex justify-content-between align-items-center" 
+            type="button" 
+            data-bs-toggle="collapse" 
+            data-bs-target="#collapse${index}" 
+            aria-expanded="${index === 0}" 
+            aria-controls="collapse${index}">
+            
+            <div class="d-flex align-items-center">
+              <span class="badge bg-${changeOrderStatusColor(status.orderStatus)} me-3">${status.orderStatus}</span>
+              <small class="text-muted">${order.date}</small>
             </div>
+          </button>
+        </h2>
+
+        <div id="collapse${index}" class="accordion-collapse collapse ${index === 0 ? 'show' : ''}" aria-labelledby="heading${index}" data-bs-parent="#orderHistoryAccordion">
+          <div class="accordion-body">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item d-flex align-items-center">
+                <i class="bi bi-person me-3"></i>
+                <strong class="me-2">Responsável:</strong> ${order.collaborators[index]}
+              </li>
+              
+              ${!isOpen && order.anomaly ? `
+                <li class="list-group-item d-flex align-items-center">
+                  <i class="bi bi-exclamation-triangle me-3 text-warning"></i>
+                  <strong class="me-2">Anomalia:</strong> ${order.anomaly}
+                </li>
+              ` : ''}
+              
+              ${!isOpen && order.action ? `
+                <li class="list-group-item d-flex align-items-center">
+                  <i class="bi bi-tools me-3 text-info"></i>
+                  <strong class="me-2">Ação:</strong> ${order.action}
+                </li>
+              ` : ''}
+            </ul>
           </div>
-        `;
+        </div>
+      </div>
+    `;
       });
-
-
-      //   let historyHTML = '<div class="accordion" id="orderHistoryAccordion">';
-
-      //   order.status.forEach((status, index) => {
-      //     const isOpen = status.orderStatus.toLowerCase() === 'aberto';
-
-      //   historyHTML += `
-      //   <div class="accordion-item">
-      //     <h2 class="accordion-header" id="heading${index}">
-      //       <button class="accordion-button ${index !== 0 ? 'collapsed' : ''}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${index}" aria-expanded="${index === 0}" aria-controls="collapse${index}">
-      //         <span class="badge bg-${changeOrderStatusColor(status.orderStatus)} me-2">${status.orderStatus}</span>
-      //         <small class="text-muted">${order.date}</small>
-      //       </button>
-      //     </h2>
-      //     <div id="collapse${index}" class="accordion-collapse collapse ${index === 0 ? 'show' : ''}" aria-labelledby="heading${index}" data-bs-parent="#orderHistoryAccordion">
-      //       <div class="accordion-body">
-      //         <ul class="list-group list-group-flush">
-      //           <li class="list-group-item d-flex align-items-center">
-      //             <i class="bi bi-clock me-2"></i>
-      //             <strong class="me-2">Tipo:</strong> ${order.type}
-      //           </li>
-      //           <li class="list-group-item d-flex align-items-center">
-      //             <i class="bi bi-person me-2"></i>
-      //             <strong class="me-2">Responsável:</strong> ${order.collaborators[index]}
-      //           </li>
-      //           <li class="list-group-item d-flex align-items-center">
-      //             <i class="bi bi-person me-2"></i>
-      //             <strong class="me-2">Equipamento:</strong> ${order.equipment}
-      //           </li>
-      //           <li class="list-group-item d-flex align-items-center">
-      //             <i class="bi bi-person me-2"></i>
-      //             <strong class="me-2">Equipamento status:</strong> ${order.equipmentStatus}
-      //           </li>
-      //           ${!isOpen && order.anomaly ? `
-      //             <li class="list-group-item d-flex align-items-center">
-      //               <i class="bi bi-exclamation-triangle me-2"></i>
-      //               <strong class="me-2">Anomalia:</strong> ${order.anomaly}
-      //             </li>
-      //           ` : ''}
-      //           ${!isOpen && order.action ? `
-      //             <li class="list-group-item d-flex align-items-center">
-      //               <i class="bi bi-tools me-2"></i>
-      //               <strong class="me-2">Ação:</strong> ${order.action}
-      //             </li>
-      //           ` : ''}
-      //         </ul>
-      //       </div>
-      //     </div>
-      //   </div>
-      // `;
-      //   });
-
-      //   historyHTML += '</div>';
-      //   modalBody.innerHTML = historyHTML;
     }
+
 
     function showToast(message, status) {
       const toast = document.getElementById('liveToast');
@@ -513,10 +518,10 @@
           return 'warning';
         case 'Concluído':
           return 'success';
-        case 'Cancelar':
+        case 'Cancelado':
           return 'danger';
         default:
-          return 'primary';
+          return 'info';
       }
     }
   </script>
