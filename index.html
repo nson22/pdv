@@ -547,6 +547,7 @@
       tbody.innerHTML = ''
 
       products.forEach(product => {
+        let isMeters = product.unit === 'M'
         let badgeBgColor = 'bg-secondary';
 
         if (product.code === 'SEM CADASTRO') {
@@ -566,7 +567,7 @@
                       <span class="text-nowrap">${numberToBrazilianCurrency(product.price)}</span>
                   </td>
                   <td class="align-middle">
-                      <span class="text-nowrap" id="stock-${product.id}">${product.unit === 'M' ? Number(product.stock).toFixed(1) : product.stock}<small>${product.unit}</small></span>
+                      <span class="text-nowrap" id="stock-${product.id}">${!isMeters ? product.stock : parseFloat(product.stock).toFixed(1)}<small>${product.unit}</small></span>
                   </td>
                   <td class="align-middle">
                       <button type="button" class="btn btn-outline-primary btn-sm text-uppercase"
@@ -587,7 +588,7 @@
       if (product) {
         if (product.unit === 'M') {
           document.getElementById('unitSaleName').value = product.name;
-          document.getElementById('unitSaleAvailability').value = parseFloat(product.stock);
+          document.getElementById('unitSaleAvailability').value = parseFloat(product.stock).toFixed(1) + product.unit;
           document.getElementById('unitSalePrice').value = numberToBrazilianCurrency(product.price);
 
           const unitSaleAmountInput = document.getElementById('uniteSaleAmont');
@@ -636,12 +637,14 @@
         }
 
         product.stock -= uniteSaleAmont;
-        document.getElementById(`stock-${product.id}`).textContent = parseFloat(product.stock) + product.unit;
+        document.getElementById(`stock-${product.id}`).textContent = product.stock + product.unit;
 
         localStorage.setItem('CART', JSON.stringify(cart));
         updateShoppingCart();
         unitModal.hide();
-      } 
+      } else {
+        showToast('Quantidade inválida ou maior que o estoque disponível.', 'error');
+      }
     }
 
     function updateShoppingCart() {
@@ -685,7 +688,7 @@
                                 <input 
                                   type="number" 
                                   class="form-control form-control-sm" 
-                                  value="${product.quantity}" 
+                                  value="${!isMeters ? product.quantity : parseFloat(product.quantity).toFixed(1)}" 
                                   ${isMeters ? 'min="0.1"' : ''}
                                   ${isMeters ? 'step="0.1"' : ''}
                                   onchange="updateQuantity('${product.id}', this.value || 1)" 
@@ -734,7 +737,6 @@
 
     function removeFromCart(id) {
       const index = cart.findIndex(item => item.id == id);
-      debugger
       if (index !== -1) {
         const removedItem = cart.splice(index, 1)[0];
 
