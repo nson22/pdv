@@ -223,7 +223,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-danger me-2" data-bs-dismiss="modal">Cancelar</button>
-            <button type="button" class="btn btn-success" onclick="addUnitProduct()">Adicionar</button>
+            <button type="button" class="btn btn-success" id="addUnitBtn" onclick="addUnitProduct()">Adicionar</button>
           </div>
         </div>
       </div>
@@ -393,9 +393,9 @@
       fetchProducts()
       if (window.location.hostname === '127.0.0.1') {
         const localProducts = [
-          { id: '1', code: '001', name: 'Produto Local 1', price: 10.00, stock: 100, unit: 'M' },
-          { id: '2', code: '002', name: 'Produto Local 2', price: 20.00, stock: 200, unit: 'M' },
-          { id: '3', code: '003', name: 'Produto Local 3', price: 30.00, stock: 300, unit: 'M' },
+          { id: '1', code: '001', name: 'Produto Local 1', price: 1, stock: 100, unit: 'M' },
+          { id: '2', code: '002', name: 'Produto Local 2', price: 2, stock: 200, unit: 'Kg' },
+          { id: '3', code: '003', name: 'Produto Local 3', price: 3, stock: 300, unit: 'Unid' },
         ];
         localStorage.setItem('PRODUCTS', JSON.stringify(localProducts));
         dbProducts = localProducts;
@@ -566,7 +566,7 @@
                       <span class="text-nowrap">${numberToBrazilianCurrency(product.price)}</span>
                   </td>
                   <td class="align-middle">
-                      <span class="text-nowrap" id="stock-${product.id}">${product.stock}<small>${product.unit}</small></span>
+                      <span class="text-nowrap" id="stock-${product.id}">${product.unit === 'M' ? Number(product.stock).toFixed(1) : product.stock}<small>${product.unit}</small></span>
                   </td>
                   <td class="align-middle">
                       <button type="button" class="btn btn-outline-primary btn-sm text-uppercase"
@@ -582,30 +582,66 @@
 
     function addToCart(productId) {
       const product = dbProducts.find(product => product.id == productId);
+      const existingItem = cart.find(item => item.id === product.id);
 
       if (product) {
-        const existingItem = cart.find(item => item.id === product.id);
-
         if (product.unit === 'M') {
-          document.getElementById('unitSaleName').value = product.name
-          document.getElementById('unitSaleAvailability').value = product.stock
-          document.getElementById('unitSalePrice').value = numberToBrazilianCurrency(product.price)
-          unitModal.show()
-          
+          document.getElementById('unitSaleName').value = product.name;
+          document.getElementById('unitSaleAvailability').value = parseFloat(product.stock);
+          document.getElementById('unitSalePrice').value = numberToBrazilianCurrency(product.price);
 
-        } else if (existingItem) {
+          const unitSaleAmountInput = document.getElementById('uniteSaleAmont');
+          unitSaleAmountInput.value = '';
+
+          unitModal.show();
+          return
+        }
+
+        if (existingItem) {
           existingItem.quantity += 1;
 
         } else {
           cart.push({ ...product, quantity: 1 });
         }
-
         product.stock -= 1;
         document.getElementById(`stock-${product.id}`).textContent = product.stock;
 
         localStorage.setItem('CART', JSON.stringify(cart));
         updateShoppingCart();
+
       }
+    }
+
+    function addUnitProduct(){
+      const unitSaleName = document.getElementById('unitSaleName').value;
+      const unitSaleAvailability = document.getElementById('unitSaleAvailability').value;
+      const unitSalePrice = brazilianCurrencyToNumber(document.getElementById('unitSalePrice').value);
+      const uniteSaleAmont = parseFloat(document.getElementById('uniteSaleAmont').value);
+
+      if(!uniteSaleAmont){
+        showToast('Por favor, insira uma quantidade válida.', 'error');
+        document.getElementById('uniteSaleAmont').focus();
+        return;
+      }
+
+      const product = dbProducts.find(product => product.name == unitSaleName);
+      
+      if (uniteSaleAmont > 0 && uniteSaleAmont <= parseFloat(unitSaleAvailability)) {
+        const existingItem = cart.find(item => item.id === product.id);
+
+        if (existingItem) {
+          existingItem.quantity += uniteSaleAmont;
+        } else {
+          cart.push({ ...product, quantity: uniteSaleAmont });
+        }
+
+        product.stock -= uniteSaleAmont;
+        document.getElementById(`stock-${product.id}`).textContent = parseFloat(product.stock) + product.unit;
+
+        localStorage.setItem('CART', JSON.stringify(cart));
+        updateShoppingCart();
+        unitModal.hide();
+      } 
     }
 
     function updateShoppingCart() {
@@ -626,8 +662,8 @@
         cartList.appendChild(emptyCartMessage);
       } else {
         cart.forEach(product => {
+          const isMeters = product.unit === 'M'
           let badgeBgColor = 'bg-secondary';
-
           if (product.code === 'SEM CADASTRO') {
             badgeBgColor = 'bg-danger';
           }
@@ -635,6 +671,7 @@
           total += subtotal;
           const li = document.createElement('li');
           li.className = 'list-group-item list-group-item-action mt-2';
+
           li.innerHTML = `
                         <div class="w-100">
                             <div class="d-flex justify-content-between align-items-center">
@@ -645,7 +682,14 @@
                             </div>
                             <div class="d-flex justify-content-between align-items-center mt-2">
                                 <span class="mb-0 text-truncate me-2">${product.name}</span>
-                                <input type="number" class="form-control form-control-sm" value="${product.quantity}" min="1" onchange="updateQuantity('${product.code}', this.value || 1)" style="width: 80px;">
+                                <input 
+                                  type="number" 
+                                  class="form-control form-control-sm" 
+                                  value="${product.quantity}" 
+                                  ${isMeters ? 'min="0.1"' : ''}
+                                  ${isMeters ? 'step="0.1"' : ''}
+                                  onchange="updateQuantity('${product.id}', this.value || 1)" 
+                                  style="width: 80px;">
                             </div>
                             <div class="d-flex justify-content-between align-items-center mt-2">
                                 <p class="mb-0">Preço: ${numberToBrazilianCurrency(product.price)}</p>
@@ -672,19 +716,17 @@
       cartItemCount.textContent = cart.length;
     }
 
-    function updateQuantity(code, newQuantity) {
-      const item = cart.find(item => item.code === code);
-      const product = dbProducts.find(product => product.code === code);
+    function updateQuantity(id, newQuantity) {
+      const item = cart.find(item => item.id == id);
+      const product = dbProducts.find(product => product.id == id);
+
       if (item && product) {
         const oldQuantity = item.quantity;
-        const quantityDifference = newQuantity - oldQuantity;
+        const quantityDifference = Number(newQuantity) - oldQuantity;
 
-        // Update the cart item quantity
-        item.quantity = parseInt(newQuantity);
-
-        // Update the product stock
+        item.quantity = Number(newQuantity);
         product.stock -= quantityDifference;
-        document.getElementById(`stock-${product.id}`).textContent = product.stock;
+        document.getElementById(`stock-${product.id}`).textContent = Number(product.stock).toFixed(1) + product.unit;
 
         updateShoppingCart();
       }
@@ -692,14 +734,14 @@
 
     function removeFromCart(id) {
       const index = cart.findIndex(item => item.id == id);
+      debugger
       if (index !== -1) {
         const removedItem = cart.splice(index, 1)[0];
 
-        // Return the quantity back to the product stock
         const product = dbProducts.find(product => product.id == id);
         if (product) {
           product.stock += removedItem.quantity;
-          document.getElementById(`stock-${product.id}`).textContent = product.stock;
+          document.getElementById(`stock-${product.id}`).textContent = Number(product.stock).toFixed(1) + product.unit; ;
         }
 
         updateShoppingCart();
