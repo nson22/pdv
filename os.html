@@ -339,13 +339,13 @@
 
                 if (newStatus === "Em progresso") {
                     await fetchOrdersWithStatus('Em progresso', 'progressList').finally(() => modalLoading.hide());
-                    await fetchOrdersWithStatus('Aberto', 'openList')
+                    fetchOrdersWithStatus('Aberto', 'openList')
                     return
                 }
 
                 if (newStatus === "Concluir") {
                     await fetchOrdersWithStatus('Concluir', 'doneList').finally(() => modalLoading.hide());
-                    await fetchOrdersWithStatus('Em progresso', 'progressList')
+                    await fetchOrdersWithStatus('Em progresso', 'progressList').finally(() => modalLoading.hide());
                     return
                 }
 
@@ -353,6 +353,7 @@
 
             function cancelOrder(id){
                 console.log('Cancelando chamado', id);
+                
             }
 
             function toLocateDate(date) {
