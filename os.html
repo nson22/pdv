@@ -94,19 +94,22 @@
                         <div class="row g-3 mb-3">
                             <div class="col-12">
                                 <label for="personInCharge" class="form-label text-uppercase">Matrícula</label>
-                                <input type="search" inputmode="numeric" class="form-control" id="personInCharge" required>
+                                <input type="search" inputmode="numeric" class="form-control" id="personInCharge"
+                                    required>
                             </div>
                             <div class="col-12 mb-2">
                                 <label for="personInChargeCode" class="form-label text-uppercase">Código</label>
-                                <input type="search" inputmode="numeric" class="form-control" id="personInChargeCode" required>
+                                <input type="password" inputmode="numeric" class="form-control" id="personInChargeCode"
+                                    required>
                             </div>
                             <div class="col-12" id="erroMessageModal">
                             </div>
                             <div class="col-6">
-                                <button type="button" class="btn btn-danger w-100 mt-3" id="cancelButtonUpdateStatus" onclick="resetModalData()" >Cancelar</button>
+                                <button type="button" class="btn btn-danger w-100 mt-3" id="cancelButtonUpdateStatus"
+                                    onclick="resetModalData()">Cancelar</button>
                             </div>
                             <div class="col-6">
-                                <button type="button"  id="confirmButtonUpdateStatus"
+                                <button type="button" id="confirmButtonUpdateStatus"
                                     class="btn btn-primary w-100 mt-3">Confirmar</button>
                             </div>
                         </div>
@@ -129,6 +132,12 @@
         <script>
             const url = 'https://script.google.com/macros/s/AKfycbzOfaFuTy7G9AD9Vr8HpsGuJxAEFbViLinio9ZDXUbdfWgY1h0HCSGC0swGjzWhrzKjPg/exec';
 
+            /**
+             * Busca os dados da tabela informada
+             * @param {string} action 
+             * @param {string} table 
+             * @returns {Promise}
+             */
             async function fetchData(action, table) {
                 const res = await axios.get(`${url}?action=${action}&table=${table}`);
                 return res.data.data;
@@ -165,6 +174,9 @@
                 await fetchOrdersWithStatus('Concluir', 'doneList').finally(() => modalLoading.hide());
             });
 
+            /**
+             * Reseta os dados do modal de confirmação
+             */
             function resetModalData() {
                 setPersonInChargeModal.hide();
                 document.getElementById('personInCharge').value = '';
@@ -172,6 +184,12 @@
                 document.getElementById('erroMessageModal').innerHTML = '';
             }
 
+            /**
+             * Busca as ordens de serviço com o status informado
+             * @param {string} status 
+             * @param {string} containerId
+             * @returns {Promise} 
+             */
             async function fetchOrdersWithStatus(status, containerId) {
                 const orderList = document.getElementById(containerId);
                 const data = await fetchData('read', 'Chamados');
@@ -183,6 +201,12 @@
             `;
             }
 
+            /**
+             * Renderiza as ordens de serviço
+             * @param {Array} data 
+             * @param {string} status 
+             * @param {HTMLElement} container 
+             */
             function renderOrders(data, status, container) {
                 container.innerHTML = '';
                 data.forEach(order => {
@@ -207,7 +231,7 @@
                                       <li class="list-group-item">
                                           <div>
                                               <h6 class="card-subtitle mb-2 fw-semibold">Data</h6>
-                                              <span class="text-muted ms-1" id="data-${order.id}">em ${toLocateDate(order.createdAt)}</span>
+                                              <span class="text-muted ms-1" id="data-${order.id}">${toLocateDate(order.createdAt)}</span>
                                           </div>
                                       </li>
                                       <li class="list-group-item">
@@ -255,6 +279,11 @@
                 })
             }
 
+            /** 
+             * Atualiza o status da OS
+             * @param {number} id 
+             * @param {string} status 
+             */
             async function setPersonInCharge(id, status) {
                 const cancelButtonUpdateStatus = document.getElementById('cancelButtonUpdateStatus');
                 const confirmButtonUpdateStatus = document.getElementById('confirmButtonUpdateStatus');
@@ -284,15 +313,16 @@
                     try {
                         toggleFormElements(true);
                         const response = await axios.get(`${url}?action=read&table=Funcionarios&id=${personInCharge.value}&code=${personInChargeCode.value}`);
-                        console.log(response.data);
-                        
+
 
                         if (!response.data.data) {
                             showError('Matrícula ou código inválidos', 'danger');
                             return;
                         }
 
-                        await updateOrderStatus(id, status);
+                        const personCode = response.data.data.code;
+
+                        await updateOrderStatus(id, status, personCode);
 
                     } catch (error) {
                         showError('Erro ao verificar matrícula e código', 'danger');
@@ -303,11 +333,20 @@
                 });
             }
 
+            /**
+             * Desabilita ou habilita os elementos do formulário
+             * @param {boolean} disable 
+             */
             function toggleFormElements(disable) {
                 const elements = ['cancelButtonUpdateStatus', 'confirmButtonUpdateStatus', 'personInCharge', 'personInChargeCode'];
                 elements.forEach(id => document.getElementById(id).disabled = disable);
             }
 
+            /**
+             * Exibe uma mensagem de erro
+             * @param {string} message 
+             * @param {string} type 
+             */
             function showError(message, type) {
                 const erroMessageModal = document.getElementById('erroMessageModal');
                 erroMessageModal.innerHTML = `
@@ -317,6 +356,11 @@
                 `;
             }
 
+            /**
+             * Atualiza o status do chamado
+             * @param {string} status 
+             * @returns {string}
+             */
             function updateStatus(status) {
                 switch (status) {
                     case 'Aberto':
@@ -328,9 +372,15 @@
                 }
             }
 
-            async function updateOrderStatus(id, status) {
+            /**
+             * Atualiza o status do chamado
+             * @param {number} id 
+             * @param {string} status 
+             * @param {number} personCode 
+             */
+            async function updateOrderStatus(id, status, personCode) {
                 const newStatus = updateStatus(status);
-                await axios.get(`${url}?action=update&table=Chamados&id=${id}&data={"status":"${newStatus}", "updatedAt": "${new Date().toISOString()}"}`);
+                await axios.get(`${url}?action=update&table=Chamados&id=${id}&data={"status":"${newStatus}", "updatedAt": "${new Date().toISOString()}", "personCode": "${personCode}"}`);
 
                 if (newStatus === 'Aberto') {
                     await fetchOrdersWithStatus('Aberto', 'openList').finally(() => modalLoading.hide());
@@ -339,7 +389,7 @@
 
                 if (newStatus === "Em progresso") {
                     await fetchOrdersWithStatus('Em progresso', 'progressList').finally(() => modalLoading.hide());
-                    fetchOrdersWithStatus('Aberto', 'openList')
+                    await fetchOrdersWithStatus('Aberto', 'openList')
                     return
                 }
 
@@ -349,18 +399,81 @@
                     return
                 }
 
+                if (newStatus === "Cancelado") {
+                    await fetchOrdersWithStatus('Aberto', 'openList').finally(() => modalLoading.hide());
+                    return
+                }
+            }   
+
+            /**
+             * Cancela o chamado
+             * @param {number} id 
+             * @param {number} personCode 
+             */
+            async function cancelOrder(id) {
+                const cancelButtonUpdateStatus = document.getElementById('cancelButtonUpdateStatus');
+                const confirmButtonUpdateStatus = document.getElementById('confirmButtonUpdateStatus');
+                const personInCharge = document.getElementById('personInCharge')
+                const personInChargeCode = document.getElementById('personInChargeCode')
+                const erroMessageModal = document.getElementById('erroMessageModal');
+                personInCharge.value = '';
+                personInChargeCode.value = '';
+
+                setPersonInChargeModal.show();
+
+                document.getElementById('confirmButtonUpdateStatus').addEventListener('click', async () => {
+                    erroMessageModal.innerHTML = `
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                    `;
+
+                    if (!personInCharge.value || !personInChargeCode.value) {
+                        showError('Informe a matrícula e o código', 'warning');
+                        personInCharge.focus();
+                        return;
+                    }
+
+                    try {
+                        toggleFormElements(true);
+                        const response = await axios.get(`${url}?action=read&table=Funcionarios&id=${personInCharge.value}&code=${personInChargeCode.value}`);
+                        debugger
+
+                        if (!response.data.data) {
+                            showError('Matrícula ou código inválidos', 'danger');
+                            return;
+                        }
+
+                        const personCode = response.data.data.code;
+
+                        await updateOrderStatus(id, status, personCode);
+
+                    } catch (error) {
+                        showError('Erro ao verificar matrícula e código', 'danger');
+
+                    } finally {
+                        resetModalData();
+                    }
+                });
             }
 
-            function cancelOrder(id){
-                console.log('Cancelando chamado', id);
-                
-            }
-
+            /**
+             * Converte a data para o formato local
+             * @param {string} date 
+             * @returns {string}
+             */
             function toLocateDate(date) {
                 const options = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' };
                 return new Date(date).toLocaleDateString('pt-BR', options).replace(',', ' às');
             }
 
+            /**
+             * Exibe um toast com a mensagem
+             * @param {string} message 
+             * @param {string} type 
+             */
             function showToast(message, type) {
                 const toast = new bootstrap.Toast(document.getElementById('liveToast'));
                 const toastMessage = document.getElementById('toast-message');
