@@ -99,9 +99,9 @@
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
   <script>
-    const url = 'https://script.google.com/macros/s/AKfycbyqPmorwLcgrBWHma8vDgDVHHdXAXREbBRDsAX4VBSkpk9ocjdHZU6cKY-R1aI3LJuiQg/exec';
+    const url = 'https://script.google.com/macros/s/AKfycbzOfaFuTy7G9AD9Vr8HpsGuJxAEFbViLinio9ZDXUbdfWgY1h0HCSGC0swGjzWhrzKjPg/exec';
     const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
-   
+
 
     document.addEventListener("DOMContentLoaded", function () {
       placeholder()
@@ -128,7 +128,7 @@
       var id = Date.now()
 
       const dados = {
-        id,
+        id: '',
         createdAt: new Date(id),
         updatedAt: new Date(id),
         name: solicitanteElement.options[solicitanteElement.selectedIndex].text,
@@ -136,13 +136,16 @@
         equipment: equipamentoElement.options[equipamentoElement.selectedIndex].text,
         preventive: manutencaoElement.checked ? "Sim" : "Não",
         status: "Aberto",
-        description: descricaoElement.value
+        description: descricaoElement.value,
+        personInChargeCode: ""
       };
 
       loadingModal.show();
       axios.get(`${url}?action=insert&table=Chamados&data=${JSON.stringify(dados)}`)
-        .then(() => {
-          showToast(`Chamado nº${id} aberto com sucesso`, "success");
+        .then((response) => {
+          console.log(response.data.data);
+          
+          showToast(`Chamado <span class="text-success fw-bold">${response.data.data.id}</span> aberto com sucesso`, "success");
           document.querySelector("#formularioManutencao").reset();
         })
         .catch(() => showToast("Erro ao abrir chamado", "danger"))
@@ -170,7 +173,7 @@
       const toastHeader = document.querySelector("#liveToast .toast-header");
       const messageElement = document.querySelector("#toast-message");
 
-      messageElement.textContent = message;
+      messageElement.innerHTML = `<p>${message}</p>`;
       toastHeader.classList.remove("bg-success", "bg-danger", "bg-warning");
       toastHeader.classList.add(`bg-${type}`);
 
@@ -184,6 +187,7 @@
         select.appendChild(option);
       });
     }
+
   </script>
 </body>
 
