@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Gerecimento de produtos</h1>
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal">
+            Adicionar Produto
+        </button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="productModalLabel">Adicionar Produto</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="productForm">
+                            <div class="mb-3">
+                                <label for="productCode" class="form-label">Código</label>
+                                <input type="text" class="form-control" id="productCode" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="productName" class="form-label">Nome</label>
+                                <input type="text" class="form-control" id="productName" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="productPrice" class="form-label">Preço</label>
+                                <input type="number" class="form-control" id="productPrice" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="productDiscount" class="form-label">Ganho (%)</label>
+                                <input type="number" class="form-control" id="productGain" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="productQuantity" class="form-label">Quantidade</label>
+                                <input type="number" class="form-control" id="productQuantity" required>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                        <button type="button" class="btn btn-primary" id="saveProduct">Salvar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">
+            <form class="d-flex" id="searchForm">
+                <input class="form-control me-2" type="search" placeholder="Buscar produto" aria-label="Search" id="searchInput">
+                <button class="btn btn-outline-success" type="button" id="getProduct">Buscar</button>
+            </form>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Código</th>
+                            <th scope="col">Nome</th>
+                            <th scope="col">Preço</th>
+                            <th scope="col">QTD.</th>
+                            <th scope="col">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productList">
+                        <!-- Product rows will be added here dynamically -->
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="6">
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination justify-content-center">
+                                        <li class="page-item" id="previous">
+                                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Anterior</a>
+                                        </li>
+                                        <li class="page-item" id="currentPage"></li>
+                                        <li class="page-item" id="next">
+                                            <a class="page-link" href="#">Próximo</a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    
+    <script>
+        const url = 'https://script.google.com/macros/s/AKfycbz6V6qLZAybsaBEyns7A2RFngvHRCGPhx58kgb8GsrFBufb6H6dT_tPXWGlvCPDc-b7/exec';
+
+        async function fetchData(action, table, page, id, limite=10) {
+            if(id) url += `&id=${id}`;
+            const res = await axios.get(`${url}?action=${action}&table=${table}&page=${page}&limit=${limite}`);
+            return res.data.data;
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+           renderProducts(1);
+        })
+
+        document.getElementById('previous').addEventListener('click', async (e) => {
+            e.preventDefault();
+            const previous = document.getElementById('previous');
+            if(previous.classList.contains('disabled')) return;
+            const currentPage = document.getElementById('currentPage').innerText;
+            renderProducts(parseInt(currentPage) - 1);
+        })
+        
+        document.getElementById('next').addEventListener('click', async (e) => {
+            e.preventDefault();
+            const currentPage = document.getElementById('currentPage').innerText;
+            renderProducts(parseInt(currentPage) + 1);
+        })
+
+        async function renderProducts(page){
+            document.getElementById('currentPage').innerHTML = `<a class="page-link" href="#" id=${page} >${page}</a>`;
+            page === 1 ? previous.classList.add('disabled') : previous.classList.remove('disabled');
+
+
+            const productList = document.getElementById('productList')
+            productList.innerHTML = "";
+
+            placeholder().forEach(placeholder => {
+                productList.innerHTML += placeholder;
+            });
+
+            const prodcuts = await fetchData("read", "products", page);
+            
+            productList.innerHTML = "";
+            
+            prodcuts.forEach(product => {
+                productList.innerHTML += `
+                    <tr>
+                        <td>${product.id}</td>
+                        <td>${product.code}</td>
+                        <td>${product.name}</td>
+                        <td>${product.price}</td>
+                        <td>${product.stock}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm">Editar</button>
+                            <button class="btn btn-danger btn-sm">Excluir</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // document.getElementById('getProduct').addEventListener('click', async (e) => {
+        //     e.preventDefault();
+        //     const searchInput = document.getElementById('searchInput').value;
+        //     const products = await fetchData("search", "products", 1, searchInput);
+        //     renderProducts(1);
+        // })
+
+        // async function getProductById(id){
+        //     const products = await fetchData("read", "products", id, limit=1);
+        //     productList.innerHTML = "";
+            
+        //     prodcuts.forEach(product => {
+        //         productList.innerHTML += `
+        //             <tr>
+        //                 <td>${product.id}</td>
+        //                 <td>${product.code}</td>
+        //                 <td>${product.name}</td>
+        //                 <td>${product.price}</td>
+        //                 <td>${product.stock}</td>
+        //                 <td>
+        //                     <button class="btn btn-warning btn-sm">Editar</button>
+        //                     <button class="btn btn-danger btn-sm">Excluir</button>
+        //                 </td>
+        //             </tr>
+        //         `;
+        //     });
+        // }
+
+        function placeholder(){
+            return Array.from({length: 10}, () => {
+                return `
+                 <tr>
+                        <td class="card-text placeholder-glow"><span class="placeholder col-2"></span></td>
+                        <td class="card-text placeholder-glow"><span class="placeholder col-2"></span></td>
+                        <td class="card-text placeholder-glow"><span class="placeholder col-8"></span></td>
+                        <td class="card-text placeholder-glow"><span class="placeholder col-2"></span></td>
+                        <td class="card-text placeholder-glow"><span class="placeholder col-2"></span></td>
+                        <td>
+                            <button class="btn bg-warning btn-sm placeholder col-4"></button>
+                            <button class="btn bg-danger btn-sm placeholder col-4"></button>
+                        </td>
+                    </tr>
+                `
+            })
+        }
+
+    </script>
+</body>
+
+</html>
