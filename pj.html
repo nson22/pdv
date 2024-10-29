@@ -13,6 +13,16 @@
             font-family: 'Roboto', sans-serif;
         }
 
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        small {
+            font-family: 'Montserrat', sans-serif;
+        }
+
         img {
             max-width: 3%;
             height: auto;
@@ -29,7 +39,8 @@
                     style="font-family: 'Montserrat', sans-serif;">PJ
                     <span class="text-secondary fw-semibold text-warning d-md-inline text-uppercase">Variedades</span>
                 </span>
-                <button class="btn btn-primary text-uppercase" id="finishPurchaseBtn" onclick="openPaymentModal()">
+                <button class="btn btn-primary text-uppercase fw-semibold" id="finishPurchaseBtn"
+                    onclick="openPaymentModal()">
                     Fechar Venda
                 </button>
             </div>
@@ -49,8 +60,8 @@
                                     placeholder="Pesquisar produto por código ou nome">
                             </div>
                             <div class="ms-2 col-md-auto">
-                                <button class="btn btn-primary btn-small text-uppercase" data-bs-toggle="modal"
-                                    data-bs-target="#customSaleModal">Avulsa</button>
+                                <button class="btn btn-primary btn-small text-uppercase fw-semibold"
+                                    data-bs-toggle="modal" data-bs-target="#customSaleModal">Avulsa</button>
                             </div>
                         </div>
                     </div>
@@ -117,19 +128,19 @@
                 <div class="ms-5">
                     <div class="row">
                         <div class="col">
-                            <kbd>F1</kbd> - <small>Buscar produto</small>
+                            <kbd>F1</kbd><small class="ms-2 fw-semibold">Buscar produto</small>
                         </div>
                         <div class="col">
-                            <kbd>F2</kbd> - <small>Vanda avulsa</small>
+                            <kbd>F2</kbd><small class="ms-2 fw-semibold">Venda avulsa</small>
                         </div>
                         <div class="col">
-                            <kbd>F3</kbd> - <small>Fechar venda</small>
+                            <kbd>F3</kbd><small class="ms-2 fw-semibold">Fechar venda</small>
                         </div>
                         <div class="col">
-                            <kbd>F4</kbd> - <small>Desconto</small>
+                            <kbd>F4</kbd><small class="ms-2 fw-semibold">Desconto</small>
                         </div>
                         <div class="col">
-                            <kbd>F11</kbd> - <small>Abrir/Fechar tela cheia</small>
+                            <kbd>F11</kbd><small class="ms-2 fw-semibold">Abrir/Fechar tela cheia</small>
                         </div>
                     </div>
                 </div>
@@ -147,13 +158,12 @@
                         <form id="customSaleForm">
                             <div class="mb-3">
                                 <label for="customProductName" class="form-label text-uppercase">Nome do Produto</label>
-                                <input type="search" class="form-control" id="customProductName" value="SEM CADASTRO"
-                                    required>
+                                <input type="search" class="form-control" id="customProductName"
+                                    value="PRODUTOS VARIADOS" required>
                             </div>
                             <div class="mb-3">
                                 <label for="customProductPrice" class="form-label text-uppercase">Valor</label>
                                 <div class="input-group">
-                                    <span class="input-group-text">R$</span>
                                     <input type="text" class="form-control" id="customProductPrice" data-currency="BRL"
                                         autocomplete="off" required>
                                 </div>
@@ -166,8 +176,9 @@
                                             id="customProductMeasureCheck"
                                             aria-label="Checkbox for following text input">
                                     </div>
-                                    <input type="number" min="0.01" class="form-control" disabled
-                                        id="customProductMeasure" aria-label="Text input with checkbox">
+                                    <input type="search" inputmode="numeric" class="form-control" disabled
+                                        placeholder="0,00" id="customProductMeasure"
+                                        aria-label="Text input with checkbox">
                                 </div>
                             </div>
                         </form>
@@ -295,8 +306,8 @@
                         <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
                             <span class="visually-hidden">Loading...</span>
                         </div>
-                        <h5 class="mt-3">Carregando...</h5>
-                        <p>Por favor, aguarde enquanto processamos a venda.</p>
+                        <h5 class="mt-3">Por favor, aguarde...</h5>
+                        <p>Enquanto a venda é processada.</p>
                     </div>
                 </div>
             </div>
@@ -308,7 +319,9 @@
     <script>
 
         //Global Variables
-        let cart = [];
+        const url = 'https://script.google.com/macros/s/AKfycbwsdNkHjMlWVv9vNCLoaQNNh0R6ahAgD4RI8ztiQvNLQTNI1MTD25GvB2raeO1qk5nn/exec';
+        const dbProducts = JSON.parse(localStorage.getItem('dbProducts'));
+        const cart = JSON.parse(localStorage.getItem('cart')) || []
         let discount = 0;
         let totalToPay = 0
 
@@ -351,179 +364,163 @@
 
         document.addEventListener('DOMContentLoaded', async function () {
             loadingShimmer()
-            const dbProducts = JSON.parse(localStorage.getItem('dbProducts'));
 
-            if (localStorage.getItem('dbProducts')) {
-                data = JSON.parse(localStorage.getItem('dbProducts'));
-                displayProducts(data);
+            if (dbProducts) {
+                displayProducts(dbProducts);
             } else {
                 fetchData().then(({ lenght }) => {
                     fetchData(lenght).then(({ data }) => {
-                        displayProducts(data);
                         localStorage.setItem('dbProducts', JSON.stringify(data));
+                        displayProducts(data);
                     })
                 })
             }
-
         })
 
         document.getElementById('searchInput').addEventListener('input', (e) => {
             const searchTerm = e.target.value.toUpperCase();
-            const filteredProducts = JSON.parse(localStorage.getItem('dbProducts')).filter(product =>
+            const filteredProducts = dbProducts.filter(product =>
                 String(product.code).includes(searchTerm) ||
                 product.name.toUpperCase().includes(searchTerm)
             );
             displayProducts(filteredProducts);
         });
 
+        document.getElementById('discountInput').addEventListener('blur', (e) => {
+            const discountValue = brazilianCurrencyToNumber(e.target.value);
+            const currentTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+            if (discountValue > currentTotal) {
+                showToast('O desconto não pode ser maior que o total da compra.', 'error');
+                e.target.value = '';
+                e.target.placeholder = 'R$ 0,00';
+                discount = 0;
+            } else {
+                discount = parseFloat(discountValue || 0);
+            }
+            updateShoppingCart();
+        });
+
+        document.getElementById('discountInput').addEventListener('input', function (event) {
+            if (cart.length === 0) {
+                event.target.value = '';
+                showToast('Não é possível aplicar desconto em um carrinho vazio.', 'error');
+                return
+            }
+        });
+
+        document.querySelectorAll('[data-currency="BRL"]').forEach(input => {
+            input.addEventListener('input', function (e) {
+                let value = e.target.value;
+                value = value.replace(/\D/g, "");
+                value = (value / 100).toFixed(2) // Adiciona casas decimais
+                    .replace(".", ",")           // Substitui ponto por vírgula
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Adiciona separador de milhares
+                e.target.value = value ? `R$ ${value}` : "";
+            });
+        });
+
+        document.addEventListener('keydown', function (event) {
+            if (event.altKey && event.code === 'KeyA') {
+                customSaleModal.show(); // Open the avulsa modal
+            }
+        });
+
+        document.getElementById('paidAmount').addEventListener('input', function (e) {
+            const paidAmount = brazilianCurrencyToNumber(e.target.value);
+            const totalAmount = brazilianCurrencyToNumber(document.getElementById('totalAmount').value);
+
+            if (paidAmount > totalAmount) {
+                const change = paidAmount - totalAmount;
+                document.getElementById('changeAmount').value = numberToBrazilianCurrency(change);
+            } else {
+                document.getElementById('changeAmount').value = 'R$ 0,00';
+            }
+        });
+
+        document.getElementById('paidAmount').addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                handlePayment();
+            }
+        });
+
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('keydown', function (event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    input.blur();
+                }
+            });
+        });
+
+        document.getElementById('customSaleModal').addEventListener('shown.bs.modal', function () {
+            document.getElementById('customProductName').focus();
+        });
+
+        document.getElementById('customSaleModal').addEventListener('hidden.bs.modal', function () {
+            document.getElementById('customSaleModalLabel').textContent = `Venda avulsa`;
+            document.getElementById('customProductName').value = 'PRODUTOS VARIADOS';
+            document.getElementById('customProductPrice').value = '';
+            document.getElementById('customProductMeasureCheck').checked = false;
+            document.getElementById('customProductMeasure').disabled = true;
+        });
+
+        document.getElementById('customProductName').addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                document.getElementById('customProductPrice').focus();
+                this.blur();
+            }
+        });
+
+        document.getElementById('customProductPrice').addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                addCustomProduct();
+            }
+        });
+
+        document.getElementById('paymentModal').addEventListener('hidden.bs.modal', function () {
+            document.getElementById('modalProductList').innerHTML = '';
+            document.getElementById('partialPaymentsList').innerHTML = '';
+        });
+
+        document.getElementById('customProductMeasureCheck').addEventListener('change', function (e) {
+            e.preventDefault();
+            const measurePrice = document.getElementById('customProductMeasure')
+            e.target.checked ? measurePrice.disabled = false : measurePrice.disabled = true;
+        })
+
+        document.getElementById('customProductMeasure').addEventListener('input', function (e) {
+            let value = e.target.value;
+            value = value.replace(/\D/g, "");
+            value = (value / 100).toFixed(2) // Adiciona casas decimais
+                .replace(".", ",")           // Substitui ponto por vírgula
+                .replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Adiciona separador de milhares
+            e.target.value = value ? `${value}` : "";
+        });
+
         async function fetchData(limit = 1) {
-            const url = 'https://script.google.com/macros/s/AKfycbwT8jL1GcRk5DE96OleA_Jtiz8aLlp8XuZp-qOc8nE-IlQxvAj7VXvk2QFwqSrsVBUM/exec';
             const res = await axios.get(`${url}?action=read&table=products&limit=${limit}`);
             return res.data;
         }
 
-        // // Adicionar evento para atualizar o desconto
-        // document.getElementById('discountInput').addEventListener('blur', (e) => {
-
-        //     const discountValue = brazilianCurrencyToNumber(e.target.value);
-        //     const currentTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
-        //     if (discountValue > currentTotal) {
-        //         // Exibir toast com mensagem de erro
-        //         showToast('O desconto não pode ser maior que o total da compra.', 'error');
-        //         // Resetar o valor do desconto para 0
-        //         e.target.value = '';
-        //         e.target.placeholder = 'R$ 0,00';
-        //         discount = 0;
-        //     } else {
-        //         discount = discountValue;
-        //     }
-        //     updateShoppingCart();
-        // });
-
-        // document.getElementById('discountInput').addEventListener('input', function (event) {
-        //     if (cart.length === 0) {
-        //         event.target.value = '';
-        //         showToast('Não é possível aplicar desconto em um carrinho vazio.', 'error');
-        //         return
-        //     }
-        // });
-
-        // // Adicionar evento para formatar inputs com data-currency="BRL"
-        // document.querySelectorAll('[data-currency="BRL"]').forEach(input => {
-        //     input.addEventListener('input', function (e) {
-        //         let value = e.target.value;
-        //         value = value.replace(/\D/g, "");
-        //         value = (value / 100).toFixed(2) // Adiciona casas decimais
-        //             .replace(".", ",")           // Substitui ponto por vírgula
-        //             .replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Adiciona separador de milhares
-        //         e.target.value = value ? `R$ ${value}` : "";
-        //     });
-        // });
-
-        // // Add event listener for Ctrl+K shortcut
-        // document.addEventListener('keydown', function (event) {
-        //     if (event.altKey && event.code === 'KeyA') {
-        //         customSaleModal.show(); // Open the avulsa modal
-        //     }
-        // });
-
-        // // Add event listener for change calculation
-        // document.getElementById('paidAmount').addEventListener('input', function (e) {
-        //     const paidAmount = brazilianCurrencyToNumber(e.target.value);
-        //     const totalAmount = brazilianCurrencyToNumber(document.getElementById('totalAmount').value);
-
-        //     if (paidAmount > totalAmount) {
-        //         const change = paidAmount - totalAmount;
-        //         document.getElementById('changeAmount').value = numberToBrazilianCurrency(change);
-        //     } else {
-        //         document.getElementById('changeAmount').value = 'R$ 0,00';
-        //     }
-        // });
-
-        // document.getElementById('paidAmount').addEventListener('keydown', function (event) {
-        //     if (event.key === 'Enter') {
-        //         event.preventDefault();
-        //         handlePayment();
-        //     }
-        // });
-
-        // // Add event listener for Enter key to blur input fields
-        // document.querySelectorAll('input').forEach(input => {
-        //     input.addEventListener('keydown', function (event) {
-        //         if (event.key === 'Enter') {
-        //             event.preventDefault();
-        //             input.blur();
-        //         }
-        //     });
-        // });
-
-        // // Add event listener to focus on customProductName when customSaleModal is shown
-        // document.getElementById('customSaleModal').addEventListener('shown.bs.modal', function () {
-        //     document.getElementById('customProductName').focus();
-        // });
-
-        // document.getElementById('customProductName').addEventListener('keydown', function (event) {
-        //     if (event.key === 'Enter') {
-        //         event.preventDefault();
-        //         this.blur();
-        //         document.getElementById('customProductPrice').focus();
-        //     }
-        // });
-
-        // document.getElementById('customProductPrice').addEventListener('keydown', function (event) {
-        //     if (event.key === 'Enter') {
-        //         event.preventDefault();
-        //         addCustomProduct();
-        //     }
-        // });
-
-        // document.getElementById('paymentModal').addEventListener('hidden.bs.modal', function () {
-        //     document.getElementById('modalProductList').innerHTML = '';
-        //     document.getElementById('partialPaymentsList').innerHTML = '';
-        // });
-
-        // document.getElementById('customProductMeasureCheck').addEventListener('change', function (e) {
-        //     e.preventDefault();
-        //     const measurePrice = document.getElementById('customProductMeasure')
-        //     e.target.checked ? measurePrice.disabled = false : measurePrice.disabled = true;
-        // })
-
-        // //Fim eventos
-        // function fetchProducts() {
-        //     loadingShimmer();
-
-        //     new Promise((resolve, reject) => {
-        //         google.script.run
-        //             .withSuccessHandler(resolve)
-        //             .withFailureHandler(reject)
-        //             .getProducts()
-        //     }).then(products => {
-        //         dbProducts = [...products]
-        //         displayProducts(products);
-        //     }).catch(error => {
-        //         showToast('Erro ao buscar produtos, tente novamente.', 'error');
-        //         console.error(error)
-        //     });
-        // }
-
         function displayProducts(products) {
+            if (!dbProducts) {
+                location.reload();
+                return;
+            }
             const tbody = document.querySelector('tbody');
             tbody.innerHTML = ''
 
             products.forEach(product => {
-                let badgeBgColor = 'bg-secondary';
-
-                if (product.code === 'SEM CADASTRO') {
-                    badgeBgColor = 'bg-danger';
-                }
-
                 const tr = document.createElement('tr');
 
                 tr.innerHTML = `
                   <td>
                       <p class="d-inline-block text-truncate" style="max-width: 450px;">
-                          <small class="badge ${badgeBgColor}">${product.code}</small></br>
+                          <small class="badge ${product.code ? "bg-secondary" : "bg-danger"}">${product.code ? product.code : "SEM CADASTRO"}</small></br>
                           ${product.name}
                       </p>
                   </td>
@@ -544,40 +541,49 @@
                 tbody.appendChild(tr);
             });
 
-            if (localStorage.getItem('cart')) {
-                console.log('aqui');
-
-                cart = JSON.parse(localStorage.getItem('cart'));
-                updateShoppingCart();
-            }
+            updateShoppingCart()
         }
 
-        function addToCart(productId) {
-            const product = JSON.parse(localStorage.getItem('dbProducts')).find(product => product.id == productId);
-            if (product) {
-                const existingItem = cart.find(item => item.id === product.id);
-                if (existingItem) {
-                    existingItem.quantity += 1;
+        function addToCart(id) {
+            const product = dbProducts.find(product => product.id == id);
+            const existingItem = cart.find(item => item.id == id);
+            debugger
+            if (existingItem) {
+                existingItem.quantity += 1;
 
-                } else {
-                    cart.push({ ...product, quantity: 1 });
+            } else {
+                if (product.unit === 'M') {
+                    document.getElementById('customSaleModalLabel').textContent = `Venda por metragem`;
+                    document.getElementById('customProductName').value = product.name;
+                    document.getElementById('customProductPrice').value = numberToBrazilianCurrency(product.price);
+                    document.getElementById('customProductMeasureCheck').checked = true;
+                    document.getElementById('customProductMeasure').disabled = false;
+                    customSaleModal.show();
+                    return
                 }
-                product.stock -= 1;
-                document.getElementById(`stock-${product.id}`).textContent = `${product.stock}${product.unit}`;
 
-                localStorage.setItem('cart', JSON.stringify(cart));
-                updateShoppingCart();
+                cart.push({ ...product, quantity: 1 });
+
             }
+
+            if (product) {
+                product.stock -= 1;
+                const stockElement = document.getElementById(`stock-${product.id}`).textContent = `${product.stock}${product.unit}`;
+                localStorage.setItem('dbProducts', JSON.stringify(dbProducts));
+            }
+
+
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateShoppingCart();
         }
 
         function updateShoppingCart() {
-            const cart = JSON.parse(localStorage.getItem('cart')) || [];
             const cartList = document.getElementById('cartList');
             const cartTotal = document.getElementById('cartTotal');
             cartList.innerHTML = '';
             let total = 0;
 
-            if (!cart) {
+            if (cart.length === 0) {
                 const emptyCartMessage = document.createElement('div');
                 emptyCartMessage.className = 'd-flex flex-column align-items-center justify-content-center h-100 text-center';
                 emptyCartMessage.innerHTML = `
@@ -589,11 +595,6 @@
                 cartList.appendChild(emptyCartMessage);
             } else {
                 cart.forEach(product => {
-                    let badgeBgColor = 'bg-secondary';
-
-                    if (product.code === '') {
-                        badgeBgColor = 'bg-danger';
-                    }
                     const subtotal = product.price * product.quantity;
                     total += subtotal;
                     const li = document.createElement('li');
@@ -602,7 +603,7 @@
                         <div class="w-100">
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span class="text-truncate me-2">
-                                    <span class="badge ${badgeBgColor}">${product.code}</span>
+                                    <span class="badge ${product.code ? "bg-secondary" : "bg-danger"}">${product.code ? product.code : "SEM CADASTRO"}</span>
                                 </span>
                                 <button class="btn btn-outline-danger btn-sm" onclick="removeFromCart('${product.id}')">
                                     <i class="fa-solid fa-trash"></i>
@@ -611,9 +612,9 @@
                             <h6 class="mb-2 text-truncate">${product.name}</h6>
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="input-group input-group-sm" style="max-width: 120px;">
-                                    <button class="btn btn-outline-secondary btn-sm" onclick="decrementQuantity('${product.code}')">-</button>
-                                    <input type="text" inputmode="numeric" class="form-control form-control-sm text-center" value="${product.quantity}" min="1" onchange="updateQuantity('${product.code}', this.value)">
-                                    <button class="btn btn-outline-secondary btn-sm" onclick="incrementQuantity('${product.code}')">+</button>
+                                    <button class="btn btn-outline-secondary btn-sm" onclick="decrementQuantity('${product.id}')"><i class="fa-solid fa-minus"></i></button>
+                                    <input type="text" inputmode="numeric" id='priceInput' class="form-control form-control-sm text-center" value="${String(product.quantity).replace('.', ',')}" min="1" onchange="updateQuantity('${product.id}', this.value)">
+                                    <button class="btn btn-outline-primary btn-sm" onclick="incrementQuantity('${product.id}')"><i class="fa-solid fa-plus"></i></button>
                                 </div>
                                 <span class="text-muted">
                                     ${numberToBrazilianCurrency(product.price)}
@@ -627,79 +628,105 @@
                     `;
                     cartList.appendChild(li);
                 });
-                updateCartBadge();
             }
 
-            // Atualizar o total com o desconto
             const finalTotal = Math.max(total - discount, 0);
             cartTotal.value = numberToBrazilianCurrency(finalTotal)
             updateCartBadge();
 
-            // Update localStorage cart
             localStorage.setItem('cart', JSON.stringify(cart));
         }
 
+        function addCustomProduct() {
+            const existingItem = cart.find(product => product.name == customProductName.value);
+
+            if(!existingItem) {
+                const customProductName = document.getElementById('customProductName')
+                const customProductPrice = document.getElementById('customProductPrice')
+                const measure = document.getElementById('customProductMeasure')
+    
+                if (customProductName.value && customProductPrice.value) {
+                    const customProduct = {
+                        id: Date.now(),
+                        code: "",
+                        name: customProductName.value.toUpperCase(),
+                        price: brazilianCurrencyToNumber(customProductPrice.value),
+                        quantity: isNaN(measure.value) ? brazilianCurrencyToNumber(measure.value) : 1,
+                    };
+    
+                    cart.push(customProduct);
+                    updateShoppingCart();
+                    updateCartBadge();
+    
+                    // Clear input fields
+                    customProductName.value = '';
+                    customProductPrice.value = '';
+                    measure.value = '';
+                    customSaleModal.hide()
+                } else {
+                    // Show error message
+                    showToast('Por favor, insira um nome válido e um preço maior que zero.', 'error');
+                }
+            }
+        }
+
         function updateCartBadge() {
-            const cartItemCount = document.getElementById('cartBadge');
-            cartItemCount.textContent = cart.length;
+            document.getElementById('cartBadge').textContent = String(cart.length).padStart(2, '0');
         }
 
         function decrementQuantity(id) {
-            const dbProducts = localStorage.getItem('dbProducts');
-           
-            const product = JSON.parse(dbProducts).find(product => product.id == id);
+            const product = dbProducts.find(product => product.id == id);
+            const existingItem = cart.find(item => item.id == id);
 
-            if (product) {
-                const existingItem = cart.find(item => item.id === product.id);
-                if(existingItem.quantity === 1) removeFromCart(id);
-
-                if (existingItem) {
+            if (existingItem) {
+                if (existingItem.quantity === 1) {
+                    removeFromCart(id);
+                } else {
                     existingItem.quantity -= 1;
-                } 
-
-                product.stock -= 1;
-                document.getElementById(`stock-${product.id}`).textContent = `${product.stock}${product.unit}`;
+                }
 
                 localStorage.setItem('cart', JSON.stringify(cart));
-                updateShoppingCart();
             }
+
+            if (product) {
+                product.stock += 1; // Increment stock when decreasing quantity
+                document.getElementById(`stock-${product.id}`).textContent = `${product.stock}${product.unit}`;
+                localStorage.setItem('dbProducts', JSON.stringify(dbProducts)); // Update dbProducts in localStorage
+            }
+
+            updateShoppingCart();
         }
 
         function incrementQuantity(id) {
-            debugger
-            const dbProducts = localStorage.getItem('dbProducts');
-          
-            const product = JSON.parse(dbProducts).find(product => product.id == id);
+            const product = dbProducts.find(product => product.id == id);
+            const existingItem = cart.find(item => item.id == id);
+
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
 
             if (product) {
-                const existingItem = cart.find(item => item.id === product.id);
-                if (existingItem) {
-                    existingItem.quantity += 1;
-
-                } else {
-                    cart.push({ ...product, quantity: 1 });
-                }
                 product.stock -= 1;
                 localStorage.setItem('dbProducts', JSON.stringify(dbProducts));
-
                 document.getElementById(`stock-${product.id}`).textContent = `${product.stock}${product.unit}`;
-
-                localStorage.setItem('cart', JSON.stringify(cart));
-                updateShoppingCart();
             }
+
+            localStorage.setItem('cart', JSON.stringify(cart));
+
+            updateShoppingCart();
         }
 
         function removeFromCart(id) {
-            const dbProducts = localStorage.getItem('dbProducts');
-            
             const index = cart.findIndex(item => item.id == id);
             if (index !== -1) {
                 const removedItem = cart.splice(index, 1)[0];
 
-                const product = JSON.parse(db).find(product => product.id == id);
+                const product = dbProducts.find(product => product.id == id);
                 if (product) {
                     product.stock += removedItem.quantity;
-                    document.getElementById(`stock-${product.id}`).textContent = product.stock;
+                    document.getElementById(`stock-${product.id}`).textContent = `${product.stock}${product.unit}`;
                 }
 
                 updateShoppingCart();
@@ -707,105 +734,74 @@
             }
         }
 
-        // function updateQuantity(code, newQuantity) {
-        //     const item = cart.find(item => item.code === code);
-        //     const product = dbProducts.find(product => product.code === code);
-        //     if (item && product) {
-        //         const oldQuantity = item.quantity;
-        //         const quantityDifference = newQuantity - oldQuantity;
+        function updateQuantity(id, newQuantity) {
+            const item = cart.find(item => item.id == id);
 
-        //         // Update the cart item quantity
-        //         item.quantity = parseInt(newQuantity);
+            const product = dbProducts.find(product => product.id == id);
+            var quantityDifference = 0
 
-        //         // Update the product stock
-        //         product.stock -= quantityDifference;
-        //         document.getElementById(`stock-${product.id}`).textContent = product.stock;
+            if (item) {
+                if (Number.isInteger(newQuantity)) {
+                    newQuantity = parseInt(newQuantity);
+                } else {
+                    newQuantity = parseFloat(newQuantity.replace(',', '.'));
+                }
 
-        //         updateShoppingCart();
-        //     }
-        // }
+                if (isNaN(newQuantity) || newQuantity < 1) {
+                    showToast('Quantidade inválida. Por favor, insira um número maior que  0(zero).', 'error');
+                    return;
+                }
 
-        // function removeFromCart(id) {
-        //     const index = cart.findIndex(item => item.id == id);
-        //     if (index !== -1) {
-        //         const removedItem = cart.splice(index, 1)[0];
+                const oldQuantity = item.quantity;
+                quantityDifference = newQuantity - oldQuantity;
 
-        //         // Return the quantity back to the product stock
-        //         const product = dbProducts.find(product => product.id == id);
-        //         if (product) {
-        //             product.stock += removedItem.quantity;
-        //             document.getElementById(`stock-${product.id}`).textContent = product.stock;
-        //         }
+                item.quantity = newQuantity;
+                localStorage.setItem('cart', JSON.stringify(cart));
 
-        //         updateShoppingCart();
-        //         updateCartBadge();
-        //     }
-        // }
+            }
 
-        // function addCustomProduct() {
-        //     const customProductName = document.getElementById('customProductName').value.trim();
-        //     const customProductPrice = brazilianCurrencyToNumber(document.getElementById('customProductPrice').value);
-        //     const measure = parseFloat(document.getElementById('customProductMeasure').value);
-        //     debugger
-        //     let id = Date.now()
+            if (product) {
+                product.stock -= quantityDifference;
+                document.getElementById(`stock-${product.id}`).textContent = `${product.stock}${product.unit}`;
+                localStorage.setItem('dbProducts', JSON.stringify(dbProducts));
+            }
 
-        //     if (customProductName && !isNaN(customProductPrice) && customProductPrice > 0) {
-        //         const customProduct = {
-        //             id,
-        //             code: `SEM CADASTRO`, 
-        //             name: customProductName.toUpperCase(),
-        //             price: customProductPrice,
-        //             quantity: isNaN(measure) ? 1 : measure,
-        //         };
+            updateShoppingCart();
+        }
 
-        //         cart.push(customProduct);
-        //         updateShoppingCart();
-        //         updateCartBadge();
+        function showToast(message, type) {
+            toastMessage.textContent = message;
+            const toastHeader = document.querySelector('.toast-header');
+            const toastIcon = document.createElement('i');
 
-        //         // Clear input fields
-        //         document.getElementById('customProductName').value = '';
-        //         document.getElementById('customProductPrice').value = '';
-        //         customSaleModal.hide()
-        //     } else {
-        //         // Show error message
-        //         showToast('Por favor, insira um nome válido e um preço maior que zero.', 'error');
-        //     }
-        // }
+            toastHeader.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-info');
 
-        // function showToast(message, type) {
-        //     toastMessage.textContent = message;
-        //     const toastHeader = document.querySelector('.toast-header');
-        //     const toastIcon = document.createElement('i');
+            switch (type) {
+                case 'success':
+                    toastHeader.classList.add('bg-success');
+                    toastIcon.className = 'fas fa-check-circle me-2';
+                    break;
+                case 'error':
+                    toastHeader.classList.add('bg-danger');
+                    toastIcon.className = 'fas fa-exclamation-circle me-2';
+                    break;
+                case 'warning':
+                    toastHeader.classList.add('bg-warning');
+                    toastIcon.className = 'fas fa-exclamation-triangle me-2';
+                    break;
+                default:
+                    toastHeader.classList.add('bg-info');
+                    toastIcon.className = 'fas fa-info-circle me-2';
+            }
 
-        //     toastHeader.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-info');
+            const existingIcon = toastHeader.querySelector('i');
+            if (existingIcon) {
+                existingIcon.remove();
+            }
 
-        //     switch (type) {
-        //         case 'success':
-        //             toastHeader.classList.add('bg-success');
-        //             toastIcon.className = 'fas fa-check-circle me-2';
-        //             break;
-        //         case 'error':
-        //             toastHeader.classList.add('bg-danger');
-        //             toastIcon.className = 'fas fa-exclamation-circle me-2';
-        //             break;
-        //         case 'warning':
-        //             toastHeader.classList.add('bg-warning');
-        //             toastIcon.className = 'fas fa-exclamation-triangle me-2';
-        //             break;
-        //         default:
-        //             toastHeader.classList.add('bg-info');
-        //             toastIcon.className = 'fas fa-info-circle me-2';
-        //     }
-
-        //     // Remove existing icon if present
-        //     const existingIcon = toastHeader.querySelector('i');
-        //     if (existingIcon) {
-        //         existingIcon.remove();
-        //     }
-
-        //     toastHeader.prepend(toastIcon);
-        //     toast.show();
-        // }
+            toastHeader.prepend(toastIcon);
+            toast.show();
+        }
 
         function numberToBrazilianCurrency(number) {
             return parseFloat(number).toLocaleString("pt-BR", {
@@ -814,115 +810,132 @@
             });
         }
 
-        // function brazilianCurrencyToNumber(currency) {
-        //     if (!currency.includes("R$")) {
-        //         currency = `R$ ${currency}`
-        //     }
+        function brazilianCurrencyToNumber(currency) {
+            if (!currency.includes("R$")) {
+                currency = `R$ ${currency}`
+            }
 
-        //     let cleanValue = currency.replace("R$", "").trim();
-        //     cleanValue = cleanValue.replace(/\./g, "");
-        //     cleanValue = cleanValue.replace(",", ".");
-        //     return parseFloat(cleanValue);
-        // }
+            let cleanValue = currency.replace("R$", "").trim();
+            cleanValue = cleanValue.replace(/\./g, "");
+            cleanValue = cleanValue.replace(",", ".");
+            return parseFloat(cleanValue);
+        }
 
-        // function openPaymentModal() {
-        //     document.getElementById('paidAmount').focus()
-        //     if (cart.length === 0) {
-        //         showToast('O carrinho está vazio. Adicione itens antes de prosseguir com a venda.', 'error');
-        //         return;
-        //     }
+        function openPaymentModal() {
+            document.getElementById('paidAmount').focus()
+            if (cart.length === 0) {
+                showToast('O carrinho está vazio. Adicione itens antes de prosseguir com a venda.', 'error');
+                return;
+            }
 
-        //     if (toast._element.classList.contains('show')) return;
+            if (toast._element.classList.contains('show')) return;
 
-        //     document.getElementById('paymentForm').reset();
+            document.getElementById('paymentForm').reset();
 
-        //     const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0) - discount;
-        //     document.getElementById('totalAmount').value = numberToBrazilianCurrency(total);
-        //     document.getElementById('discountAmount').value = numberToBrazilianCurrency(discount);
+            const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0) - discount;
+            document.getElementById('totalAmount').value = numberToBrazilianCurrency(total);
+            document.getElementById('discountAmount').value = numberToBrazilianCurrency(discount);
 
-        //     modalProductList.innerHTML = '';
-        //     cart.forEach(item => {
-        //         const li = document.createElement('li');
-        //         li.className = 'list-group-item d-flex justify-content-between align-items-center';
-        //         li.innerHTML = `
-        //             <div class="d-flex justify-content-between align-items-center w-100">
-        //               <div class="d-flex flex-column">
-        //                 <small class="badge bg-secondary">${item.code}</small>
-        //                 <small class="my-1 text-truncate" style="max-width: 500px;" title="${item.name}">${item.name}</small>
-        //                 <small class="text-muted">${item.quantity}x ${numberToBrazilianCurrency(item.price)}</small>
-        //               </div>
-        //               <span class="text-danger fw-bold">${numberToBrazilianCurrency(item.price * item.quantity)}</span>
-        //             </div>
-        //         `;
-        //         modalProductList.appendChild(li);
-        //     });
+            modalProductList.innerHTML = '';
+            cart.forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                li.innerHTML = `
+                    <div class="d-flex flex-column w-100">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <small class="badge ${item.code ? 'bg-secondary' : 'bg-danger'}">${item.code ? item.code : 'SEM CADASTRO'}</small>
+                            <small class="text-muted">${item.quantity}x ${numberToBrazilianCurrency(item.price)}</small>
+                        </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-truncate ms-2" style="max-width: 400px;" title="${item.name}">${item.name}</small>
+                            <span class="text-danger fw-bold">${numberToBrazilianCurrency(item.price * item.quantity)}</span>
+                        </div>
+                    </div>
+                `;
+                modalProductList.appendChild(li);
+            });
+            paymentModal.show();
+        }
 
-        //     paymentModal.show();
-        // }
+        function getPaymentMethod() {
+            let paymentMethods = document.querySelectorAll(`[data-testid*="radio"]`);
+            let checkedRadio = Array.from(paymentMethods).find(radio => radio.checked);
+            return checkedRadio ? checkedRadio.dataset.payment || null : null;
+        }
 
-        // function getPaymentMethod() {
-        //     let paymentMethods = document.querySelectorAll(`[data-testid*="radio"]`);
-        //     let checkedRadio = Array.from(paymentMethods).find(radio => radio.checked);
-        //     return checkedRadio ? checkedRadio.dataset.payment || null : null;
-        // }
+        async function handlePayment() {
+            const totalAmountEl = document.getElementById('totalAmount')
+            const discountAmountEl = document.getElementById('discountAmount')
+            const paidAmountEl = document.getElementById('paidAmount')
+            const changeAmountEl = document.getElementById('changeAmount')
 
-        // function handlePayment() {
-        //     const totalAmountEl = document.getElementById('totalAmount')
-        //     const discountAmountEl = document.getElementById('discountAmount')
-        //     const paidAmountEl = document.getElementById('paidAmount')
-        //     const changeAmountEl = document.getElementById('changeAmount')
+            if (!paidAmountEl.value.trim()) {
+                showToast('Por favor, insira o valor para pagamento.', 'error');
+                return;
+            }
 
-        //     if (!paidAmountEl.value.trim()) {
-        //         showToast('Por favor, insira o valor para pagamento.', 'error');
-        //         return;
-        //     }
+            let paidAmount = brazilianCurrencyToNumber(paidAmountEl.value)
+            let totalAmount = brazilianCurrencyToNumber(totalAmountEl.value)
+            let discountAmount = brazilianCurrencyToNumber(discountAmountEl.value)
 
-        //     let paidAmount = brazilianCurrencyToNumber(paidAmountEl.value)
-        //     let totalAmount = brazilianCurrencyToNumber(totalAmountEl.value)
-        //     let discountAmount = brazilianCurrencyToNumber(discountAmountEl.value)
+            if (paidAmount < totalAmount) {
+                updatePaymentMethodList(getPaymentMethod(), paidAmount);
+                paidAmountEl.value = '';
+                const newTotalAmount = totalAmount - paidAmount;
+                totalAmountEl.value = numberToBrazilianCurrency(newTotalAmount)
+                return;
+            }
 
-        //     if (paidAmount < totalAmount) {
-        //         updatePaymentMethodList(getPaymentMethod(), paidAmount);
-        //         paidAmountEl.value = '';
-        //         const newTotalAmount = totalAmount - paidAmount;
-        //         totalAmountEl.value = numberToBrazilianCurrency(newTotalAmount)
-        //         return;
-        //     }
+            updatePaymentMethodList(getPaymentMethod(), paidAmount);
+            paidAmountEl.value = '';
+            const newTotalAmount = totalAmount - paidAmount;
+            totalAmountEl.value = ''
 
-        //     updatePaymentMethodList(getPaymentMethod(), paidAmount);
-        //     paidAmountEl.value = '';
-        //     const newTotalAmount = totalAmount - paidAmount;
-        //     totalAmountEl.value = ''
+            let methodsPaid = Array.from(document.querySelectorAll('#paymentType')).map(el => el.innerText);
+            let amountPaid = Array.from(document.querySelectorAll('#amountPaid')).map(el => el.innerText);
 
-        //     let methodsPaid = Array.from(document.querySelectorAll('#paymentType')).map(el => el.innerText);
-        //     let amountPaid = Array.from(document.querySelectorAll('#amountPaid')).map(el => el.innerText);
+            let paymentMethods = methodsPaid.map((method, index) => ({
+                method,
+                amount: amountPaid[index]
+            }));
 
-        //     let paymentMethods = methodsPaid.map((method, index) => ({
-        //         method,
-        //         amount: amountPaid[index]
-        //     }));
+            let products = cart.map(product => ({
+                code: product.code,
+                name: product.name,
+                quantity: product.quantity,
+                price: product.price
+            }));
 
-        //     let products = cart.map(product => ({
-        //         code: product.code,
-        //         name: product.name,
-        //         quantity: product.quantity,
-        //         price: product.price
-        //     }));
+            let formData = {
+                products,
+                discountAmount,
+                paymentMethods
+            };
 
-        //     let formData = {
-        //         id: Date.now(),
-        //         products,
-        //         discountAmount,
-        //         paymentMethods
-        //     };
+            loadingModal.show();
+            await postSale(formData)
 
-        //     console.log("Form Data:", formData);
+            updatePaymentMethodList("", 0, true);
+        }
 
-        //     loadingModal.show();
-        //     postPayment(formData)
+        async function postSale(data) {
+            console.log("Form Data:", data);
 
-        //     updatePaymentMethodList("", 0, true);
-        // }
+            try {
+                const response = await axios.post(url, data);
+
+                console.log('Response:', response.data);
+                showToast('Venda finalizada com sucesso!', 'success');
+                clearCart();
+                paymentModal.hide();
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Erro ao finalizar a venda. Tente novamente.', 'error');
+            } finally {
+                loadingModal.hide();
+            }
+        }
+
 
         // function postPayment(paymentData) {
         //     return new Promise((resolve, reject) => {
@@ -944,32 +957,32 @@
         // }
 
 
-        // function updatePaymentMethodList(paymentType = '', amountPaid = 0, reset = false) {
-        //     if (!reset) {
-        //         const listItem = document.createElement('li');
-        //         listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
-        //         listItem.innerHTML = `
-        //             <div class="d-flex justify-content-between align-items-center w-100">
-        //                 <span class="fw-bold" id="paymentType">${paymentType}</span>
-        //                 <div class="d-flex align-items-center">
-        //                     <span class="fw-bold text-danger" id="amountPaid">${numberToBrazilianCurrency(amountPaid)}</span>
-        //                 </div>
-        //             </div>
-        //         `;
-        //         partialPaymentsList.appendChild(listItem);
-        //         return
-        //     }
-        //     partialPaymentsList.innerHTML = '';
-        // }
+        function updatePaymentMethodList(paymentType = '', amountPaid = 0, reset = false) {
+            if (!reset) {
+                const listItem = document.createElement('li');
+                listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+                listItem.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center w-100">
+                        <span class="fw-bold" id="paymentType">${paymentType}</span>
+                        <div class="d-flex align-items-center">
+                            <span class="fw-bold text-danger" id="amountPaid">${numberToBrazilianCurrency(amountPaid)}</span>
+                        </div>
+                    </div>
+                `;
+                partialPaymentsList.appendChild(listItem);
+                return
+            }
+            partialPaymentsList.innerHTML = '';
+        }
 
-        // function clearCart() {
-        //     cart = [];
-        //     localStorage.removeItem('cart');
-        //     document.getElementById('discountInput').value = ''; // Clear discount input field
-        //     discount = 0
-        //     updateShoppingCart();
-        //     updateCartBadge();
-        // }
+        function clearCart() {
+            cart = [];
+            localStorage.removeItem('cart');
+            document.getElementById('discountInput').value = ''; // Clear discount input field
+            discount = 0
+            updateShoppingCart();
+            updateCartBadge();
+        }
 
         function loadingShimmer() {
             const tbody = document.querySelector('tbody');
@@ -996,6 +1009,43 @@
                 tbody.appendChild(tr);
             })
         }
+
+        // {
+        //     "id": 1730143624132,
+        //         "products": [
+        //             {
+        //                 "code": "",
+        //                 "name": "PAPEL CONTACT FANTASIA 45X5 (LEONORA)",
+        //                 "quantity": 3,
+        //                 "price": 5
+        //             },
+        //             {
+        //                 "code": "7896396109181",
+        //                 "name": "TOALHA DE GELADEIRA COM 3 PÇS REF 918",
+        //                 "quantity": 1,
+        //                 "price": 5
+        //             }
+        //         ],
+        //             "discountAmount": 0,
+        //                 "paymentMethods": [
+        //                     {
+        //                         "method": "PIX",
+        //                         "amount": "R$ 5,00"
+        //                     },
+        //                     {
+        //                         "method": "CREDITO",
+        //                         "amount": "R$ 5,00"
+        //                     },
+        //                     {
+        //                         "method": "DEBITO",
+        //                         "amount": "R$ 5,00"
+        //                     },
+        //                     {
+        //                         "method": "DINHEIRO",
+        //                         "amount": "R$ 10,00"
+        //                     }
+        //                 ]
+        // }
 
     </script>
 </body>
