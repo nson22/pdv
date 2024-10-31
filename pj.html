@@ -19,6 +19,7 @@
         h4,
         h5,
         h6,
+        span,
         small {
             font-family: 'Montserrat', sans-serif;
         }
@@ -84,7 +85,7 @@
                     </div>
                 </div>
 
-                <div class="col-lg-4 col-md-5 d-flex flex-column h-100 px-5">
+                <div class="col-lg-4 col-md-5 d-flex flex-column h-100 px-2">
                     <div class="sticky-top bg-white d-flex justify-content-center align-items-center">
                         <h2 class="mb-0 text-center text-uppercase p-2">
                             Carrinho<span class="badge bg-secondary ms-3" id="cartBadge">0</span></h2>
@@ -319,7 +320,7 @@
     <script>
 
         //Global Variables
-        const url = 'https://script.google.com/macros/s/AKfycbwsdNkHjMlWVv9vNCLoaQNNh0R6ahAgD4RI8ztiQvNLQTNI1MTD25GvB2raeO1qk5nn/exec';
+        const url = 'https://script.google.com/macros/s/AKfycbzwdYhGkhWWn1zOhvyNmNEpulQAY_XZP3qsSkmy6OGRlwm5Lqu-_52duDaDHMtRrX9E/exec';
         const dbProducts = JSON.parse(localStorage.getItem('dbProducts'));
         const cart = JSON.parse(localStorage.getItem('cart')) || []
         let discount = 0;
@@ -502,7 +503,7 @@
         });
 
         async function fetchData(limit = 1) {
-            const res = await axios.get(`${url}?action=read&table=products&limit=${limit}`);
+            const res = await axios.get(`${url}?action=read&table=estoque&limit=${limit}`);
             return res.data;
         }
 
@@ -547,10 +548,9 @@
         function addToCart(id) {
             const product = dbProducts.find(product => product.id == id);
             const existingItem = cart.find(item => item.id == id);
-            debugger
+
             if (existingItem) {
                 existingItem.quantity += 1;
-
             } else {
                 if (product.unit === 'M') {
                     document.getElementById('customSaleModalLabel').textContent = `Venda por metragem`;
@@ -559,22 +559,31 @@
                     document.getElementById('customProductMeasureCheck').checked = true;
                     document.getElementById('customProductMeasure').disabled = false;
                     customSaleModal.show();
-                    return
+                    return;
                 }
 
                 cart.push({ ...product, quantity: 1 });
-
             }
 
             if (product) {
-                product.stock -= 1;
-                const stockElement = document.getElementById(`stock-${product.id}`).textContent = `${product.stock}${product.unit}`;
+                if (product.unit === 'M') {
+                    product.stock = Math.round((product.stock - 1) * 100) / 100; // Subtrai 1 metro e arredonda para 2 casas decimais
+                } else {
+                    product.stock -= 1;
+                }
+                updateStockDisplay(product);
                 localStorage.setItem('dbProducts', JSON.stringify(dbProducts));
             }
 
-
             localStorage.setItem('cart', JSON.stringify(cart));
             updateShoppingCart();
+        }
+
+        function updateStockDisplay(product) {
+            const stockElement = document.getElementById(`stock-${product.id}`);
+            if (stockElement) {
+                stockElement.textContent = `${product.stock}${product.unit}`;
+            }
         }
 
         function updateShoppingCart() {
@@ -638,36 +647,57 @@
         }
 
         function addCustomProduct() {
-            const existingItem = cart.find(product => product.name == customProductName.value);
+            debugger
+            const customProductName = document.getElementById('customProductName').value;
+            const customProductPrice = document.getElementById('customProductPrice').value;
+            const measureInput = document.getElementById('customProductMeasure');
+            const measure = parseFloat(measureInput.value.replace(',', '.'));
 
-            if(!existingItem) {
-                const customProductName = document.getElementById('customProductName')
-                const customProductPrice = document.getElementById('customProductPrice')
-                const measure = document.getElementById('customProductMeasure')
-    
-                if (customProductName.value && customProductPrice.value) {
-                    const customProduct = {
-                        id: Date.now(),
-                        code: "",
-                        name: customProductName.value.toUpperCase(),
-                        price: brazilianCurrencyToNumber(customProductPrice.value),
-                        quantity: isNaN(measure.value) ? brazilianCurrencyToNumber(measure.value) : 1,
-                    };
-    
-                    cart.push(customProduct);
+            const product = dbProducts.find(product => product.name === customProductName);
+
+            if (product) {
+                if (product.unit === 'M') {
+                    // Arredonda para 2 casas decimais
+                    const roundedMeasure = Math.round(measure * 100) / 100;
+
+                    // Atualiza o estoque com precisão de 2 casas decimais
+                    product.stock = Math.round((product.stock - roundedMeasure) * 100) / 100;
+
+                    const existingItem = cart.find(item => item.id === product.id);
+                    if (existingItem) {
+                        existingItem.quantity = Math.round((existingItem.quantity + roundedMeasure) * 100) / 100;
+                    } else {
+                        cart.push({ ...product, quantity: roundedMeasure });
+                    }
+
+                    updateStockDisplay(product);
                     updateShoppingCart();
-                    updateCartBadge();
-    
-                    // Clear input fields
-                    customProductName.value = '';
-                    customProductPrice.value = '';
-                    measure.value = '';
-                    customSaleModal.hide()
-                } else {
-                    // Show error message
-                    showToast('Por favor, insira um nome válido e um preço maior que zero.', 'error');
+                    customSaleModal.hide();
+                }
+                else {
+                    // Lógica para adicionar um produto personalizado que não está no dbProducts
+                    if (customProductName && customProductPrice) {
+                        const customProduct = {
+                            id: Date.now().toString(),
+                            code: "",
+                            name: customProductName.toUpperCase(),
+                            price: brazilianCurrencyToNumber(customProductPrice),
+                            quantity: isNaN(measure) ? 1 : Math.round(measure * 100) / 100,
+                            unit: isNaN(measure) ? 'UN' : 'M'
+                        };
+                        cart.push(customProduct);
+                        updateShoppingCart();
+                        customSaleModal.hide();
+                    } else {
+                        showToast('Por favor, preencha todos os campos necessários.', 'error');
+                    }
                 }
             }
+
+            // Limpa os campos do modal
+            document.getElementById('customProductName').value = '';
+            document.getElementById('customProductPrice').value = '';
+            measureInput.value = '';
         }
 
         function updateCartBadge() {
@@ -679,7 +709,7 @@
             const existingItem = cart.find(item => item.id == id);
 
             if (existingItem) {
-                if (existingItem.quantity === 1) {
+                if (existingItem.quantity <= 1) {
                     removeFromCart(id);
                 } else {
                     existingItem.quantity -= 1;
