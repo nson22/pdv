@@ -320,9 +320,9 @@
     <script>
 
         //Global Variables
-        const url = 'https://script.google.com/macros/s/AKfycbzwdYhGkhWWn1zOhvyNmNEpulQAY_XZP3qsSkmy6OGRlwm5Lqu-_52duDaDHMtRrX9E/exec';
+        const url = 'https://script.google.com/macros/s/AKfycbyMw4O_P29dZgzo0Y1kGl7bmN2LJvRSNU2ssr5uiM3BkS1e3nFox2sjoBdjggdyRTOc/exec';
         const dbProducts = JSON.parse(localStorage.getItem('dbProducts'));
-        const cart = JSON.parse(localStorage.getItem('cart')) || []
+        let cart = JSON.parse(localStorage.getItem('cart')) || []
         let discount = 0;
         let totalToPay = 0
 
@@ -364,18 +364,7 @@
         });
 
         document.addEventListener('DOMContentLoaded', async function () {
-            loadingShimmer()
-
-            if (dbProducts) {
-                displayProducts(dbProducts);
-            } else {
-                fetchData().then(({ lenght }) => {
-                    fetchData(lenght).then(({ data }) => {
-                        localStorage.setItem('dbProducts', JSON.stringify(data));
-                        displayProducts(data);
-                    })
-                })
-            }
+            init()
         })
 
         document.getElementById('searchInput').addEventListener('input', (e) => {
@@ -944,59 +933,20 @@
             };
 
             loadingModal.show();
-            await postSale(formData)
 
+            await postSale(formData);
+            
+            cart = [];
+            showToast('Venda realizada com sucesso!', 'success');
+            paymentModal.hide();
             updatePaymentMethodList("", 0, true);
+            init()
         }
 
         async function postSale(data) {
-            console.log("Form Data:", data);
-            // {
-            //     "products": [
-            //         {
-            //             "code": "1",
-            //             "name": "PRODUTOS VARIADOS",
-            //             "quantity": 1,
-            //             "price": 10
-            //         },
-            //         {
-            //             "code": "",
-            //             "name": "PAPEL CONTACT FANTASIA 45X5 (LEONORA)",
-            //             "quantity": 1,
-            //             "price": 5
-            //         },
-            //         {
-            //             "code": "7896396109181",
-            //             "name": "TOALHA DE GELADEIRA COM 3 PÇS REF 918",
-            //             "quantity": 1,
-            //             "price": 5
-            //         }
-            //     ],
-            //         "discountAmount": 0,
-            //             "paymentMethods": [
-            //                 {
-            //                     "method": "PIX",
-            //                     "amount": "R$ 5,00"
-            //                 },
-            //                 {
-            //                     "method": "CREDITO",
-            //                     "amount": "R$ 5,00"
-            //                 },
-            //                 {
-            //                     "method": "DEBITO",
-            //                     "amount": "R$ 5,00"
-            //                 },
-            //                 {
-            //                     "method": "DINHEIRO",
-            //                     "amount": "R$ 5,00"
-            //                 }
-            //             ]
-            // }
-
             const total = data.products.reduce((sum, item) => sum + item.price * item.quantity, 0) - discount;
             const date = Date.now();
 
-            // Processing the sale
             try {
                 const res = await axios.get(`${url}?action=insert&table=vendas&data={ 
                     "total_venda": "${numberToBrazilianCurrency(total)}", 
@@ -1005,9 +955,8 @@
                     "data_mes_ano": "${paymentDateFormatter(date, true)}"
                 }`);
 
-                // Processing the products of the sale
                 const productPromises = data.products.map(async (product) => {
-                    return await axios.get(`${url}?action=insert&table=vendas_produtos&data={ 
+                    return await axios.get(`${url}?action=insert&table=vendas_produtos&data={
                         "id_venda": ${res.data.data.id}, 
                         "id_produto": ${product.id}, 
                         "produto": "${product.name}", 
@@ -1028,7 +977,18 @@
                     }`);
                 });
 
-                await Promise.all(productPromises, paymentsPromises);
+                const productStockPromises = data.products.map(async (product) => {
+                    const productStock = dbProducts.find(item => item.id == product.id);
+
+                    return await axios.get(`${url}?action=update&table=estoque&id=${product.id}&data={
+                        "stock": ${productStock.stock}
+                    }`);
+                });
+
+                await Promise.all(productPromises, paymentsPromises, productStockPromises);
+
+                loadingModal.hide();
+
 
             } catch (error) {
                 showToast('Erro ao processar a venda, tente novamente:', "error");
@@ -1049,27 +1009,6 @@
                 month: '2-digit'
             }).format(date);
         }
-
-
-        // function postPayment(paymentData) {
-        //     return new Promise((resolve, reject) => {
-        //         google.script.run
-        //             .withSuccessHandler(resolve)
-        //             .withFailureHandler(reject)
-        //             .postPaymentGAS(paymentData);
-        //     }).then(response => {
-        //         console.log('Response:', response);
-        //         showToast('Venda finalizada com sucesso!', 'success');
-        //         clearCart();
-        //         paymentModal.hide();
-        //     }).catch(error => {
-        //         console.error('Error:', error);
-        //         showToast('Erro ao finalizar a venda. Tente novamente.', 'error');
-        //     }).finally(() => {
-        //         loadingModal.hide();
-        //     });
-        // }
-
 
         function updatePaymentMethodList(paymentType = '', amountPaid = 0, reset = false) {
             if (!reset) {
@@ -1122,6 +1061,25 @@
                 `;
                 tbody.appendChild(tr);
             })
+        }
+
+        function init() {
+            localStorage.removeItem('dbProducts');
+
+            loadingShimmer()
+
+            if (dbProducts) {
+                displayProducts(dbProducts);
+            } else {
+                fetchData().then(({ lenght }) => {
+                    fetchData(lenght).then(({ data }) => {
+                        localStorage.setItem('dbProducts', JSON.stringify(data));
+                        displayProducts(data);
+                    })
+                })
+            }
+
+
         }
 
     </script>
