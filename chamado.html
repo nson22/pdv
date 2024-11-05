@@ -6,18 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&display=swap" rel="stylesheet" />
   <style>
-    label,
-    button,
-    span,
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6 {
+    body {
       font-family: "Montserrat", sans-serif;
     }
   </style>
@@ -25,169 +16,201 @@
 
 <body>
   <div class="container">
-    <nav class="navbar navbar-expand-lg sticky-top">
+    <nav class="navbar bg-body-light fixed-top">
       <div class="container-fluid">
-        <h1 class="navbar-brand fw-bold">YAMADA</h1>
+        <div class="d-flex justify-content-center w-100">
+          <img src="https://cache2net4.com/Repositorio/13384/Logo/logo%20site2.png" alt="Logo" style="width: 12rem;"
+            class="navbar-brand">
+        </div>
       </div>
     </nav>
 
-    <h3 class="text-uppercase text-center my-5">Chamado de Manutenção</h3>
-    <form target="_self" id="formularioManutencao">
+    <h3 class="text-uppercase text-center mt-5 pt-5">Chamado de Manutenção</h3>
+    <form id="maintenanceForm" class="needs-validation" novalidate>
       <div class="row g-3">
         <div class="col-12">
-          <label for="solicitante" class="form-label text-uppercase">Solicitante</label>
-          <select class="form-select" id="solicitante" required>
-            <option selected disabled>Selecionar</option>
+          <label for="solicitantes" class="form-label text-uppercase">Solicitante</label>
+          <select class="form-select" id="solicitantes" required>
+            <option value="">Selecionar</option>
           </select>
+          <div class="invalid-feedback">Por favor, selecione um solicitante.</div>
         </div>
         <div class="col-12">
-          <label for="departamento" class="form-label text-uppercase">Departamento</label>
-          <select class="form-select" id="departamento" required>
-            <option selected disabled>Selecionar</option>
+          <label for="departamentos" class="form-label text-uppercase">Departamento</label>
+          <select class="form-select" id="departamentos" required>
+            <option value="">Selecionar</option>
           </select>
+          <div class="invalid-feedback">Por favor, selecione um departamento.</div>
         </div>
         <div class="col-12">
-          <label for="equipamento" class="form-label text-uppercase">Equipamento</label>
-          <select class="form-select" id="equipamento" required>
-            <option selected disabled>Selecionar</option>
+          <label for="equipamentos" class="form-label text-uppercase">Equipamento</label>
+          <select class="form-select" id="equipamentos" required>
+            <option value="">Selecionar</option>
           </select>
+          <div class="invalid-feedback">Por favor, selecione um equipamento.</div>
         </div>
         <div class="col-12">
           <label for="descricao" class="form-label text-uppercase">Descrição</label>
           <textarea class="form-control" rows="3" id="descricao" style="resize: none" required></textarea>
+          <div class="invalid-feedback">Por favor, forneça uma descrição.</div>
         </div>
         <div class="col-12">
-          <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" role="switch" value="" id="manutencao" />
-            <label class="form-check-label" for="manutencao">
-              Manuntenção preventiva
-            </label>
-          </div>
-        </div>
-        <div class="col-12">
-          <button type="submit" class="btn btn-primary w-100 text-uppercase fw-semibold mt-3">
-            Abrir
+          <button type="submit" class="btn btn-primary btn-lg w-100 text-uppercase fw-semibold mt-3">
+            Abrir Chamado
           </button>
         </div>
       </div>
     </form>
   </div>
-  <div class="modal fade" id="loadingModal" tabindex="-1" aria-labelledby="loadingModalLabel" aria-hidden="true">
+
+  <!-- Loading Modal -->
+  <div class="modal fade" id="loadingModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-body text-center">
           <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
+            <span class="visually-hidden">Carregando...</span>
           </div>
-          <p class="mt-3">Abrindo chamado aguarde...</p>
+          <p class="mt-3" id="modalMessage"></p>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Toast -->
   <div class="toast-container position-fixed bottom-0 end-0 p-3">
-    <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div id="notificationToast" class="toast bg-success" role="alert" aria-live="assertive" aria-atomic="true">
       <div class="toast-header">
         <strong class="me-auto">Mensagem</strong>
         <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
       </div>
-      <div class="toast-body">
-        <p id="toast-message"></p>
-      </div>
+      <div class="toast-body" id="toastMessage"></div>
     </div>
   </div>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-
   <script>
-    const url = 'https://script.google.com/macros/s/AKfycbzOfaFuTy7G9AD9Vr8HpsGuJxAEFbViLinio9ZDXUbdfWgY1h0HCSGC0swGjzWhrzKjPg/exec';
-    const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+    // UI Components
+    const UI = {
+      modal: {
+        element: new bootstrap.Modal(document.getElementById('loadingModal')),
+        message: document.getElementById('modalMessage')
+      },
+      toast: {
+        element: new bootstrap.Toast(document.getElementById('notificationToast')),
+        container: document.getElementById('notificationToast'),
+        message: document.getElementById('toastMessage')
+      },
+      form: document.getElementById('maintenanceForm')
+    };
 
+    // Configuration
+    const CONFIG = {
+      tables: ['solicitantes', 'departamentos', 'equipamentos']
+    };
 
-    document.addEventListener("DOMContentLoaded", function () {
-      placeholder()
-      fetchData('Chamados').then(response => id = response.length);
-      fetchData('Solicitantes').then(response => populateSelectElement("#solicitante", response));
-      fetchData('Departamentos').then(response => populateSelectElement("#departamento", response));
-      fetchData('Equipamentos').then(response => populateSelectElement("#equipamento", response));
+    // Utility Functions
+    const Utils = {
+      showLoading: (message) => {
+        UI.modal.message.textContent = message;
+        UI.modal.element.show();
+      },
+      hideLoading: () => {
+        UI.modal.element.hide();
+      },
+      showNotification: (message, type) => {
+        UI.toast.container.className = 'toast';
+        UI.toast.container.classList.add(`bg-${type}`, 'text-white');
+        UI.toast.message.textContent = message;
+        UI.toast.element.show();
+
+      }
+    };
+
+    // Form Handlers
+    const FormHandlers = {
+      populateSelect: (elementId, data) => {
+        const select = document.getElementById(elementId);
+        select.innerHTML = '<option value="">Selecionar</option>';
+
+        data.forEach(item => {
+          const option = document.createElement('option');
+          option.value = item;
+          option.textContent = item;
+          select.appendChild(option);
+        });
+      },
+
+      getFormData: () => {
+        return {
+          solicitante: document.getElementById('solicitantes').value,
+          departamento: document.getElementById('departamentos').value,
+          equipamento: document.getElementById('equipamentos').value,
+          descricao: document.getElementById('descricao').value
+        };
+      },
+
+      resetForm: () => {
+        UI.form.reset();
+        UI.form.classList.remove('was-validated');
+      }
+    };
+
+    // API Handlers
+    const API = {
+      loadData: () => {
+        Utils.showLoading('Carregando dados, aguarde...');
+
+        CONFIG.tables.forEach(table => {
+          google.script.run
+            .withSuccessHandler((response) => {
+              FormHandlers.populateSelect(table, response);
+              Utils.hideLoading();
+            })
+            .withFailureHandler((error) => {
+              console.error(`Erro ao carregar ${table}:`, error);
+              Utils.showNotification(`Erro ao carregar ${table}`, 'danger');
+              Utils.hideLoading();
+            })
+            .read(table);
+        });
+      },
+
+      submitForm: (formData) => {
+        Utils.showLoading('Abrindo chamado, aguarde...');
+
+        google.script.run
+          .withSuccessHandler(() => {
+            Utils.hideLoading();
+            Utils.showNotification('Chamado aberto com sucesso!', 'success');
+            FormHandlers.resetForm();
+          })
+          .withFailureHandler((error) => {
+            console.error('Erro ao abrir chamado:', error);
+            Utils.hideLoading();
+            Utils.showNotification('Falha ao abrir o chamado!', 'danger');
+          })
+          .post(formData);
+      }
+    };
+
+    // Event Listeners
+    document.addEventListener('DOMContentLoaded', () => {
+      API.loadData();
     });
 
-    document.querySelector("#formularioManutencao").addEventListener("submit", function (event) {
+    UI.form.addEventListener('submit', (event) => {
       event.preventDefault();
 
-      const solicitanteElement = document.querySelector("#solicitante");
-      const departamentoElement = document.querySelector("#departamento");
-      const equipamentoElement = document.querySelector("#equipamento");
-      const descricaoElement = document.querySelector("#descricao");
-      const manutencaoElement = document.querySelector("#manutencao");
-
-      if (![solicitanteElement, departamentoElement, equipamentoElement, descricaoElement].every(el => el.value)) {
-        showToast("Preencha todos os campos", "warning");
+      if (!UI.form.checkValidity()) {
+        event.stopPropagation();
+        UI.form.classList.add('was-validated');
         return;
       }
 
-      var id = Date.now()
-
-      const dados = {
-        id: '',
-        createdAt: new Date(id),
-        updatedAt: new Date(id),
-        name: solicitanteElement.options[solicitanteElement.selectedIndex].text,
-        sector: departamentoElement.options[departamentoElement.selectedIndex].text,
-        equipment: equipamentoElement.options[equipamentoElement.selectedIndex].text,
-        preventive: manutencaoElement.checked ? "Sim" : "Não",
-        status: "Aberto",
-        description: descricaoElement.value,
-        personCode: ""
-      };
-
-      loadingModal.show();
-      axios.get(`${url}?action=insert&table=Chamados&data=${JSON.stringify(dados)}`)
-        .then((response) => {
-          console.log(response.data.data);
-
-          showToast(`Chamado <span class="text-success fw-bold">${response.data.data.id}</span> aberto com sucesso`, "success");
-          document.querySelector("#formularioManutencao").reset();
-        })
-        .catch(() => showToast("Erro ao abrir chamado", "danger"))
-        .finally(() => loadingModal.hide());
+      const formData = FormHandlers.getFormData();
+      API.submitForm(formData);
     });
-
-    async function fetchData(table) {
-      const res = await axios.get(`${url}?action=read&table=${table}`);
-      return res.data.data;
-    }
-
-    function populateSelectElement(selector, items) {
-      const selectElement = document.querySelector(selector);
-      selectElement.innerHTML = "<option selected disabled>Selecionar</option>";
-      items.forEach(item => {
-        const optionElement = document.createElement("option");
-        optionElement.value = item.id;
-        optionElement.textContent = item.name;
-        selectElement.appendChild(optionElement);
-      });
-    }
-
-    function showToast(message, type) {
-      const toast = new bootstrap.Toast(document.getElementById("liveToast"));
-      const toastHeader = document.querySelector("#liveToast .toast-header");
-      const messageElement = document.querySelector("#toast-message");
-
-      messageElement.innerHTML = `<p>${message}</p>`;
-      toastHeader.classList.remove("bg-success", "bg-danger", "bg-warning");
-      toastHeader.classList.add(`bg-${type}`);
-
-      toast.show();
-    }
-
-    function placeholder() {
-      document.querySelectorAll('select').forEach(select => {
-        const option = document.createElement('option');
-        option.textContent = 'Carregando...';
-        select.appendChild(option);
-      });
-    }
-
   </script>
 </body>
 
