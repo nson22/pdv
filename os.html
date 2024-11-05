@@ -39,7 +39,16 @@
         </nav>
         <div class="row my-5 pt-4">
             <h5 class="text-uppercase text-center mb-4">Ordem de serviços</h5>
-            <ul class="nav nav-pills mb-3 px-2 justify-content-between" id="pills-tab" role="tablist">
+            <div class="btn-group" role="group">
+                <input type="radio" class="btn-check" name="btnradio" id="btnRadioOpen" autocomplete="off" checked>
+                <label class="btn btn-lg btn-outline-primary" for="btnRadioOpen">Abertos</label>
+                <input type="radio" class="btn-check" name="btnradio" id="btnRadioInProgress" autocomplete="off">
+                <label class="btn btn-lg btn-outline-primary" for="btnRadioInProgress">Em progresso</label>
+            </div>
+            <div id="container">
+                
+            </div>
+            <!-- <ul class="nav nav-pills mb-3 px-2 justify-content-between" id="pills-tab" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link fw-semibold active" id="pills-open-tab" data-bs-toggle="pill"
                         data-bs-target="#pills-open" type="button" role="tab" aria-controls="pills-open"
@@ -64,7 +73,7 @@
                     tabindex="0">
                     <div class="col-12" id="doneList"></div>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
     <div class="modal fade" id="loadingModal" tabindex="-1" aria-labelledby="loadingModalLabel" aria-hidden="true">
@@ -123,316 +132,347 @@
             </div>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const url = 'https://script.google.com/macros/s/AKfycbzOfaFuTy7G9AD9Vr8HpsGuJxAEFbViLinio9ZDXUbdfWgY1h0HCSGC0swGjzWhrzKjPg/exec';
-
-        async function fetchData(action, table) {
-            const res = await axios.get(`${url}?action=${action}&table=${table}`);
-            return res.data.data;
-        }
-
-        const modalLoading = new bootstrap.Modal(document.getElementById('loadingModal'), {
-            backdrop: 'static',
-            keyboard: false
-        });
-
-        const setPersonInChargeModal = new bootstrap.Modal(document.getElementById('setPersonInChargeModal'));
+        const orders = Array.from({length: 10}, (_, i) => {
+            return {
+                id: i + 1,
+                createdAt: new Date(),
+                requester: 'Nilson Silva',
+                department: 'TI',
+                equipment: 'Servidor',
+                description: "Servidor caiu",
+                status: 'Aberto',
+            }
+        })
 
         document.addEventListener('DOMContentLoaded', () => {
-            modalLoading.show();
-            document.getElementById('openList').innerHTML = '';
-            fetchOrdersWithStatus('Aberto', 'openList').finally(() => modalLoading.hide());
-        });
+            renderOrders(orders)
+        })
+        // const url = 'https://script.google.com/macros/s/AKfycbzOfaFuTy7G9AD9Vr8HpsGuJxAEFbViLinio9ZDXUbdfWgY1h0HCSGC0swGjzWhrzKjPg/exec';
 
-        document.getElementById('pills-open-tab').addEventListener('click', async () => {
-            document.getElementById('openList').innerHTML = '';
-            modalLoading.show();
-            await fetchOrdersWithStatus('Aberto', 'openList').finally(() => modalLoading.hide());
-        });
+        // async function fetchData(action, table) {
+        //     const res = await axios.get(`${url}?action=${action}&table=${table}`);
+        //     return res.data.data;
+        // }
 
-        document.getElementById('pills-progress-tab').addEventListener('click', async () => {
-            document.getElementById('progressList').innerHTML = '';
-            modalLoading.show();
-            await fetchOrdersWithStatus('Em progresso', 'progressList').finally(() => modalLoading.hide());
-        });
+        // const modalLoading = new bootstrap.Modal(document.getElementById('loadingModal'), {
+        //     backdrop: 'static',
+        //     keyboard: false
+        // });
 
-        document.getElementById('pills-done-tab').addEventListener('click', async () => {
-            document.getElementById('doneList').innerHTML = '';
-            modalLoading.show();
-            await fetchOrdersWithStatus('Concluir', 'doneList').finally(() => modalLoading.hide());
-        });
+        // const setPersonInChargeModal = new bootstrap.Modal(document.getElementById('setPersonInChargeModal'));
 
-        function resetModalData() {
-            setPersonInChargeModal.hide();
-            document.getElementById('personInCharge').value = '';
-            document.getElementById('personInChargeCode').value = '';
-            document.getElementById('erroMessageModal').innerHTML = '';
-        }
+        // document.addEventListener('DOMContentLoaded', () => {
+        //     modalLoading.show();
+        //     document.getElementById('openList').innerHTML = '';
+        //     fetchOrdersWithStatus('Aberto', 'openList').finally(() => modalLoading.hide());
+        // });
 
-        async function fetchOrdersWithStatus(status, containerId) {
-            const orderList = document.getElementById(containerId);
-            const data = await fetchData('read', 'Chamados');
+        // document.getElementById('pills-open-tab').addEventListener('click', async () => {
+        //     document.getElementById('openList').innerHTML = '';
+        //     modalLoading.show();
+        //     await fetchOrdersWithStatus('Aberto', 'openList').finally(() => modalLoading.hide());
+        // });
 
-            if (data.some(order => order.status === status)) {
-                renderOrders(data, status, orderList);
-            } else {
-                orderList.innerHTML = `
-                        <div class="alert alert-warning mx-2" role="alert">
-                            Não há chamados ${status.toLowerCase()}.
-                        </div>
-                    `;
-            }
-        }
+        // document.getElementById('pills-progress-tab').addEventListener('click', async () => {
+        //     document.getElementById('progressList').innerHTML = '';
+        //     modalLoading.show();
+        //     await fetchOrdersWithStatus('Em progresso', 'progressList').finally(() => modalLoading.hide());
+        // });
 
-        function renderOrders(data, status, container) {
+        // document.getElementById('pills-done-tab').addEventListener('click', async () => {
+        //     document.getElementById('doneList').innerHTML = '';
+        //     modalLoading.show();
+        //     await fetchOrdersWithStatus('Concluir', 'doneList').finally(() => modalLoading.hide());
+        // });
+
+        // function resetModalData() {
+        //     setPersonInChargeModal.hide();
+        //     document.getElementById('personInCharge').value = '';
+        //     document.getElementById('personInChargeCode').value = '';
+        //     document.getElementById('erroMessageModal').innerHTML = '';
+        // }
+
+        // async function fetchOrdersWithStatus(status, containerId) {
+        //     const orderList = document.getElementById(containerId);
+        //     const data = await fetchData('read', 'Chamados');
+
+        //     if (data.some(order => order.status === status)) {
+        //         renderOrders(data, status, orderList);
+        //     } else {
+        //         orderList.innerHTML = `
+        //                 <div class="alert alert-warning mx-2" role="alert">
+        //                     Não há chamados ${status.toLowerCase()}.
+        //                 </div>
+        //             `;
+        //     }
+        // }
+
+        function renderOrders(data) {
             container.innerHTML = '';
             data.forEach(order => {
-                if (order.status !== status) return;
-
                 container.innerHTML += `
-                        <div class="accordion accordion-flush" id="orderAccordion">
-                            <div class="accordion-item mx-2">
-                                <h2 class="accordion-header" id="flush-heading${order.id}">
-                                    <button class="accordion-button collapsed d-flex justify-content-between align-items-center"
-                                        type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse${order.id}">
-                                        <div>
-                                            <span class="card-title fw-bold">OS</span>
-                                            <span class="card-title fw-semibold text-muted" id="order-number-${order.id}">${String(order.id).padStart(9, 0)}</span>
-                                        </div>
-                                    </button>
-                                </h2>
-                                <div id="flush-collapse${order.id}" class="accordion-collapse collapse"
-                                    aria-labelledby="flush-heading${order.id}" data-bs-parent="#orderAccordion">
-                                    <div class="accordion-body">
-                                        <ul class="list-group list-group-flush">
-                                            <li class="list-group-item">
-                                                <div>
-                                                    <h6 class="card-subtitle mb-2 fw-semibold">Data</h6>
-                                                    <span class="text-muted ms-1" id="data-${order.id}">${toLocateDate(order.createdAt)}</span>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item">
-                                                <div>
-                                                    <h6 class="card-subtitle mb-2 fw-semibold">Solicitante</h6>
-                                                    <span class="text-muted" id="solicitante-${order.id}">${order.name}</span>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item">
-                                                <div>
-                                                    <h6 class="card-subtitle mb-2 fw-semibold">Setor</h6>
-                                                    <span class="text-muted" id="departamento-${order.id}">${order.sector}</span>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item">
-                                                <div>
-                                                    <h6 class="card-subtitle mb-2 fw-semibold">Equipamento</h6>
-                                                    <span class="text-muted" id="equipamento-${order.id}">${order.equipment}</span>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item">
-                                                <div>
-                                                    <h6 class="card-subtitle mb-2 fw-semibold">Preventiva?</h6>
-                                                    <span class="text-muted" id="preventive-${order.id}">${order.preventive}</span>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item">
-                                                <div>
-                                                    <h6 class="card-subtitle mb-2 fw-semibold">Descrição</h6>
-                                                    <span class="text-muted" id="descricao-${order.id}">${order.description}</span>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item">
-                                                <div class="d-flex justify-content-between">
-                                                    <button type="button" class="btn btn-danger fw-semibold w-50 me-1" onclick="cancelOrder(${order.id})">Cancelar</button>
-                                                    <button type="button" class="btn btn-primary fw-semibold w-50 ms-1" onclick="setPersonInCharge(${order.id}, '${order.status}')">${updateStatus(order.status)}</button>
-                                                </div>
-                                            </li>
-                                        </ul>
+                    <div class="accordion accordion-flush" id="orderAccordion">
+                        <div class="accordion-item mx-2 mt-3">
+                            <h2 class="accordion-header" id="flush-heading${order.id}">
+                                <button class="accordion-button collapsed d-flex justify-content-between align-items-center"
+                                    type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse${order.id}">
+                                    <div>
+                                        <span class="card-title fw-bold">OS</span>
+                                        <span class="card-title fw-semibold text-muted" id="order-number-${order.id}">${String(order.id).padStart(9, 0)}</span>
                                     </div>
+                                </button>
+                            </h2>
+                            <div id="flush-collapse${order.id}" class="accordion-collapse collapse"
+                                aria-labelledby="flush-heading${order.id}" data-bs-parent="#orderAccordion">
+                                <div class="accordion-body">
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item">
+                                            <div>
+                                                <h6 class="card-subtitle mb-2 fw-semibold">Data</h6>
+                                                <span class="text-muted ms-1" id="data-${order.id}">${toLocateDate(order.createdAt)}</span>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div>
+                                                <h6 class="card-subtitle mb-2 fw-semibold">Solicitante</h6>
+                                                <span class="text-muted" id="solicitante-${order.id}">${order.requester}</span>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div>
+                                                <h6 class="card-subtitle mb-2 fw-semibold">Setor</h6>
+                                                <span class="text-muted" id="departamento-${order.id}">${order.department}</span>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div>
+                                                <h6 class="card-subtitle mb-2 fw-semibold">Equipamento</h6>
+                                                <span class="text-muted" id="equipamento-${order.id}">${order.equipment}</span>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div>
+                                                <h6 class="card-subtitle mb-2 fw-semibold">Descrição</h6>
+                                                <span class="text-muted" id="descricao-${order.id}">${order.description}</span>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div>
+                                                <h6 class="card-subtitle mb-2 fw-semibold">Lista</h6>
+                                                <input class="form-control" list="defectList" id="defect" placeholder="Filtrar defeitos">
+                                                <datalist id="defectList">
+                                                    <option value="M01">Alarme de emergência</option>
+                                                    <option value="M02">Alarme de erro de sistema do robô</option>
+                                                    <option value="M03">Alarme no inversor</option>
+                                                    <option value="M04">Alarme no servo amplificador</option>
+                                                    <option value="M05">Aquecimento do óleo</option>
+                                                    <option value="M06">Armário de manuais desorganizados</option>
+                                                    <option value="M07">Choque elétrico</option>
+                                                    <option value="M08">Contaminação do produto</option>
+                                                </datalist>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div>
+                                                <h6 class="card-subtitle mb-2 fw-semibold">Comentário</h6>
+                                                <textarea type="search" rows=4 class="form-control" placeholder="Adicionar comentário" id="comentario-${order.id}" style="resize: none"></textarea>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div class="d-flex justify-content-between">
+                                                <button type="button" class="btn btn-lg btn-danger fw-semibold w-50 me-1" onclick="cancelOrder(${order.id})">Cancelar</button>
+                                                <button type="button" class="btn btn-lg btn-primary fw-semibold w-50 me-1" onclick="updateOrderStatus(${order.id})">Em progresso</button>
+                                            </div>
+                                        </li>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
-                    `;
-            });
-        }
-
-        async function setPersonInCharge(id, status) {
-            const personInCharge = document.getElementById('personInCharge');
-            const personInChargeCode = document.getElementById('personInChargeCode');
-            const erroMessageModal = document.getElementById('erroMessageModal');
-            personInCharge.value = '';
-            personInChargeCode.value = '';
-
-            setPersonInChargeModal.show();
-
-            document.getElementById('confirmButtonUpdateStatus').addEventListener('click', async () => {
-                erroMessageModal.innerHTML = `
-                        <div class="d-flex justify-content-center">
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </div>
-                        </div>
-                    `;
-
-                if (!personInCharge.value || !personInChargeCode.value) {
-                    showError('Informe a matrícula e o código', 'warning');
-                    personInCharge.focus();
-                    return;
-                }
-
-                try {
-                    toggleFormElements(true);
-                    const response = await axios.get(`${url}?action=read&table=Funcionarios&id=${personInCharge.value}&code=${personInChargeCode.value}`);
-
-                    if (!response.data.data) {
-                        showError('Matrícula ou código inválidos', 'danger');
-                        return;
-                    }
-
-                    const personCode = response.data.data.code;
-                    await updateOrderStatus(id, status, personCode);
-
-                } catch (error) {
-                    showError('Erro ao verificar matrícula e código', 'danger');
-                } finally {
-                    resetModalData();
-                }
-            });
-        }
-
-        function toggleFormElements(disable) {
-            const elements = ['cancelButtonUpdateStatus', 'confirmButtonUpdateStatus', 'personInCharge', 'personInChargeCode'];
-            elements.forEach(id => document.getElementById(id).disabled = disable);
-        }
-
-        function showError(message, type) {
-            const erroMessageModal = document.getElementById('erroMessageModal');
-            erroMessageModal.innerHTML = `
-                    <div class="alert alert-${type}" role="alert">
-                        ${message}
                     </div>
                 `;
-        }
-
-        function updateStatus(status) {
-            switch (status) {
-                case 'Aberto':
-                    return 'Em progresso';
-                case 'Em progresso':
-                    return 'Concluir';
-                case 'Concluir':
-                    return 'Finalizado';
-            }
-        }
-
-        async function updateOrderStatus(id, status, personCode) {
-            const newStatus = updateStatus(status);
-            await axios.get(`${url}?action=update&table=Chamados&id=${id}&data={"status":"${newStatus}", "updatedAt": "${new Date().toISOString()}", "personCode": "${personCode}"}`);
-
-            if (newStatus === 'Aberto') {
-                await fetchOrdersWithStatus('Aberto', 'openList').finally(() => modalLoading.hide());
-                return;
-            }
-
-            if (newStatus === "Em progresso") {
-                await fetchOrdersWithStatus('Em progresso', 'progressList').finally(() => modalLoading.hide());
-                await fetchOrdersWithStatus('Aberto', 'openList');
-                return;
-            }
-
-            if (newStatus === "Concluir") {
-                await fetchOrdersWithStatus('Concluir', 'doneList').finally(() => modalLoading.hide());
-                await fetchOrdersWithStatus('Em progresso', 'progressList').finally(() => modalLoading.hide());
-                return;
-            }
-
-            if (newStatus === "Cancelado") {
-                await fetchOrdersWithStatus('Aberto', 'openList').finally(() => modalLoading.hide());
-                return;
-            }
-        }
-
-        async function cancelOrder(id) {
-            const personInCharge = document.getElementById('personInCharge');
-            const personInChargeCode = document.getElementById('personInChargeCode');
-            const erroMessageModal = document.getElementById('erroMessageModal');
-            personInCharge.value = '';
-            personInChargeCode.value = '';
-
-            setPersonInChargeModal.show();
-
-            document.getElementById('confirmButtonUpdateStatus').addEventListener('click', async () => {
-                erroMessageModal.innerHTML = `
-                        <div class="d-flex justify-content-center">
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </div>
-                        </div>
-                    `;
-
-                if (!personInCharge.value || !personInChargeCode.value) {
-                    showError('Informe a matrícula e o código', 'warning');
-                    personInCharge.focus();
-                    return;
-                }
-
-                try {
-                    toggleFormElements(true);
-                    const response = await axios.get(`${url}?action=read&table=Funcionarios&id=${personInCharge.value}&code=${personInChargeCode.value}`);
-
-                    if (!response.data.data) {
-                        showError('Matrícula ou código inválidos', 'danger');
-                        return;
-                    }
-
-                    const personCode = response.data.data.code;
-                    await updateOrderStatus(id, 'Cancelado', personCode);
-
-                } catch (error) {
-                    showError('Erro ao verificar matrícula e código', 'danger');
-                } finally {
-                    resetModalData();
-                }
             });
         }
 
-        async function handleStatusChange(newStatus) {
-            const statusMap = {
-                "Em progresso": ['Em progresso', 'Aberto'],
-                "Concluir": ['Concluir', 'Em progresso'],
-                "Cancelado": ['Aberto']
-            };
+        // <button type="button" class="btn btn-primary fw-semibold w-50 ms-1" onclick="setPersonInCharge(${order.id}, '${order.status}')">${updateStatus(order.status)}</button>
 
-            if (statusMap[newStatus]) {
-                for (const status of statusMap[newStatus]) {
-                    await fetchOrdersWithStatus(status, getListId(status)).finally(() => modalLoading.hide());
-                }
-            }
-        }
 
-        function getListId(status) {
-            const listIdMap = {
-                'Em progresso': 'progressList',
-                'Aberto': 'openList',
-                'Concluir': 'doneList'
-            };
-            return listIdMap[status];
-        }
+        // async function setPersonInCharge(id, status) {
+        //     const personInCharge = document.getElementById('personInCharge');
+        //     const personInChargeCode = document.getElementById('personInChargeCode');
+        //     const erroMessageModal = document.getElementById('erroMessageModal');
+        //     personInCharge.value = '';
+        //     personInChargeCode.value = '';
+
+        //     setPersonInChargeModal.show();
+
+        //     document.getElementById('confirmButtonUpdateStatus').addEventListener('click', async () => {
+        //         erroMessageModal.innerHTML = `
+        //                 <div class="d-flex justify-content-center">
+        //                     <div class="spinner-border text-primary" role="status">
+        //                         <span class="visually-hidden">Loading...</span>
+        //                     </div>
+        //                 </div>
+        //             `;
+
+        //         if (!personInCharge.value || !personInChargeCode.value) {
+        //             showError('Informe a matrícula e o código', 'warning');
+        //             personInCharge.focus();
+        //             return;
+        //         }
+
+        //         try {
+        //             toggleFormElements(true);
+        //             const response = await axios.get(`${url}?action=read&table=Funcionarios&id=${personInCharge.value}&code=${personInChargeCode.value}`);
+
+        //             if (!response.data.data) {
+        //                 showError('Matrícula ou código inválidos', 'danger');
+        //                 return;
+        //             }
+
+        //             const personCode = response.data.data.code;
+        //             await updateOrderStatus(id, status, personCode);
+
+        //         } catch (error) {
+        //             showError('Erro ao verificar matrícula e código', 'danger');
+        //         } finally {
+        //             resetModalData();
+        //         }
+        //     });
+        // }
+
+        // function toggleFormElements(disable) {
+        //     const elements = ['cancelButtonUpdateStatus', 'confirmButtonUpdateStatus', 'personInCharge', 'personInChargeCode'];
+        //     elements.forEach(id => document.getElementById(id).disabled = disable);
+        // }
+
+        // function showError(message, type) {
+        //     const erroMessageModal = document.getElementById('erroMessageModal');
+        //     erroMessageModal.innerHTML = `
+        //             <div class="alert alert-${type}" role="alert">
+        //                 ${message}
+        //             </div>
+        //         `;
+        // }
+
+        // function updateStatus(status) {
+        //     switch (status) {
+        //         case 'Aberto':
+        //             return 'Em progresso';
+        //         case 'Em progresso':
+        //             return 'Concluir';
+        //         case 'Concluir':
+        //             return 'Finalizado';
+        //     }
+        // }
+
+        // async function updateOrderStatus(id, status, personCode) {
+        //     const newStatus = updateStatus(status);
+        //     await axios.get(`${url}?action=update&table=Chamados&id=${id}&data={"status":"${newStatus}", "updatedAt": "${new Date().toISOString()}", "personCode": "${personCode}"}`);
+
+        //     if (newStatus === 'Aberto') {
+        //         await fetchOrdersWithStatus('Aberto', 'openList').finally(() => modalLoading.hide());
+        //         return;
+        //     }
+
+        //     if (newStatus === "Em progresso") {
+        //         await fetchOrdersWithStatus('Em progresso', 'progressList').finally(() => modalLoading.hide());
+        //         await fetchOrdersWithStatus('Aberto', 'openList');
+        //         return;
+        //     }
+
+        //     if (newStatus === "Concluir") {
+        //         await fetchOrdersWithStatus('Concluir', 'doneList').finally(() => modalLoading.hide());
+        //         await fetchOrdersWithStatus('Em progresso', 'progressList').finally(() => modalLoading.hide());
+        //         return;
+        //     }
+
+        //     if (newStatus === "Cancelado") {
+        //         await fetchOrdersWithStatus('Aberto', 'openList').finally(() => modalLoading.hide());
+        //         return;
+        //     }
+        // }
+
+        // async function cancelOrder(id) {
+        //     const personInCharge = document.getElementById('personInCharge');
+        //     const personInChargeCode = document.getElementById('personInChargeCode');
+        //     const erroMessageModal = document.getElementById('erroMessageModal');
+        //     personInCharge.value = '';
+        //     personInChargeCode.value = '';
+
+        //     setPersonInChargeModal.show();
+
+        //     document.getElementById('confirmButtonUpdateStatus').addEventListener('click', async () => {
+        //         erroMessageModal.innerHTML = `
+        //                 <div class="d-flex justify-content-center">
+        //                     <div class="spinner-border text-primary" role="status">
+        //                         <span class="visually-hidden">Loading...</span>
+        //                     </div>
+        //                 </div>
+        //             `;
+
+        //         if (!personInCharge.value || !personInChargeCode.value) {
+        //             showError('Informe a matrícula e o código', 'warning');
+        //             personInCharge.focus();
+        //             return;
+        //         }
+
+        //         try {
+        //             toggleFormElements(true);
+        //             const response = await axios.get(`${url}?action=read&table=Funcionarios&id=${personInCharge.value}&code=${personInChargeCode.value}`);
+
+        //             if (!response.data.data) {
+        //                 showError('Matrícula ou código inválidos', 'danger');
+        //                 return;
+        //             }
+
+        //             const personCode = response.data.data.code;
+        //             await updateOrderStatus(id, 'Cancelado', personCode);
+
+        //         } catch (error) {
+        //             showError('Erro ao verificar matrícula e código', 'danger');
+        //         } finally {
+        //             resetModalData();
+        //         }
+        //     });
+        // }
+
+        // async function handleStatusChange(newStatus) {
+        //     const statusMap = {
+        //         "Em progresso": ['Em progresso', 'Aberto'],
+        //         "Concluir": ['Concluir', 'Em progresso'],
+        //         "Cancelado": ['Aberto']
+        //     };
+
+        //     if (statusMap[newStatus]) {
+        //         for (const status of statusMap[newStatus]) {
+        //             await fetchOrdersWithStatus(status, getListId(status)).finally(() => modalLoading.hide());
+        //         }
+        //     }
+        // }
+
+        // function getListId(status) {
+        //     const listIdMap = {
+        //         'Em progresso': 'progressList',
+        //         'Aberto': 'openList',
+        //         'Concluir': 'doneList'
+        //     };
+        //     return listIdMap[status];
+        // }
 
         function toLocateDate(date) {
             const options = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' };
             return new Date(date).toLocaleDateString('pt-BR', options).replace(',', ' às');
         }
 
-        function showToast(message, type) {
-            const toast = new bootstrap.Toast(document.getElementById('liveToast'));
-            const toastMessage = document.getElementById('toast-message');
-            toastMessage.textContent = message;
-            toastMessage.className = `text-${type}`;
-            toast.show();
-        }
+        // function showToast(message, type) {
+        //     const toast = new bootstrap.Toast(document.getElementById('liveToast'));
+        //     const toastMessage = document.getElementById('toast-message');
+        //     toastMessage.textContent = message;
+        //     toastMessage.className = `text-${type}`;
+        //     toast.show();
+        // }
     </script>
 </body>
 

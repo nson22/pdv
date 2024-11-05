@@ -935,7 +935,7 @@
             loadingModal.show();
 
             await postSale(formData);
-            
+
             cart = [];
             showToast('Venda realizada com sucesso!', 'success');
             paymentModal.hide();
@@ -1068,19 +1068,27 @@
 
             loadingShimmer()
 
-            if (dbProducts) {
-                displayProducts(dbProducts);
-            } else {
-                fetchData().then(({ lenght }) => {
-                    fetchData(lenght).then(({ data }) => {
-                        localStorage.setItem('dbProducts', JSON.stringify(data));
-                        displayProducts(data);
-                    })
+            google.script.run
+                .withSuccessHandler((products) => {
+                    console.log(products);
+                    
+                    displayProducts(products)
                 })
-            }
+                .withFailureHandler((error) => {
+                    console.error('Error:', error);
+                })
+                .getProducts()
 
 
+            // fetchData().then(({ lenght }) => {
+            //     fetchData(lenght).then(({ data }) => {
+            //         localStorage.setItem('dbProducts', JSON.stringify(data));
+            //         displayProducts(data);
+            //     })
+            // })
         }
+
+        
 
     </script>
 </body>

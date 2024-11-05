@@ -1,1110 +1,1172 @@
-# Test Cases: Ziyou Club Login Screen
+Vou traduzir os casos de teste para português brasileiro.
 
-## Test Suite: Login Functionality
+# Casos de Teste: Tela de Login do Ziyou Club
 
-### Test Case ID: LOG_001
-**Test Case Name:** Valid Login Credentials  
-**Priority:** High  
-**Precondition:** 
-- App is installed and launched
-- User has valid registered account
-- Internet connection is available  
+## Suite de Testes: Funcionalidade de Login
 
-**Test Steps:**
-1. Enter valid registered email in Email field
-2. Enter correct password in Password field
-3. Click "Acessar" button
+### ID do Caso de Teste: LOG_001
+**Nome do Caso de Teste:** Credenciais de Login Válidas  
+**Prioridade:** Alta  
+**Pré-condição:** 
+- Aplicativo está instalado e iniciado
+- Usuário possui conta registrada válida
+- Conexão com internet está disponível  
 
-**Expected Result:**  
-- User should be successfully logged in
-- User should be directed to the main fitness content screen
+**Passos do Teste:**
+1. Inserir email registrado válido no campo Email
+2. Inserir senha correta no campo Senha
+3. Clicar no botão "Acessar"
 
-**Post-condition:**  
-User is logged into the application
+**Resultado Esperado:**  
+- Usuário deve ser logado com sucesso
+- Usuário deve ser direcionado para a tela principal de conteúdo fitness
 
----
-
-### Test Case ID: LOG_002
-**Test Case Name:** Invalid Email Format  
-**Priority:** High  
-**Precondition:**
-- App is installed and launched
-- Internet connection is available
-
-**Test Steps:**
-1. Enter invalid email format (e.g., "test@", "test.com", "@test.com")
-2. Enter any password
-3. Click "Acessar" button
-
-**Expected Result:**
-- System should display email format validation error
-- Login should not proceed
-
-**Post-condition:**
-User remains on login screen with error message
+**Pós-condição:**  
+Usuário está logado no aplicativo
 
 ---
 
-### Test Case ID: LOG_003
-**Test Case Name:** Empty Email Field  
-**Priority:** Medium  
-**Precondition:**
-- App is installed and launched
+### ID do Caso de Teste: LOG_002
+**Nome do Caso de Teste:** Formato de Email Inválido  
+**Prioridade:** Alta  
+**Pré-condição:**
+- Aplicativo está instalado e iniciado
+- Conexão com internet está disponível
 
-**Test Steps:**
-1. Leave Email field empty
-2. Enter any password
-3. Click "Acessar" button
+**Passos do Teste:**
+1. Inserir formato de email inválido (ex: "teste@", "teste.com", "@teste.com")
+2. Inserir qualquer senha
+3. Clicar no botão "Acessar"
 
-**Expected Result:**
-- System should display required field error for email
-- Login should not proceed
+**Resultado Esperado:**
+- Sistema deve exibir erro de validação do formato do email
+- Login não deve prosseguir
 
-**Post-condition:**
-User remains on login screen with error message
-
----
-
-### Test Case ID: LOG_004
-**Test Case Name:** Empty Password Field  
-**Priority:** Medium  
-**Precondition:**
-- App is installed and launched
-
-**Test Steps:**
-1. Enter valid email
-2. Leave Password field empty
-3. Click "Acessar" button
-
-**Expected Result:**
-- System should display required field error for password
-- Login should not proceed
-
-**Post-condition:**
-User remains on login screen with error message
+**Pós-condição:**
+Usuário permanece na tela de login com mensagem de erro
 
 ---
 
-### Test Case ID: LOG_005
-**Test Case Name:** Password Toggle Visibility  
-**Priority:** Low  
-**Precondition:**
-- App is installed and launched
+### ID do Caso de Teste: LOG_003
+**Nome do Caso de Teste:** Campo de Email Vazio  
+**Prioridade:** Média  
+**Pré-condição:**
+- Aplicativo está instalado e iniciado
 
-**Test Steps:**
-1. Enter any text in Password field
-2. Click eye icon in Password field
-3. Click eye icon again
+**Passos do Teste:**
+1. Deixar campo de Email vazio
+2. Inserir qualquer senha
+3. Clicar no botão "Acessar"
 
-**Expected Result:**
-- Password should toggle between visible and masked characters
-- Eye icon should change to reflect current state
+**Resultado Esperado:**
+- Sistema deve exibir erro de campo obrigatório para email
+- Login não deve prosseguir
 
-**Post-condition:**
-Password visibility state matches last toggle action
-
----
-
-### Test Case ID: LOG_006
-**Test Case Name:** Forgot Password Link  
-**Priority:** Medium  
-**Precondition:**
-- App is installed and launched
-- Internet connection is available
-
-**Test Steps:**
-1. Click "Esqueceu sua senha?" link
-
-**Expected Result:**
-- User should be directed to password recovery screen
-
-**Post-condition:**
-User is on password recovery screen
+**Pós-condição:**
+Usuário permanece na tela de login com mensagem de erro
 
 ---
 
-### Test Case ID: LOG_007
-**Test Case Name:** Offline Login Attempt  
-**Priority:** Medium  
-**Precondition:**
-- App is installed and launched
-- Device is in offline mode
+### ID do Caso de Teste: LOG_004
+**Nome do Caso de Teste:** Campo de Senha Vazio  
+**Prioridade:** Média  
+**Pré-condição:**
+- Aplicativo está instalado e iniciado
 
-**Test Steps:**
-1. Enter valid email
-2. Enter valid password
-3. Click "Acessar" button
+**Passos do Teste:**
+1. Inserir email válido
+2. Deixar campo de Senha vazio
+3. Clicar no botão "Acessar"
 
-**Expected Result:**
-- System should display no internet connection error
-- Login should not proceed
+**Resultado Esperado:**
+- Sistema deve exibir erro de campo obrigatório para senha
+- Login não deve prosseguir
 
-**Post-condition:**
-User remains on login screen with connectivity error message
-
----
-
-### Test Case ID: LOG_008
-**Test Case Name:** Invalid Login Credentials  
-**Priority:** High  
-**Precondition:**
-- App is installed and launched
-- Internet connection is available
-
-**Test Steps:**
-1. Enter registered email
-2. Enter incorrect password
-3. Click "Acessar" button
-
-**Expected Result:**
-- System should display invalid credentials error
-- Login should not proceed
-
-**Post-condition:**
-User remains on login screen with error message
-# Test Cases for Ziyou Club Fitness App
-## Module: Dashboard Screen
-
-### Test Case ID: TC_DS_001
-**Test Case Title:** Verify Last Session Display  
-**Precondition:** App is installed and user is logged in  
-**Priority:** High  
-**Test Data:** User has completed at least one session  
-**Test Steps:**
-1. Navigate to dashboard screen
-2. Observe "Sua ultima sessão" (Last session) section
-3. Verify time display format
-4. Verify calories count
-5. Click on "detalhes" (details) link
-
-**Expected Results:**
-- Last session time should be displayed in HH:MM:SS format
-- Calories burned should be displayed as a number
-- Date should be displayed correctly
-- Details link should be clickable and navigate to session details
-
-### Test Case ID: TC_DS_002
-**Test Case Title:** Verify Equipment Connection  
-**Precondition:** App is installed and Bluetooth is enabled  
-**Priority:** High  
-**Test Data:** Compatible exercise equipment nearby  
-**Test Steps:**
-1. Navigate to dashboard screen
-2. Click on "Conecte seu equipamento" (Connect your equipment)
-3. Observe Bluetooth pairing process
-4. Complete connection
-
-**Expected Results:**
-- Bluetooth pairing interface should appear
-- Available equipment should be listed
-- Successful connection should be indicated
-- Connected equipment should be displayed in the interface
-
-### Test Case ID: TC_DS_003
-**Test Case Title:** Verify Weekly Summary Display  
-**Precondition:** App is installed and user has activity data  
-**Priority:** High  
-**Test Data:** User has completed workouts in the current week  
-**Test Steps:**
-1. Navigate to dashboard screen
-2. Observe "Resumo da semana" (Weekly summary) section
-3. Verify all metrics displayed
-
-**Expected Results:**
-- Minutes per week should show current/target (60/609)
-- Calories should show current/target (421/2146)
-- Average speed should display correctly (17.6 km/h)
-- Progress circle should reflect current progress
-
-### Test Case ID: TC_DS_004
-**Test Case Title:** Verify Weekly Progress Calendar  
-**Precondition:** App is installed and user has activity data  
-**Priority:** Medium  
-**Test Steps:**
-1. Navigate to dashboard screen
-2. Observe weekly calendar (D,S,T,Q,Q,S,S)
-3. Verify completed workout indicators
-4. Verify current day indicator
-
-**Expected Results:**
-- Days should be correctly labeled
-- Completed workouts should show checkmark
-- Current day should be highlighted
-- Past days should show appropriate status indicators
-
-### Test Case ID: TC_DS_005
-**Test Case Title:** Verify Weekly Goal Progress  
-**Precondition:** App is installed and user has set weekly goals  
-**Priority:** Medium  
-**Test Data:** User has completed at least one session  
-**Test Steps:**
-1. Navigate to dashboard screen
-2. Observe weekly goal progress bar
-3. Verify progress percentage calculation
-4. Verify goal completion message
-
-**Expected Results:**
-- Progress bar should reflect current progress
-- Percentage should be accurately calculated
-- Message should show "100% da sua meta de 1 sessões semanais!"
-- Progress should match completed sessions in calendar
-
-### Test Case ID: TC_DS_006
-**Test Case Title:** Verify Navigation Bar Functionality  
-**Precondition:** App is installed and user is logged in  
-**Priority:** High  
-**Test Steps:**
-1. Observe bottom navigation bar
-2. Click on each navigation icon
-3. Return to home screen
-4. Verify current section highlight
-
-**Expected Results:**
-- All navigation icons should be clickable
-- Each icon should navigate to correct section
-- Current section should be highlighted
-- Home icon should return to dashboard
-
-### Test Case ID: TC_DS_007
-**Test Case Title:** Verify Device Status Display  
-**Precondition:** App is installed  
-**Priority:** Low  
-**Test Steps:**
-1. Observe top status bar
-2. Verify battery indicator
-3. Verify time display
-4. Verify connection indicators
-
-**Expected Results:**
-- Battery level should be accurately displayed (72%)
-- Time should be correctly shown (13:34)
-- WiFi/cellular signals should be visible
-- Bluetooth status should be indicated
-
-### Test Case ID: TC_DS_008
-**Test Case Title:** Verify Share Functionality  
-**Precondition:** App is installed and user has activity data  
-**Priority:** Medium  
-**Test Steps:**
-1. Navigate to dashboard screen
-2. Click share icon in weekly summary
-3. Verify sharing options
-4. Test sharing process
-
-**Expected Results:**
-- Share icon should be clickable
-- Sharing options should appear
-- Sharing process should complete successfully
-- Shared content should include relevant workout data
-
-### Test Case ID: TC_DS_009
-**Test Case Title:** Verify Data Refresh  
-**Precondition:** App is installed and user has completed a new workout  
-**Priority:** High  
-**Test Steps:**
-1. Complete a new workout session
-2. Return to dashboard screen
-3. Pull to refresh (if available)
-4. Observe data update
-
-**Expected Results:**
-- New workout data should appear in last session
-- Weekly summary should update
-- Calendar should update
-- Goal progress should update
-
-### Test Case ID: TC_DS_010
-**Test Case Title:** Verify Metric Unit Display  
-**Precondition:** App is installed  
-**Priority:** Medium  
-**Test Steps:**
-1. Navigate to dashboard screen
-2. Observe all metric displays
-3. Verify unit consistency
-4. Check number formatting
-
-**Expected Results:**
-- Speed should be displayed in km/h
-- Time should be in HH:MM:SS format
-- Calories should be whole numbers
-- All units should be consistently formatted
----
-# Test Cases: Class Search/Filter Screen
-
-## Test Suite: Class Search and Filter Functionality
-
-### Test Case ID: SRCH_001
-**Test Case Name:** Filter Expansion/Collapse  
-**Priority:** High  
-**Precondition:** 
-- User is logged in
-- Search screen is loaded
-
-**Test Steps:**
-1. Click each filter option (Modalidades, Distância, etc.)
-2. Verify dropdown expands
-3. Click again on expanded filter
-4. Verify dropdown collapses
-
-**Expected Result:**
-- Each filter should expand when clicked
-- Each filter should collapse when clicked again
-- Only one filter should be expanded at a time
-
-**Post-condition:**
-All filters return to collapsed state
+**Pós-condição:**
+Usuário permanece na tela de login com mensagem de erro
 
 ---
 
-### Test Case ID: SRCH_002
-**Test Case Name:** Multiple Filter Selection  
-**Priority:** High  
-**Precondition:**
-- User is logged in
-- Search screen is loaded
+### ID do Caso de Teste: LOG_005
+**Nome do Caso de Teste:** Alternar Visibilidade da Senha  
+**Prioridade:** Baixa  
+**Pré-condição:**
+- Aplicativo está instalado e iniciado
 
-**Test Steps:**
-1. Expand Modalidades filter
-2. Select multiple options
-3. Expand Duração filter
-4. Select duration option
-5. Click "Ver todas as aulas"
+**Passos do Teste:**
+1. Inserir qualquer texto no campo Senha
+2. Clicar no ícone de olho no campo Senha
+3. Clicar novamente no ícone de olho
 
-**Expected Result:**
-- Multiple selections should be allowed within filters
-- Selected filters should be visually indicated
-- Results should reflect all applied filters
+**Resultado Esperado:**
+- Senha deve alternar entre caracteres visíveis e mascarados
+- Ícone de olho deve mudar para refletir o estado atual
 
-**Post-condition:**
-Search results display with selected filters applied
+**Pós-condição:**
+Estado de visibilidade da senha corresponde à última ação de alternância
 
 ---
 
-### Test Case ID: SRCH_003
-**Test Case Name:** Filter Reset/Clear  
-**Priority:** Medium  
-**Precondition:**
-- User is logged in
-- Multiple filters are selected
+### ID do Caso de Teste: LOG_006
+**Nome do Caso de Teste:** Link Esqueceu sua Senha  
+**Prioridade:** Média  
+**Pré-condição:**
+- Aplicativo está instalado e iniciado
+- Conexão com internet está disponível
 
-**Test Steps:**
-1. Locate clear/reset option
-2. Clear all selected filters
-3. Verify filter state
+**Passos do Teste:**
+1. Clicar no link "Esqueceu sua senha?"
 
-**Expected Result:**
-- All filters should reset to default state
-- No selections should remain active
-- Search results should update accordingly
+**Resultado Esperado:**
+- Usuário deve ser direcionado para a tela de recuperação de senha
 
-**Post-condition:**
-All filters return to default state
+**Pós-condição:**
+Usuário está na tela de recuperação de senha
 
 ---
 
-### Test Case ID: SRCH_004
-**Test Case Name:** Caloric Expenditure Range Filter  
-**Priority:** Medium  
-**Precondition:**
-- User is logged in
-- Search screen is loaded
+### ID do Caso de Teste: LOG_007
+**Nome do Caso de Teste:** Tentativa de Login Offline  
+**Prioridade:** Média  
+**Pré-condição:**
+- Aplicativo está instalado e iniciado
+- Dispositivo está em modo offline
 
-**Test Steps:**
-1. Expand "Gasto Calórico Est" filter
-2. Select calorie range
-3. Verify results update
+**Passos do Teste:**
+1. Inserir email válido
+2. Inserir senha válida
+3. Clicar no botão "Acessar"
 
-**Expected Result:**
-- Calorie range selection should be possible
-- Results should show classes within selected range
-- Range values should be clearly displayed
+**Resultado Esperado:**
+- Sistema deve exibir erro de sem conexão com internet
+- Login não deve prosseguir
 
-**Post-condition:**
-Classes filtered by selected calorie range
-
----
-
-### Test Case ID: SRCH_005
-**Test Case Name:** Distance-Based Search  
-**Priority:** High  
-**Precondition:**
-- User is logged in
-- Location services enabled
-- Search screen is loaded
-
-**Test Steps:**
-1. Expand "Distância" filter
-2. Select distance range
-3. Verify location-based results
-
-**Expected Result:**
-- Distance options should be available
-- Results should show classes within selected radius
-- Location permissions should be requested if needed
-
-**Post-condition:**
-Classes filtered by distance from user location
+**Pós-condição:**
+Usuário permanece na tela de login com mensagem de erro de conectividade
 
 ---
 
-### Test Case ID: SRCH_006
-**Test Case Name:** Instructor Filter  
-**Priority:** Medium  
-**Precondition:**
-- User is logged in
-- Search screen is loaded
+### ID do Caso de Teste: LOG_008
+**Nome do Caso de Teste:** Credenciais de Login Inválidas  
+**Prioridade:** Alta  
+**Pré-condição:**
+- Aplicativo está instalado e iniciado
+- Conexão com internet está disponível
 
-**Test Steps:**
-1. Expand "Professor" filter
-2. Select specific instructor
-3. Verify filtered results
+**Passos do Teste:**
+1. Inserir email registrado
+2. Inserir senha incorreta
+3. Clicar no botão "Acessar"
 
-**Expected Result:**
-- Instructor list should be populated
-- Results should show only selected instructor's classes
-- Instructor names should be clearly displayed
+**Resultado Esperado:**
+- Sistema deve exibir erro de credenciais inválidas
+- Login não deve prosseguir
 
-**Post-condition:**
-Classes filtered by selected instructor
+**Pós-condição:**
+Usuário permanece na tela de login com mensagem de erro
+
+# Casos de Teste para o Aplicativo Ziyou Club Fitness
+## Módulo: Tela de Dashboard
+---
+
+### ID do Caso de Teste: TC_DS_001
+**Título do Caso de Teste:** Verificar Exibição da Última Sessão  
+**Pré-condição:** Aplicativo está instalado e usuário está logado  
+**Prioridade:** Alta  
+**Dados de Teste:** Usuário completou pelo menos uma sessão  
+**Passos do Teste:**
+1. Navegar para a tela de dashboard
+2. Observar a seção "Sua última sessão"
+3. Verificar formato de exibição do tempo
+4. Verificar contagem de calorias
+5. Clicar no link "detalhes"
+
+**Resultados Esperados:**
+- O tempo da última sessão deve ser exibido no formato HH:MM:SS
+- As calorias queimadas devem ser exibidas como um número
+- A data deve ser exibida corretamente
+- O link de detalhes deve ser clicável e navegar para os detalhes da sessão
+
+### ID do Caso de Teste: TC_DS_002
+**Título do Caso de Teste:** Verificar Conexão de Equipamento  
+**Pré-condição:** Aplicativo está instalado e Bluetooth está ativado  
+**Prioridade:** Alta  
+**Dados de Teste:** Equipamento de exercício compatível nas proximidades  
+**Passos do Teste:**
+1. Navegar para a tela de dashboard
+2. Clicar em "Conecte seu equipamento"
+3. Observar processo de pareamento Bluetooth
+4. Completar conexão
+
+**Resultados Esperados:**
+- Interface de pareamento Bluetooth deve aparecer
+- Equipamentos disponíveis devem ser listados
+- Conexão bem-sucedida deve ser indicada
+- Equipamento conectado deve ser exibido na interface
+
+### ID do Caso de Teste: TC_DS_003
+**Título do Caso de Teste:** Verificar Exibição do Resumo Semanal  
+**Pré-condição:** Aplicativo está instalado e usuário tem dados de atividade  
+**Prioridade:** Alta  
+**Dados de Teste:** Usuário completou treinos na semana atual  
+**Passos do Teste:**
+1. Navegar para a tela de dashboard
+2. Observar a seção "Resumo da semana"
+3. Verificar todas as métricas exibidas
+
+**Resultados Esperados:**
+- Minutos por semana devem mostrar atual/meta (60/609)
+- Calorias devem mostrar atual/meta (421/2146)
+- Velocidade média deve ser exibida corretamente (17.6 km/h)
+- Círculo de progresso deve refletir o progresso atual
+
+### ID do Caso de Teste: TC_DS_004
+**Título do Caso de Teste:** Verificar Calendário de Progresso Semanal  
+**Pré-condição:** Aplicativo está instalado e usuário tem dados de atividade  
+**Prioridade:** Média  
+**Passos do Teste:**
+1. Navegar para a tela de dashboard
+2. Observar calendário semanal (D,S,T,Q,Q,S,S)
+3. Verificar indicadores de treinos completados
+4. Verificar indicador do dia atual
+
+**Resultados Esperados:**
+- Dias devem estar corretamente rotulados
+- Treinos completados devem mostrar marca de verificação
+- Dia atual deve estar destacado
+- Dias passados devem mostrar indicadores de status apropriados
+
+### ID do Caso de Teste: TC_DS_005
+**Título do Caso de Teste:** Verificar Progresso da Meta Semanal  
+**Pré-condição:** Aplicativo está instalado e usuário definiu metas semanais  
+**Prioridade:** Média  
+**Dados de Teste:** Usuário completou pelo menos uma sessão  
+**Passos do Teste:**
+1. Navegar para a tela de dashboard
+2. Observar barra de progresso da meta semanal
+3. Verificar cálculo da porcentagem de progresso
+4. Verificar mensagem de conclusão da meta
+
+**Resultados Esperados:**
+- Barra de progresso deve refletir o progresso atual
+- Porcentagem deve ser calculada com precisão
+- Mensagem deve mostrar "100% da sua meta de 1 sessões semanais!"
+- Progresso deve corresponder às sessões completadas no calendário
+
+### ID do Caso de Teste: TC_DS_006
+**Título do Caso de Teste:** Verificar Funcionalidade da Barra de Navegação  
+**Pré-condição:** Aplicativo está instalado e usuário está logado  
+**Prioridade:** Alta  
+**Passos do Teste:**
+1. Observar barra de navegação inferior
+2. Clicar em cada ícone de navegação
+3. Retornar à tela inicial
+4. Verificar destaque da seção atual
+
+**Resultados Esperados:**
+- Todos os ícones de navegação devem ser clicáveis
+- Cada ícone deve navegar para a seção correta
+- Seção atual deve estar destacada
+- Ícone inicial deve retornar ao dashboard
+
+### ID do Caso de Teste: TC_DS_007
+**Título do Caso de Teste:** Verificar Exibição do Status do Dispositivo  
+**Pré-condição:** Aplicativo está instalado  
+**Prioridade:** Baixa  
+**Passos do Teste:**
+1. Observar barra de status superior
+2. Verificar indicador de bateria
+3. Verificar exibição de horário
+4. Verificar indicadores de conexão
+
+**Resultados Esperados:**
+- Nível de bateria deve ser exibido com precisão (72%)
+- Horário deve ser mostrado corretamente (13:34)
+- Sinais de WiFi/celular devem estar visíveis
+- Status do Bluetooth deve ser indicado
+
+### ID do Caso de Teste: TC_DS_008
+**Título do Caso de Teste:** Verificar Funcionalidade de Compartilhamento  
+**Pré-condição:** Aplicativo está instalado e usuário tem dados de atividade  
+**Prioridade:** Média  
+**Passos do Teste:**
+1. Navegar para a tela de dashboard
+2. Clicar no ícone de compartilhamento no resumo semanal
+3. Verificar opções de compartilhamento
+4. Testar processo de compartilhamento
+
+**Resultados Esperados:**
+- Ícone de compartilhamento deve ser clicável
+- Opções de compartilhamento devem aparecer
+- Processo de compartilhamento deve ser concluído com sucesso
+- Conteúdo compartilhado deve incluir dados relevantes do treino
+
+### ID do Caso de Teste: TC_DS_009
+**Título do Caso de Teste:** Verificar Atualização de Dados  
+**Pré-condição:** Aplicativo está instalado e usuário completou um novo treino  
+**Prioridade:** Alta  
+**Passos do Teste:**
+1. Completar uma nova sessão de treino
+2. Retornar à tela de dashboard
+3. Puxar para atualizar (se disponível)
+4. Observar atualização dos dados
+
+**Resultados Esperados:**
+- Dados do novo treino devem aparecer na última sessão
+- Resumo semanal deve atualizar
+- Calendário deve atualizar
+- Progresso da meta deve atualizar
+
+### ID do Caso de Teste: TC_DS_010
+**Título do Caso de Teste:** Verificar Exibição de Unidades Métricas  
+**Pré-condição:** Aplicativo está instalado  
+**Prioridade:** Média  
+**Passos do Teste:**
+1. Navegar para a tela de dashboard
+2. Observar todas as exibições métricas
+3. Verificar consistência das unidades
+4. Verificar formatação dos números
+
+**Resultados Esperados:**
+- Velocidade deve ser exibida em km/h
+- Tempo deve estar no formato HH:MM:SS
+- Calorias devem ser números inteiros
+- Todas as unidades devem estar formatadas consistentemente
+---
+
+# Casos de Teste: Tela de Busca/Filtro de Aulas
+
+## Suite de Testes: Funcionalidade de Busca e Filtro de Aulas
+
+### ID do Caso de Teste: SRCH_001
+**Nome do Caso de Teste:** Expansão/Recolhimento de Filtros  
+**Prioridade:** Alta  
+**Pré-condição:** 
+- Usuário está logado
+- Tela de busca está carregada
+
+**Passos do Teste:**
+1. Clicar em cada opção de filtro (Modalidades, Distância, etc.)
+2. Verificar se o menu suspenso expande
+3. Clicar novamente no filtro expandido
+4. Verificar se o menu suspenso recolhe
+
+**Resultado Esperado:**
+- Cada filtro deve expandir quando clicado
+- Cada filtro deve recolher quando clicado novamente
+- Apenas um filtro deve estar expandido por vez
+
+**Pós-condição:**
+Todos os filtros retornam ao estado recolhido
 
 ---
 
-### Test Case ID: SRCH_007
-**Test Case Name:** Duration Filter  
-**Priority:** Medium  
-**Precondition:**
-- User is logged in
-- Search screen is loaded
+### ID do Caso de Teste: SRCH_002
+**Nome do Caso de Teste:** Seleção Múltipla de Filtros  
+**Prioridade:** Alta  
+**Pré-condição:**
+- Usuário está logado
+- Tela de busca está carregada
 
-**Test Steps:**
-1. Expand "Duração" filter
-2. Select time duration
-3. Verify filtered results
+**Passos do Teste:**
+1. Expandir filtro de Modalidades
+2. Selecionar múltiplas opções
+3. Expandir filtro de Duração
+4. Selecionar opção de duração
+5. Clicar em "Ver todas as aulas"
 
-**Expected Result:**
-- Duration options should be available
-- Results should show classes of selected duration
-- Time formats should be clearly displayed
+**Resultado Esperado:**
+- Múltiplas seleções devem ser permitidas dentro dos filtros
+- Filtros selecionados devem ser indicados visualmente
+- Resultados devem refletir todos os filtros aplicados
 
-**Post-condition:**
-Classes filtered by selected duration
-
----
-
-### Test Case ID: SRCH_008
-**Test Case Name:** Music Style Filter  
-**Priority:** Low  
-**Precondition:**
-- User is logged in
-- Search screen is loaded
-
-**Test Steps:**
-1. Expand "Música" filter
-2. Select music style
-3. Verify filtered results
-
-**Expected Result:**
-- Music style options should be available
-- Results should show classes with selected music style
-- Music styles should be clearly labeled
-
-**Post-condition:**
-Classes filtered by selected music style
+**Pós-condição:**
+Resultados da busca são exibidos com os filtros selecionados aplicados
 
 ---
 
-### Test Case ID: SRCH_009
-**Test Case Name:** Filter Persistence  
-**Priority:** Medium  
-**Precondition:**
-- User is logged in
-- Filters are selected
-
-**Test Steps:**
-1. Apply multiple filters
-2. Navigate away from screen
-3. Return to search screen
-4. Verify filter state
-
-**Expected Result:**
-- Selected filters should persist after screen navigation
-- Filter selections should be visually indicated
-- Results should maintain filtered state
-
-**Post-condition:**
-Filter selections maintained after navigation
+Aqui está a tradução para o português brasileiro:
 
 ---
 
-### Test Case ID: SRCH_010
-**Test Case Name:** Search Without Filters  
-**Priority:** High  
-**Precondition:**
-- User is logged in
-- Search screen is loaded
-- No filters selected
+### ID do Caso de Teste: SRCH_003
+**Nome do Caso de Teste:** Redefinir/Limpar Filtros  
+**Prioridade:** Média  
+**Pré-condição:**
+- Usuário está logado
+- Múltiplos filtros estão selecionados
 
-**Test Steps:**
-1. Click "Ver todas as aulas" without selecting any filters
+**Passos do Teste:**
+1. Localize a opção de limpar/redefinir
+2. Limpe todos os filtros selecionados
+3. Verifique o estado dos filtros
 
-**Expected Result:**
-- All available classes should be displayed
-- Results should be in default sort order
-- No filter restrictions should be applied
+**Resultado Esperado:**
+- Todos os filtros devem ser redefinidos para o estado padrão
+- Nenhuma seleção deve permanecer ativa
+- Os resultados da busca devem ser atualizados de acordo
 
-**Post-condition:**
-All classes displayed without filters
-
----
-
-### Test Case ID: SRCH_011
-**Test Case Name:** Network Connection Loss  
-**Priority:** High  
-**Precondition:**
-- User is logged in
-- Search screen is loaded
-
-**Test Steps:**
-1. Disable network connection
-2. Attempt to apply filters
-3. Click "Ver todas as aulas"
-
-**Expected Result:**
-- Appropriate error message displayed
-- Previously loaded data handled gracefully
-- Option to retry when connection restored
-
-**Post-condition:**
-User notified of connection issue
-# Test Cases: Evolution/Progress Tracking Screen
-
-## Test Suite: Workout Progress Tracking
-
-### Test Case ID: EVOL_001
-**Test Case Name:** Weekly Navigation  
-**Priority:** High  
-**Precondition:** 
-- User is logged in
-- User has workout history
-- Evolution screen is loaded
-
-**Test Steps:**
-1. Click left arrow to view previous week
-2. Click right arrow to view next week
-3. Verify date range updates
-4. Verify statistics update for selected week
-
-**Expected Result:**
-- Navigation between weeks should be smooth
-- Weekly stats should update accordingly
-- Current week should be clearly indicated
-- Unavailable future dates should be disabled
-
-**Post-condition:**
-Selected week's data is displayed correctly
+**Pós-condição:**
+Todos os filtros retornam ao estado padrão
 
 ---
 
-### Test Case ID: EVOL_002
-**Test Case Name:** Daily Statistics Display  
-**Priority:** High  
-**Precondition:**
-- User is logged in
-- User has completed workouts for the day
+### ID do Caso de Teste: SRCH_004
+**Nome do Caso de Teste:** Filtro de Faixa de Gasto Calórico  
+**Prioridade:** Média  
+**Pré-condição:**
+- Usuário está logado
+- Tela de busca está carregada
 
-**Test Steps:**
-1. Select a day with completed workouts
-2. Verify total time displayed
-3. Verify distance (km) displayed
-4. Verify calories burned displayed
+**Passos do Teste:**
+1. Expanda o filtro "Gasto Calórico Est"
+2. Selecione a faixa de calorias
+3. Verifique a atualização dos resultados
 
-**Expected Result:**
-- All statistics should be accurate
-- Numbers should be properly formatted
-- Units should be clearly displayed
-- Values should match individual workout totals
+**Resultado Esperado:**
+- Deve ser possível selecionar a faixa de calorias
+- Os resultados devem mostrar aulas dentro da faixa selecionada
+- Os valores da faixa devem ser exibidos claramente
 
-**Post-condition:**
-Daily statistics accurately reflect workout data
+**Pós-condição:**
+Aulas filtradas pela faixa de gasto calórico selecionada
 
 ---
 
-### Test Case ID: EVOL_003
-**Test Case Name:** Workout Session Details  
-**Priority:** High  
-**Precondition:**
-- User is logged in
-- Workout sessions exist for selected day
+### ID do Caso de Teste: SRCH_005
+**Nome do Caso de Teste:** Busca Baseada em Distância  
+**Prioridade:** Alta  
+**Pré-condição:**
+- Usuário está logado
+- Serviços de localização habilitados
+- Tela de busca está carregada
 
-**Test Steps:**
-1. Locate specific workout session
-2. Verify session name displayed
-3. Verify session duration displayed
-4. Verify session time displayed
-5. Click session arrow to view details
+**Passos do Teste:**
+1. Expanda o filtro "Distância"
+2. Selecione a faixa de distância
+3. Verifique os resultados baseados na localização
 
-**Expected Result:**
-- Session details should be accurate
-- Time format should be correct (HH:MM:SS)
-- Session type icon should be displayed
-- Navigation to detail view should work
+**Resultado Esperado:**
+- As opções de distância devem estar disponíveis
+- Os resultados devem mostrar aulas dentro do raio selecionado
+- Permissões de localização devem ser solicitadas, se necessário
 
-**Post-condition:**
-Session details are accessible and accurate
+**Pós-condição:**
+Aulas filtradas pela distância a partir da localização do usuário
+
+---
+Aqui está a tradução para o português brasileiro:
 
 ---
 
-### Test Case ID: EVOL_004
-**Test Case Name:** Calendar Date Selection  
-**Priority:** Medium  
-**Precondition:**
-- User is logged in
-- Calendar icon is visible
+### ID do Caso de Teste: SRCH_006
+**Nome do Caso de Teste:** Filtro de Professor  
+**Prioridade:** Média  
+**Pré-condição:**
+- Usuário está logado
+- Tela de busca está carregada
 
-**Test Steps:**
-1. Click calendar icon
-2. Select different date
-3. Verify screen updates
-4. Verify workout list updates
+**Passos do Teste:**
+1. Expanda o filtro "Professor"
+2. Selecione um professor específico
+3. Verifique os resultados filtrados
 
-**Expected Result:**
-- Calendar should be easy to navigate
-- Selected date should be highlighted
-- Screen should update to show selected date's data
-- Current date should be clearly marked
+**Resultado Esperado:**
+- A lista de professores deve estar preenchida
+- Os resultados devem mostrar apenas as aulas do professor selecionado
+- Os nomes dos professores devem estar claramente exibidos
 
-**Post-condition:**
-Selected date's data is displayed
+**Pós-condição:**
+Aulas filtradas pelo professor selecionado
 
 ---
 
-### Test Case ID: EVOL_005
-**Test Case Name:** Weekly Summary Calculation  
-**Priority:** High  
-**Precondition:**
-- User is logged in
-- Week contains multiple workouts
+### ID do Caso de Teste: SRCH_007
+**Nome do Caso de Teste:** Filtro de Duração  
+**Prioridade:** Média  
+**Pré-condição:**
+- Usuário está logado
+- Tela de busca está carregada
 
-**Test Steps:**
-1. View weekly summary
-2. Verify total sessions count
-3. Verify total time calculation
-4. Verify total distance calculation
-5. Verify total calories calculation
+**Passos do Teste:**
+1. Expanda o filtro "Duração"
+2. Selecione a duração de tempo
+3. Verifique os resultados filtrados
 
-**Expected Result:**
-- "Esta semana" summary should show correct totals
-- All calculations should be accurate
-- Numbers should be properly rounded
-- Units should be displayed correctly
+**Resultado Esperado:**
+- As opções de duração devem estar disponíveis
+- Os resultados devem mostrar aulas com a duração selecionada
+- Os formatos de tempo devem estar claramente exibidos
 
-**Post-condition:**
-Weekly summary accurately reflects all workouts
+**Pós-condição:**
+Aulas filtradas pela duração selecionada
 
 ---
 
-### Test Case ID: EVOL_006
-**Test Case Name:** Day Status Indicators  
-**Priority:** Medium  
-**Precondition:**
-- User is logged in
-- Week view is displayed
+### ID do Caso de Teste: SRCH_008
+**Nome do Caso de Teste:** Filtro de Estilo de Música  
+**Prioridade:** Baixa  
+**Pré-condição:**
+- Usuário está logado
+- Tela de busca está carregada
 
-**Test Steps:**
-1. Verify completed workout indicators
-2. Verify current day highlighting
-3. Verify future days appearance
-4. Verify past days without workouts
+**Passos do Teste:**
+1. Expanda o filtro "Música"
+2. Selecione o estilo musical
+3. Verifique os resultados filtrados
 
-**Expected Result:**
-- Checkmark should appear for completed workout days
-- Current day should be highlighted
-- Future days should be appropriately styled
-- Past days should show workout status
+**Resultado Esperado:**
+- As opções de estilo de música devem estar disponíveis
+- Os resultados devem mostrar aulas com o estilo musical selecionado
+- Os estilos de música devem estar claramente identificados
 
-**Post-condition:**
-All day status indicators correctly displayed
+**Pós-condição:**
+Aulas filtradas pelo estilo de música selecionado
 
 ---
 
-### Test Case ID: EVOL_007
-**Test Case Name:** Session List Scrolling  
-**Priority:** Medium  
-**Precondition:**
-- User is logged in
-- Multiple sessions exist for selected day
+### ID do Caso de Teste: SRCH_009
+**Nome do Caso de Teste:** Persistência dos Filtros  
+**Prioridade:** Média  
+**Pré-condição:**
+- Usuário está logado
+- Filtros estão selecionados
 
-**Test Steps:**
-1. Scroll through session list
-2. Verify all sessions are accessible
-3. Verify scroll behavior
-4. Check session order (chronological)
+**Passos do Teste:**
+1. Aplique múltiplos filtros
+2. Navegue para fora da tela
+3. Retorne para a tela de busca
+4. Verifique o estado dos filtros
 
-**Expected Result:**
-- Smooth scrolling behavior
-- All sessions should be accessible
-- Sessions should be in correct order
-- No visual glitches during scroll
+**Resultado Esperado:**
+- Os filtros selecionados devem persistir após a navegação
+- As seleções de filtros devem estar visualmente indicadas
+- Os resultados devem manter o estado filtrado
 
-**Post-condition:**
-All sessions are viewable and properly ordered
+**Pós-condição:**
+Seleções de filtros mantidas após navegação
+---
+
+Aqui está a tradução para o português brasileiro:
 
 ---
 
-### Test Case ID: EVOL_008
-**Test Case Name:** Zero Workout State  
-**Priority:** Medium  
-**Precondition:**
-- User is logged in
-- Selected day has no workouts
+### ID do Caso de Teste: SRCH_010
+**Nome do Caso de Teste:** Busca Sem Filtros  
+**Prioridade:** Alta  
+**Pré-condição:**
+- Usuário está logado
+- Tela de busca está carregada
+- Nenhum filtro selecionado
 
-**Test Steps:**
-1. Select day with no workouts
-2. Verify empty state display
-3. Verify statistics display
-4. Check available actions
+**Passos do Teste:**
+1. Clique em "Ver todas as aulas" sem selecionar nenhum filtro
 
-**Expected Result:**
-- Appropriate empty state message displayed
-- Statistics should show zeros or be hidden
-- UI should handle empty state gracefully
-- Options to start new workout should be available
+**Resultado Esperado:**
+- Todas as aulas disponíveis devem ser exibidas
+- Os resultados devem estar na ordem de classificação padrão
+- Nenhuma restrição de filtro deve ser aplicada
 
-**Post-condition:**
-Empty state handled appropriately
+**Pós-condição:**
+Todas as aulas exibidas sem filtros
 
 ---
 
-### Test Case ID: EVOL_009
-**Test Case Name:** Network Connection Loss  
-**Priority:** High  
-**Precondition:**
-- User is logged in
-- Evolution screen is loaded
+### ID do Caso de Teste: SRCH_011
+**Nome do Caso de Teste:** Perda de Conexão de Rede  
+**Prioridade:** Alta  
+**Pré-condição:**
+- Usuário está logado
+- Tela de busca está carregada
 
-**Test Steps:**
-1. Disable network connection
-2. Attempt to navigate between weeks
-3. Attempt to view session details
-4. Re-enable network connection
+**Passos do Teste:**
+1. Desative a conexão de rede
+2. Tente aplicar filtros
+3. Clique em "Ver todas as aulas"
 
-**Expected Result:**
-- Cached data should remain visible
-- Appropriate error message for new data requests
-- Graceful handling of offline state
-- Auto-refresh when connection restored
+**Resultado Esperado:**
+- Mensagem de erro apropriada exibida
+- Dados carregados previamente devem ser manipulados de forma adequada
+- Opção de tentar novamente quando a conexão for restaurada
 
-**Post-condition:**
-App handles offline state appropriately
+**Pós-condição:**
+Usuário notificado sobre o problema de conexão
 
 ---
 
-### Test Case ID: EVOL_010
-**Test Case Name:** Data Refresh  
-**Priority:** Medium  
-**Precondition:**
-- User is logged in
-- New workout completed in another device
+## Suíte de Testes: Rastreamento de Progresso de Treino
 
-**Test Steps:**
-1. Complete workout on different device
-2. Wait for sync period or trigger manual refresh
-3. Verify data updates
-4. Check summary recalculation
+### ID do Caso de Teste: EVOL_001
+**Nome do Caso de Teste:** Navegação Semanal  
+**Prioridade:** Alta  
+**Pré-condição:** 
+- Usuário está logado
+- Usuário possui histórico de treino
+- Tela de evolução está carregada
 
-**Expected Result:**
-- New data should appear automatically or with refresh
-- Summary statistics should update
-- Session list should update
-- Status indicators should update
+**Passos do Teste:**
+1. Clique na seta para a esquerda para visualizar a semana anterior
+2. Clique na seta para a direita para visualizar a semana seguinte
+3. Verifique a atualização do intervalo de datas
+4. Verifique a atualização das estatísticas para a semana selecionada
 
-**Post-condition:**
-All data synchronized and updated
+**Resultado Esperado:**
+- A navegação entre semanas deve ser suave
+- As estatísticas semanais devem ser atualizadas de acordo
+- A semana atual deve estar claramente indicada
+- Datas futuras indisponíveis devem estar desabilitadas
 
----
-
-### Test Case ID: EVOL_011
-**Test Case Name:** Session Time Display Format  
-**Priority:** Low  
-**Precondition:**
-- User is logged in
-- Sessions exist with various durations
-
-**Test Steps:**
-1. View sessions with different durations
-2. Check time format consistency
-3. Verify AM/PM display
-4. Check different time zones if applicable
-
-**Expected Result:**
-- Time format should be consistent
-- Duration should be in HH:MM:SS format
-- Session times should be in local time
-- Time zones should be handled correctly
-
-**Post-condition:**
-All time displays are correct and consistent
-# Test Cases: Profile Screen
-
-## Test Suite: User Profile Management
-
-### Test Case ID: PROF_001
-**Test Case Name:** Profile Information Display  
-**Priority:** High  
-**Precondition:** 
-- User is logged in
-- Profile screen is loaded
-
-**Test Steps:**
-1. Verify user name display
-2. Verify email address display
-3. Verify birth date display
-4. Verify profile picture display
-5. Verify greeting message ("Olá! Boa tarde")
-
-**Expected Result:**
-- All user information should be correctly displayed
-- Date format should be localized
-- Greeting should match time of day
-- Email should be in valid format
-- Profile picture should be properly scaled
-
-**Post-condition:**
-All profile information displayed accurately
+**Pós-condição:**
+Dados da semana selecionada exibidos corretamente
 
 ---
 
-### Test Case ID: PROF_002
-**Test Case Name:** Profile Picture Update  
-**Priority:** Medium  
-**Precondition:**
-- User is logged in
-- Has camera/gallery permissions
+### ID do Caso de Teste: EVOL_002
+**Nome do Caso de Teste:** Exibição de Estatísticas Diárias  
+**Prioridade:** Alta  
+**Pré-condição:**
+- Usuário está logado
+- Usuário completou treinos no dia
 
-**Test Steps:**
-1. Click edit icon on profile picture
-2. Select image source (camera/gallery)
-3. Select/capture new image
-4. Confirm image selection
-5. Verify image update
+**Passos do Teste:**
+1. Selecione um dia com treinos concluídos
+2. Verifique o tempo total exibido
+3. Verifique a distância (km) exibida
+4. Verifique as calorias queimadas exibidas
 
-**Expected Result:**
-- Image picker should open
-- Selected image should be uploaded
-- Profile picture should update
-- Changes should persist after reload
+**Resultado Esperado:**
+- Todas as estatísticas devem ser precisas
+- Os números devem estar formatados corretamente
+- As unidades devem estar claramente exibidas
+- Os valores devem corresponder aos totais dos treinos individuais
 
-**Post-condition:**
-Profile picture updated successfully
+**Pós-condição:**
+Estatísticas diárias refletem com precisão os dados dos treinos
+
+---
+Aqui está a tradução para o português brasileiro:
 
 ---
 
-### Test Case ID: PROF_003
-**Test Case Name:** Initial Settings Access  
-**Priority:** High  
-**Precondition:**
-- User is logged in
+### ID do Caso de Teste: EVOL_003
+**Nome do Caso de Teste:** Detalhes da Sessão de Treino  
+**Prioridade:** Alta  
+**Pré-condição:**
+- Usuário está logado
+- Sessões de treino existem para o dia selecionado
 
-**Test Steps:**
-1. Click "Ajustes Iniciais"
-2. Verify settings screen loads
-3. Check all settings options are accessible
-4. Verify current settings values displayed
+**Passos do Teste:**
+1. Localize a sessão de treino específica
+2. Verifique o nome da sessão exibido
+3. Verifique a duração da sessão exibida
+4. Verifique o horário da sessão exibido
+5. Clique na seta da sessão para ver os detalhes
 
-**Expected Result:**
-- Settings screen should open
-- All options should be clickable
-- Current values should be displayed
-- Navigation should be smooth
+**Resultado Esperado:**
+- Os detalhes da sessão devem ser precisos
+- O formato de horário deve estar correto (HH:MM:SS)
+- O ícone do tipo de sessão deve ser exibido
+- A navegação para a visualização de detalhes deve funcionar
 
-**Post-condition:**
-Settings screen accessible and functional
-
----
-
-### Test Case ID: PROF_004
-**Test Case Name:** My Classes Access  
-**Priority:** High  
-**Precondition:**
-- User is logged in
-
-**Test Steps:**
-1. Click "Minhas aulas"
-2. Verify class list loads
-3. Check class details are visible
-4. Verify navigation back to profile
-
-**Expected Result:**
-- Classes screen should open
-- Class information should be visible
-- Navigation should work correctly
-- List should be scrollable if needed
-
-**Post-condition:**
-Classes screen accessible and showing correct data
+**Pós-condição:**
+Os detalhes da sessão são acessíveis e precisos
 
 ---
 
-### Test Case ID: PROF_005
-**Test Case Name:** App Rating Function  
-**Priority:** Medium  
-**Precondition:**
-- User is logged in
-- App installed from official store
+### ID do Caso de Teste: EVOL_004
+**Nome do Caso de Teste:** Seleção de Data no Calendário  
+**Prioridade:** Média  
+**Pré-condição:**
+- Usuário está logado
+- Ícone do calendário está visível
 
-**Test Steps:**
-1. Click "Avalie o Aplicativo"
-2. Verify rating interface appears
-3. Submit rating
-4. Check confirmation message
+**Passos do Teste:**
+1. Clique no ícone do calendário
+2. Selecione uma data diferente
+3. Verifique a atualização da tela
+4. Verifique a atualização da lista de treinos
 
-**Expected Result:**
-- Rating interface should open
-- Rating submission should work
-- Feedback should be saved
-- Appropriate confirmation displayed
+**Resultado Esperado:**
+- O calendário deve ser fácil de navegar
+- A data selecionada deve estar destacada
+- A tela deve atualizar para mostrar os dados da data selecionada
+- A data atual deve estar claramente marcada
 
-**Post-condition:**
-Rating submitted successfully
-
----
-
-### Test Case ID: PROF_006
-**Test Case Name:** Help System Access  
-**Priority:** High  
-**Precondition:**
-- User is logged in
-- Internet connection available
-
-**Test Steps:**
-1. Click "Precisa de ajuda?"
-2. Click "Fale conosco"
-3. Verify help options displayed
-4. Test contact methods
-
-**Expected Result:**
-- Help options should be accessible
-- Contact methods should work
-- Support information should be clear
-- Navigation should be intuitive
-
-**Post-condition:**
-Help system accessible and functional
+**Pós-condição:**
+Dados da data selecionada são exibidos
 
 ---
 
-### Test Case ID: PROF_007
-**Test Case Name:** Terms and Privacy Policy  
-**Priority:** Medium  
-**Precondition:**
-- User is logged in
+### ID do Caso de Teste: EVOL_005
+**Nome do Caso de Teste:** Cálculo de Resumo Semanal  
+**Prioridade:** Alta  
+**Pré-condição:**
+- Usuário está logado
+- A semana contém múltiplos treinos
 
-**Test Steps:**
-1. Click "Politica de Privacidade"
-2. Verify policy content loads
-3. Return to profile
-4. Click "Termos de uso"
-5. Verify terms content loads
+**Passos do Teste:**
+1. Visualize o resumo semanal
+2. Verifique a contagem total de sessões
+3. Verifique o cálculo do tempo total
+4. Verifique o cálculo da distância total
+5. Verifique o cálculo das calorias totais
 
-**Expected Result:**
-- Documents should be readable
-- Navigation should work
-- Content should be up-to-date
-- Links should be functional
+**Resultado Esperado:**
+- O resumo "Esta semana" deve mostrar os totais corretos
+- Todos os cálculos devem ser precisos
+- Os números devem estar devidamente arredondados
+- As unidades devem ser exibidas corretamente
 
-**Post-condition:**
-Legal documents accessible and readable
-
----
-
-### Test Case ID: PROF_008
-**Test Case Name:** Offline Mode Profile  
-**Priority:** High  
-**Precondition:**
-- User is logged in
-- Then disconnect internet
-
-**Test Steps:**
-1. Disable network connection
-2. Access profile information
-3. Attempt to update profile picture
-4. Try accessing various sections
-
-**Expected Result:**
-- Basic profile info should be visible
-- Appropriate offline messages shown
-- Cached data should be accessible
-- Update functions should be disabled
-
-**Post-condition:**
-Profile handles offline state appropriately
+**Pós-condição:**
+Resumo semanal reflete com precisão todos os treinos
 
 ---
 
-### Test Case ID: PROF_009
-**Test Case Name:** Time-Based Greeting  
-**Priority:** Low  
-**Precondition:**
-- User is logged in
+### ID do Caso de Teste: EVOL_006
+**Nome do Caso de Teste:** Indicadores de Status do Dia  
+**Prioridade:** Média  
+**Pré-condição:**
+- Usuário está logado
+- Visão semanal está exibida
 
-**Test Steps:**
-1. Access profile at different times of day
-2. Verify greeting changes appropriately
-3. Check different time zones
-4. Verify language localization
+**Passos do Teste:**
+1. Verifique os indicadores de treino completo
+2. Verifique o destaque do dia atual
+3. Verifique a aparência dos dias futuros
+4. Verifique os dias passados sem treinos
 
-**Expected Result:**
-- Greeting should match time of day
-- Language should be correct
-- Time zone should be respected
-- Format should be consistent
+**Resultado Esperado:**
+- Deve aparecer um tique para os dias com treinos completos
+- O dia atual deve estar destacado
+- Os dias futuros devem estar estilizados apropriadamente
+- Dias passados devem mostrar o status dos treinos
 
-**Post-condition:**
-Greeting displays correctly for time/locale
+**Pós-condição:**
+Todos os indicadores de status dos dias são exibidos corretamente
+
+---
+Aqui está a tradução para o português brasileiro:
 
 ---
 
-### Test Case ID: PROF_010
-**Test Case Name:** Navigation Bar Function  
-**Priority:** High  
-**Precondition:**
-- User is logged in
+### ID do Caso de Teste: EVOL_003
+**Nome do Caso de Teste:** Detalhes da Sessão de Treino  
+**Prioridade:** Alta  
+**Pré-condição:**
+- Usuário está logado
+- Sessões de treino existem para o dia selecionado
 
-**Test Steps:**
-1. Click each navigation bar icon
-2. Return to profile via nav bar
-3. Verify active state indication
-4. Check navigation history
+**Passos do Teste:**
+1. Localize a sessão de treino específica
+2. Verifique o nome da sessão exibido
+3. Verifique a duração da sessão exibida
+4. Verifique o horário da sessão exibido
+5. Clique na seta da sessão para ver os detalhes
 
-**Expected Result:**
-- Navigation should be smooth
-- Active state should be clear
-- History should work correctly
-- Icons should be responsive
+**Resultado Esperado:**
+- Os detalhes da sessão devem ser precisos
+- O formato de horário deve estar correto (HH:MM:SS)
+- O ícone do tipo de sessão deve ser exibido
+- A navegação para a visualização de detalhes deve funcionar
 
-**Post-condition:**
-Navigation functions properly
+**Pós-condição:**
+Os detalhes da sessão são acessíveis e precisos
 
 ---
 
-### Test Case ID: PROF_011
-**Test Case Name:** Profile Data Validation  
-**Priority:** High  
-**Precondition:**
-- User is logged in
-- Profile editing mode accessible
+### ID do Caso de Teste: EVOL_004
+**Nome do Caso de Teste:** Seleção de Data no Calendário  
+**Prioridade:** Média  
+**Pré-condição:**
+- Usuário está logado
+- Ícone do calendário está visível
 
-**Test Steps:**
-1. Verify email format
-2. Check date format
-3. Validate name display
-4. Verify character limits
+**Passos do Teste:**
+1. Clique no ícone do calendário
+2. Selecione uma data diferente
+3. Verifique a atualização da tela
+4. Verifique a atualização da lista de treinos
 
-**Expected Result:**
-- Email should be valid format
-- Date should be correctly formatted
-- Name should follow rules
-- No truncation of important data
+**Resultado Esperado:**
+- O calendário deve ser fácil de navegar
+- A data selecionada deve estar destacada
+- A tela deve atualizar para mostrar os dados da data selecionada
+- A data atual deve estar claramente marcada
 
-**Post-condition:**
-All profile data properly validated
+**Pós-condição:**
+Dados da data selecionada são exibidos
+
+---
+
+### ID do Caso de Teste: EVOL_005
+**Nome do Caso de Teste:** Cálculo de Resumo Semanal  
+**Prioridade:** Alta  
+**Pré-condição:**
+- Usuário está logado
+- A semana contém múltiplos treinos
+
+**Passos do Teste:**
+1. Visualize o resumo semanal
+2. Verifique a contagem total de sessões
+3. Verifique o cálculo do tempo total
+4. Verifique o cálculo da distância total
+5. Verifique o cálculo das calorias totais
+
+**Resultado Esperado:**
+- O resumo "Esta semana" deve mostrar os totais corretos
+- Todos os cálculos devem ser precisos
+- Os números devem estar devidamente arredondados
+- As unidades devem ser exibidas corretamente
+
+**Pós-condição:**
+Resumo semanal reflete com precisão todos os treinos
+
+---
+
+### ID do Caso de Teste: EVOL_006
+**Nome do Caso de Teste:** Indicadores de Status do Dia  
+**Prioridade:** Média  
+**Pré-condição:**
+- Usuário está logado
+- Visão semanal está exibida
+
+**Passos do Teste:**
+1. Verifique os indicadores de treino completo
+2. Verifique o destaque do dia atual
+3. Verifique a aparência dos dias futuros
+4. Verifique os dias passados sem treinos
+
+**Resultado Esperado:**
+- Deve aparecer um tique para os dias com treinos completos
+- O dia atual deve estar destacado
+- Os dias futuros devem estar estilizados apropriadamente
+- Dias passados devem mostrar o status dos treinos
+
+**Pós-condição:**
+Todos os indicadores de status dos dias são exibidos corretamente
+
+---
+Aqui está a tradução para o português brasileiro:
+
+---
+
+### ID do Caso de Teste: EVOL_010
+**Nome do Caso de Teste:** Atualização de Dados  
+**Prioridade:** Média  
+**Pré-condição:**
+- Usuário está logado
+- Novo treino concluído em outro dispositivo
+
+**Passos do Teste:**
+1. Conclua o treino em outro dispositivo
+2. Aguarde o período de sincronização ou acione a atualização manual
+3. Verifique a atualização dos dados
+4. Verifique o recálculo do resumo
+
+**Resultado Esperado:**
+- Novos dados devem aparecer automaticamente ou após a atualização
+- As estatísticas do resumo devem ser atualizadas
+- A lista de sessões deve ser atualizada
+- Indicadores de status devem ser atualizados
+
+**Pós-condição:**
+Todos os dados sincronizados e atualizados
+
+---
+
+### ID do Caso de Teste: EVOL_011
+**Nome do Caso de Teste:** Formato de Exibição do Horário da Sessão  
+**Prioridade:** Baixa  
+**Pré-condição:**
+- Usuário está logado
+- Sessões com várias durações existem
+
+**Passos do Teste:**
+1. Visualize sessões com diferentes durações
+2. Verifique a consistência do formato de horário
+3. Verifique a exibição AM/PM
+4. Verifique diferentes fusos horários, se aplicável
+
+**Resultado Esperado:**
+- O formato de horário deve ser consistente
+- A duração deve estar no formato HH:MM:SS
+- Os horários das sessões devem estar no horário local
+- Fusos horários devem ser tratados corretamente
+
+**Pós-condição:**
+Todos os horários são exibidos corretamente e de forma consistente
+
+---
+
+## Suíte de Testes: Gerenciamento de Perfil do Usuário
+
+### ID do Caso de Teste: PROF_001
+**Nome do Caso de Teste:** Exibição das Informações do Perfil  
+**Prioridade:** Alta  
+**Pré-condição:** 
+- Usuário está logado
+- Tela de perfil está carregada
+
+**Passos do Teste:**
+1. Verifique a exibição do nome do usuário
+2. Verifique a exibição do endereço de e-mail
+3. Verifique a exibição da data de nascimento
+4. Verifique a exibição da foto de perfil
+5. Verifique a mensagem de saudação ("Olá! Boa tarde")
+
+**Resultado Esperado:**
+- Todas as informações do usuário devem ser exibidas corretamente
+- O formato da data deve estar localizado
+- A saudação deve corresponder ao período do dia
+- O e-mail deve estar em formato válido
+- A foto de perfil deve estar corretamente ajustada
+
+**Pós-condição:**
+Todas as informações do perfil exibidas com precisão
+
+---
+
+### ID do Caso de Teste: PROF_002
+**Nome do Caso de Teste:** Atualização da Foto de Perfil  
+**Prioridade:** Média  
+**Pré-condição:**
+- Usuário está logado
+- Possui permissões para câmera/galeria
+
+**Passos do Teste:**
+1. Clique no ícone de edição na foto de perfil
+2. Selecione a fonte da imagem (câmera/galeria)
+3. Selecione/capture uma nova imagem
+4. Confirme a seleção da imagem
+5. Verifique a atualização da imagem
+
+**Resultado Esperado:**
+- O seletor de imagem deve abrir
+- A imagem selecionada deve ser carregada
+- A foto de perfil deve ser atualizada
+- As mudanças devem persistir após recarregar
+
+**Pós-condição:**
+Foto de perfil atualizada com sucesso
+Aqui está a tradução para o português brasileiro:
+
+---
+
+### ID do Caso de Teste: PROF_003
+**Nome do Caso de Teste:** Acesso aos Ajustes Iniciais  
+**Prioridade:** Alta  
+**Pré-condição:**
+- Usuário está logado
+
+**Passos do Teste:**
+1. Clique em "Ajustes Iniciais"
+2. Verifique se a tela de ajustes carrega
+3. Verifique se todas as opções de ajustes são acessíveis
+4. Verifique se os valores atuais dos ajustes são exibidos
+
+**Resultado Esperado:**
+- A tela de ajustes deve abrir
+- Todas as opções devem ser clicáveis
+- Os valores atuais devem ser exibidos
+- A navegação deve ser fluida
+
+**Pós-condição:**
+Tela de ajustes acessível e funcional
+
+---
+
+### ID do Caso de Teste: PROF_004
+**Nome do Caso de Teste:** Acesso a Minhas Aulas  
+**Prioridade:** Alta  
+**Pré-condição:**
+- Usuário está logado
+
+**Passos do Teste:**
+1. Clique em "Minhas aulas"
+2. Verifique se a lista de aulas carrega
+3. Verifique se os detalhes das aulas estão visíveis
+4. Verifique a navegação de volta ao perfil
+
+**Resultado Esperado:**
+- A tela de aulas deve abrir
+- As informações das aulas devem estar visíveis
+- A navegação deve funcionar corretamente
+- A lista deve ser rolável, se necessário
+
+**Pós-condição:**
+Tela de aulas acessível e exibindo dados corretos
+
+---
+
+### ID do Caso de Teste: PROF_005
+**Nome do Caso de Teste:** Função de Avaliação do Aplicativo  
+**Prioridade:** Média  
+**Pré-condição:**
+- Usuário está logado
+- Aplicativo instalado a partir da loja oficial
+
+**Passos do Teste:**
+1. Clique em "Avalie o Aplicativo"
+2. Verifique se a interface de avaliação aparece
+3. Envie a avaliação
+4. Verifique a mensagem de confirmação
+
+**Resultado Esperado:**
+- A interface de avaliação deve abrir
+- O envio da avaliação deve funcionar
+- O feedback deve ser salvo
+- A confirmação apropriada deve ser exibida
+
+**Pós-condição:**
+Avaliação enviada com sucesso
+---
+Aqui está a tradução para o português brasileiro:
+
+---
+
+### ID do Caso de Teste: PROF_006
+**Nome do Caso de Teste:** Acesso ao Sistema de Ajuda  
+**Prioridade:** Alta  
+**Pré-condição:**
+- Usuário está logado
+- Conexão com a internet disponível
+
+**Passos do Teste:**
+1. Clique em "Precisa de ajuda?"
+2. Clique em "Fale conosco"
+3. Verifique se as opções de ajuda são exibidas
+4. Teste os métodos de contato
+
+**Resultado Esperado:**
+- As opções de ajuda devem ser acessíveis
+- Os métodos de contato devem funcionar
+- As informações de suporte devem ser claras
+- A navegação deve ser intuitiva
+
+**Pós-condição:**
+Sistema de ajuda acessível e funcional
+
+---
+
+### ID do Caso de Teste: PROF_007
+**Nome do Caso de Teste:** Política de Privacidade e Termos de Uso  
+**Prioridade:** Média  
+**Pré-condição:**
+- Usuário está logado
+
+**Passos do Teste:**
+1. Clique em "Política de Privacidade"
+2. Verifique se o conteúdo da política carrega
+3. Retorne ao perfil
+4. Clique em "Termos de uso"
+5. Verifique se o conteúdo dos termos carrega
+
+**Resultado Esperado:**
+- Os documentos devem ser legíveis
+- A navegação deve funcionar
+- O conteúdo deve estar atualizado
+- Os links devem estar funcionais
+
+**Pós-condição:**
+Documentos legais acessíveis e legíveis
+
+---
+
+### ID do Caso de Teste: PROF_008
+**Nome do Caso de Teste:** Perfil em Modo Offline  
+**Prioridade:** Alta  
+**Pré-condição:**
+- Usuário está logado
+- Em seguida, desconecte a internet
+
+**Passos do Teste:**
+1. Desative a conexão com a internet
+2. Acesse as informações do perfil
+3. Tente atualizar a foto de perfil
+4. Tente acessar várias seções
+
+**Resultado Esperado:**
+- As informações básicas do perfil devem ser visíveis
+- Mensagens apropriadas de offline devem ser exibidas
+- Dados em cache devem estar acessíveis
+- As funções de atualização devem estar desativadas
+
+**Pós-condição:**
+Perfil lida com o estado offline de maneira apropriada
+
+---
+Claro! Aqui está a tradução do texto que você forneceu para o português:
+
+---
+
+### ID do Caso de Teste: PROF_009
+**Nome do Caso de Teste:** Saudação Baseada no Tempo  
+**Prioridade:** Baixa  
+**Pré-condição:**
+- O usuário está logado
+
+**Passos do Teste:**
+1. Acessar o perfil em diferentes horários do dia
+2. Verificar se a saudação muda apropriadamente
+3. Verificar diferentes fusos horários
+4. Verificar a localização do idioma
+
+**Resultado Esperado:**
+- A saudação deve corresponder ao horário do dia
+- O idioma deve estar correto
+- O fuso horário deve ser respeitado
+- O formato deve ser consistente
+
+**Pós-condição:**
+A saudação é exibida corretamente para o horário/locale
+
+---
+
+### ID do Caso de Teste: PROF_010
+**Nome do Caso de Teste:** Função da Barra de Navegação  
+**Prioridade:** Alta  
+**Pré-condição:**
+- O usuário está logado
+
+**Passos do Teste:**
+1. Clicar em cada ícone da barra de navegação
+2. Retornar ao perfil pela barra de navegação
+3. Verificar a indicação do estado ativo
+4. Verificar o histórico de navegação
+
+**Resultado Esperado:**
+- A navegação deve ser suave
+- O estado ativo deve ser claro
+- O histórico deve funcionar corretamente
+- Os ícones devem ser responsivos
+
+**Pós-condição:**
+A navegação funciona corretamente
+
+---
+
+### ID do Caso de Teste: PROF_011
+**Nome do Caso de Teste:** Validação dos Dados do Perfil  
+**Prioridade:** Alta  
+**Pré-condição:**
+- O usuário está logado
+- O modo de edição do perfil está acessível
+
+**Passos do Teste:**
+1. Verificar o formato do e-mail
+2. Verificar o formato da data
+3. Validar a exibição do nome
+4. Verificar os limites de caracteres
+
+**Resultado Esperado:**
+- O e-mail deve ter um formato válido
+- A data deve estar formatada corretamente
+- O nome deve seguir as regras
+- Não deve haver truncamento de dados importantes
+
+**Pós-condição:**
+Todos os dados do perfil validados corretamente
+
+--- 
+
+Se precisar de mais alguma coisa, é só avisar!
