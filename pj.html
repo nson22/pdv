@@ -181,6 +181,12 @@
                                         autocomplete="off" required>
                                 </div>
                             </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="measure">
+                                <label class="form-check-label" for="measure">
+                                    Por metragem
+                                </label>
+                            </div>
                         </form>
                     </div>
                     <div class="modal-footer">
@@ -862,82 +868,43 @@
             });
         }
 
-        /**
-         * Adiciona um produto personalizado ao carrinho de compras.
-         *
-         * @function
-         * @name addCustomProduct
-         * @description
-         * Esta função realiza as seguintes operações:
-         * 1. Obtém os valores dos campos do modal de produto personalizado.
-         * 2. Verifica se o produto já existe no banco de dados.
-         * 3. Se o produto existir e for vendido por metro:
-         *    a. Arredonda a medida para 2 casas decimais.
-         *    b. Atualiza o estoque do produto.
-         *    c. Adiciona ou atualiza o item no carrinho.
-         * 4. Se o produto não existir ou não for vendido por metro:
-         *    a. Cria um novo produto personalizado.
-         *    b. Adiciona o novo produto ao carrinho.
-         * 5. Atualiza a exibição do carrinho e fecha o modal.
-         * 6. Limpa os campos do modal após a adição.
-         *
-         * @throws {Error} Exibe um toast de erro se os campos necessários não forem preenchidos.
-         *
-         * @example
-         * // Chama a função quando o usuário confirma a adição de um produto personalizado
-         * addCustomProduct();
-         */
         function addCustomProduct() {
-            const customProductName = document.getElementById('customProductName').value;
+            const customProductName = document.getElementById('customProductName').value.trim().toUpperCase();
             const customProductPrice = document.getElementById('customProductPrice').value;
-            const measureInput = document.getElementById('customProductMeasure');
-            const measure = parseFloat(measureInput.value.replace(',', '.'));
+            const measure = document.getElementById('measure').checked;
 
-            const product = dbProducts.find(product => product.name === customProductName);
-
-            if (product) {
-                if (product.unit === 'M') {
-                    // Arredonda para 2 casas decimais
-                    const roundedMeasure = Math.round(measure * 100) / 100;
-
-                    // Atualiza o estoque com precisão de 2 casas decimais
-                    product.stock = Math.round((product.stock - roundedMeasure) * 100) / 100;
-
-                    const existingItem = cart.find(item => item.id === product.id);
-                    if (existingItem) {
-                        existingItem.quantity = Math.round((existingItem.quantity + roundedMeasure) * 100) / 100;
-                    } else {
-                        cart.push({ ...product, quantity: roundedMeasure });
-                    }
-
-                    updateProductStock(product.id, 'add');
-                    updateShoppingCart();
-                    customSaleModal.hide();
-                }
-                else {
-                    // Lógica para adicionar um produto personalizado que não está no dbProducts
-                    if (customProductName && customProductPrice) {
-                        const customProduct = {
-                            id: Date.now().toString(),
-                            code: "",
-                            name: customProductName.toUpperCase(),
-                            price: brazilianCurrencyToNumber(customProductPrice),
-                            quantity: isNaN(measure) ? 1 : Math.round(measure * 100) / 100,
-                            unit: isNaN(measure) ? 'UN' : 'M'
-                        };
-                        cart.push(customProduct);
-                        updateShoppingCart();
-                        customSaleModal.hide();
-                    } else {
-                        showToast('Por favor, preencha todos os campos necessários.', 'error');
-                    }
-                }
+            if (!customProductName || !customProductPrice) {
+                showToast('Por favor, preencha todos os campos necessários.', 'error');
+                return;
             }
 
-            // Limpa os campos do modal
+            const customProduct = {
+                id: 999999, // Using timestamp as a unique ID
+                name: customProductName,
+                price: brazilianCurrencyToNumber(customProductPrice),
+                stock: 0,
+                quantity: 1,
+                unit: measure ? 'M' : 'UN'
+            };
+
+            // Atualiza o estoque em dbProducts
+            dbProducts.push(customProduct);
+            updateProductStock(customProduct);
+
+            // Adiciona o novo produto ao carrinho
+            cart.push(customProduct);
+            localStorage.setItem('cart', JSON.stringify(cart));
+
+            updateShoppingCart();
+            updateCartBadge();
+
+            // Clear the input fields
             document.getElementById('customProductName').value = '';
             document.getElementById('customProductPrice').value = '';
-            measureInput.value = '';
+            document.getElementById('measure').checked = false;
+
+            // Close the modal
+            customSaleModal.hide();
         }
 
         /**
@@ -1688,8 +1655,6 @@
             document.getElementById('customSaleModalLabel').textContent = `Venda avulsa`;
             document.getElementById('customProductName').value = 'PRODUTOS VARIADOS';
             document.getElementById('customProductPrice').value = '';
-            document.getElementById('customProductMeasureCheck').checked = false;
-            document.getElementById('customProductMeasure').disabled = true;
         });
 
         /**
