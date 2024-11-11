@@ -28,6 +28,17 @@
             max-width: 3%;
             height: auto;
         }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* Firefox */
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
     </style>
 </head>
 
@@ -167,19 +178,6 @@
                                 <div class="input-group">
                                     <input type="text" class="form-control" id="customProductPrice" data-currency="BRL"
                                         autocomplete="off" required>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="customProductMeasure" class="form-label text-uppercase">Metragem</label>
-                                <div class="input-group mb-3">
-                                    <div class="input-group-text">
-                                        <input class="form-check-input mt-0" type="checkbox"
-                                            id="customProductMeasureCheck"
-                                            aria-label="Checkbox for following text input">
-                                    </div>
-                                    <input type="search" inputmode="numeric" class="form-control" disabled
-                                        placeholder="0,00" id="customProductMeasure"
-                                        aria-label="Text input with checkbox">
                                 </div>
                             </div>
                         </form>
@@ -744,55 +742,45 @@
             document.getElementById('partialPaymentsList').innerHTML = '';
         });
 
-        /**
-         * Habilita ou desabilita o campo de entrada de medida personalizada.
-         *
-         * @function
-         * @name customProductMeasureCheckHandler
-         * @param {Event} e - O evento de mudança.
-         * @description
-         * Esta função é um manipulador de eventos para a caixa de seleção de medida personalizada.
-         * Ela realiza as seguintes operações:
-         * 1. Previne o comportamento padrão do evento.
-         * 2. Obtém a referência do campo de entrada de medida personalizada.
-         * 3. Habilita o campo se a caixa de seleção estiver marcada, ou desabilita caso contrário.
-         *
-         * @example
-         * // Este evento é acionado automaticamente quando o usuário marca ou desmarca a caixa de seleção
-         * document.getElementById('customProductMeasureCheck').addEventListener('change', customProductMeasureCheckHandler);
-         */
-        document.getElementById('customProductMeasureCheck').addEventListener('change', function (e) {
-            e.preventDefault();
-            const measurePrice = document.getElementById('customProductMeasure')
-            e.target.checked ? measurePrice.disabled = false : measurePrice.disabled = true;
-        })
+        function quantityUpdate(id) {
+            console.log('BLUR', e)
+            let value = document.getElementById();
+            value = value.replace(/,/g, '.'); // Replace comma with dot for decimal
 
-        /**
-         * Formata o valor inserido no campo de medida personalizada para o formato brasileiro de moeda.
-         *
-         * @function
-         * @name customProductMeasureInputHandler
-         * @param {Event} e - O evento de input.
-         * @description
-         * Esta função é um manipulador de eventos para o campo de entrada de medida personalizada.
-         * Ela realiza as seguintes operações:
-         * 1. Remove todos os caracteres não numéricos do valor inserido.
-         * 2. Converte o valor para um número com duas casas decimais.
-         * 3. Formata o número para o padrão brasileiro de moeda (vírgula como separador decimal e ponto como separador de milhar).
-         * 4. Atualiza o valor do campo de entrada com o valor formatado.
-         *
-         * @example
-         * // Este evento é acionado automaticamente quando o usuário digita no campo de medida personalizada
-         * document.getElementById('customProductMeasure').addEventListener('input', customProductMeasureInputHandler);
-         */
-        document.getElementById('customProductMeasure').addEventListener('input', function (e) {
-            let value = e.target.value;
-            value = value.replace(/\D/g, "");
-            value = (value / 100).toFixed(2) // Adiciona casas decimais
-                .replace(".", ",")           // Substitui ponto por vírgula
-                .replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Adiciona separador de milhares
-            e.target.value = value ? `${value}` : "";
-        });
+            if (value === '') {
+                value = '1';
+            }
+
+            const [_, productId] = e.target.id.split('-')
+            const cartItem = cart.find(item => item.id == productId);
+
+            if (cartItem) {
+                if (cartItem.unit === 'M') {
+                    cartItem.quantity = parseFloat(value);
+
+                    // Update stock for 'M' unit products
+                    const product = dbProducts.find(p => p.id == productId);
+                    if (product) {
+                        const oldQuantity = parseFloat(e.target.dataset.oldValue || '0');
+                        const quantityDifference = cartItem.quantity - oldQuantity;
+                        product.stock = Math.max(0, (parseFloat(product.stock) - quantityDifference).toFixed(2));
+                        document.getElementById(`stock-${productId}`).textContent = product.stock + 'M';
+                    }
+
+                    // Store the current value for future comparison
+                    e.target.dataset.oldValue = cartItem.quantity;
+
+                    // Format the input value to 2 decimal places
+                    e.target.value = cartItem.quantity.toFixed(2);
+                } else {
+                    cartItem.quantity = parseInt(value, 10);
+                    e.target.value = cartItem.quantity;
+                }
+
+                updateShoppingCart();
+                updateProductStock(productId, 'update');
+            }
+        }
 
         /**
          * Exibe os produtos na interface do usuário.
@@ -911,7 +899,7 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="input-group input-group-sm" style="max-width: 120px;">
                                     <button class="btn btn-outline-secondary btn-sm" onclick="decrementQuantity('${product.id}')"><i class="fa-solid fa-minus"></i></button>
-                                    <input type="text" inputmode="numeric" id='priceInput' class="form-control form-control-sm text-center" value="${String(product.quantity).replace('.', ',')}" min="1" onchange="updateQuantity('${product.id}', this.value)">
+                                    <input type="number" inputmode="numeric" id='priceInput-${product.id}' onblur=quantityUpdate(${product.id}) class="form-control form-control-sm text-center" min="1" value=${product.quantity} >
                                     <button class="btn btn-outline-primary btn-sm" onclick="incrementQuantity('${product.id}')"><i class="fa-solid fa-plus"></i></button>
                                 </div>
                                 <span class="text-muted">
@@ -956,27 +944,14 @@
          * addToCart('123');
          */
         function addToCart(id) {
-            debugger
             const existingItem = cart.find(item => item.id == id);
-
 
             if (existingItem) {
                 existingItem.quantity += 1;
-            } else {
-                const product = dbProducts.find(product => product.id == id);
-
-                if (product.unit === 'M') {
-                    document.getElementById('customSaleModalLabel').textContent = `Venda por metragem`;
-                    document.getElementById('customProductName').value = product.name;
-                    document.getElementById('customProductPrice').value = numberToBrazilianCurrency(product.price);
-                    document.getElementById('customProductMeasureCheck').checked = true;
-                    document.getElementById('customProductMeasure').disabled = false;
-                    customSaleModal.show();
-                    return;
-                }
-
-                cart.push({ ...product, quantity: 1 });
             }
+
+            const product = dbProducts.find(product => product.id == id);
+            cart.push({ ...product, quantity: 1 });
 
             updateShoppingCart();
             updateProductStock(id, 'add');
@@ -1052,40 +1027,54 @@
         }
 
         /**
-         * Atualiza o estoque de um produto após uma operação de adição ou remoção.
+         * Atualiza o estoque de um produto após uma operação de adição, remoção ou atualização.
          *
          * @function
          * @name updateProductStock
          * @param {string} id - O ID do produto cujo estoque será atualizado.
-         * @param {string} action - A ação a ser realizada ('add' para adicionar ao carrinho, 'remove' para remover do carrinho).
+         * @param {string} action - A ação a ser realizada ('add', 'remove' ou 'update').
+         * @param {number} [quantity] - A quantidade a ser atualizada (necessária para 'update').
          * @description
          * Esta função realiza as seguintes operações:
          * 1. Encontra o produto no banco de dados usando o ID fornecido.
          * 2. Atualiza o estoque do produto com base na ação:
          *    - Se a ação for 'add', diminui o estoque.
          *    - Se a ação for 'remove', aumenta o estoque.
+         *    - Se a ação for 'update', ajusta o estoque baseado na diferença entre a nova quantidade e a antiga.
          * 3. Trata de forma diferente produtos vendidos por unidade (UN) e por metro (M).
-         * 4. Atualiza a exibição do estoque na interface do usuário.
-         *
-         * @example
-         * // Atualiza o estoque após adicionar o produto com ID '123' ao carrinho
-         * updateProductStock('123', 'add');
-         *
-         * @example
-         * // Atualiza o estoque após remover o produto com ID '456' do carrinho
-         * updateProductStock('456', 'remove');
+         * 4. Permite que o estoque fique negativo.
+         * 5. Atualiza a exibição do estoque na interface do usuário.
          */
-        function updateProductStock(id, action) {
+        function updateProductStock(id, action, quantity) {
+            // Encontra o produto no banco de dados
             const product = dbProducts.find(product => product.id == id);
+            const cartItem = cart.find(item => item.id == id);
 
-            if (action === 'add') {
-                product.unit === 'M' ? product.stock = Math.round((product.stock - 1) * 100) : product.stock -= 1
-            } else if (action === 'remove') {
-                product.unit === 'M' ? product.stock = Math.round((product.stock + 1) * 100) : product.stock += 1
+            if (product) {
+                if (action === 'add') {
+                    // Diminui o estoque ao adicionar ao carrinho
+                    product.stock -= (product.unit === 'M' ? parseFloat(cartItem.quantity) : 1);
+                } else if (action === 'remove') {
+                    // Aumenta o estoque ao remover do carrinho
+                    product.stock += (product.unit === 'M' ? parseFloat(cartItem.quantity) : 1);
+                } else if (action === 'update' && quantity !== undefined) {
+                    // Ajusta o estoque com base na diferença entre a nova e a antiga quantidade
+                    const oldQuantity = parseFloat(cartItem.quantity);
+                    const newQuantity = parseFloat(quantity);
+                    const difference = newQuantity - oldQuantity;
+                    product.stock -= difference;
+                }
+
+                // Arredonda para 2 casas decimais para unidade 'M'
+                product.stock = product.unit === 'M' ? parseFloat(product.stock.toFixed(2)) : Math.round(product.stock);
+
+                // Atualiza a exibição do estoque na interface
+                const stockElement = document.getElementById(`stock-${product.id}`);
+                stockElement.textContent = `${product.stock}${product.unit}`;
+
+                // Atualiza dbProducts no localStorage
+                localStorage.setItem('dbProducts', JSON.stringify(dbProducts));
             }
-
-            const stockElement = document.getElementById(`stock-${product.id}`);
-            stockElement.textContent = `${product.stock}${product.unit}`;
         }
 
         /**
@@ -1247,12 +1236,10 @@
          * updateQuantity('456', '2,5');
          */
         function updateQuantity(id, newQuantity) {
-            const item = cart.find(item => item.id == id);
-
-            const product = dbProducts.find(product => product.id == id);
+            const existingItem = cart.find(item => item.id == id);
             var quantityDifference = 0
 
-            if (item) {
+            if (existingItem) {
                 if (Number.isInteger(newQuantity)) {
                     newQuantity = parseInt(newQuantity);
                 } else {
@@ -1267,10 +1254,15 @@
                 const oldQuantity = item.quantity;
                 quantityDifference = newQuantity - oldQuantity;
 
-                item.quantity = newQuantity;
+                existingItem.quantity = newQuantity;
                 localStorage.setItem('cart', JSON.stringify(cart));
 
             }
+
+            const product = dbProducts.find(product => product.id == id);
+
+            // const stockElement = document.getElementById(`stock-${product.id}`);
+            // stockElement.textContent = `${product.stock}${product.unit}`;
 
             if (product) {
                 product.stock -= quantityDifference;
