@@ -314,12 +314,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
-
-        //Global Variables
-        const url = 'https://script.google.com/macros/s/AKfycbyMw4O_P29dZgzo0Y1kGl7bmN2LJvRSNU2ssr5uiM3BkS1e3nFox2sjoBdjggdyRTOc/exec';
-        // let dbProducts = JSON.parse(localStorage.getItem('dbProducts'));
         let cart = JSON.parse(localStorage.getItem('cart')) || []
         let discount = 0;
         let totalToPay = 0
@@ -332,10 +327,1037 @@
         const modalProductList = document.getElementById('modalProductList');
         const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
 
-        //DOM Events
+        /**
+        * Inicializa a aplicação carregando e exibindo os produtos.
+        * 
+        * Esta função realiza as seguintes tarefas:
+        * 1. Exibe um efeito de carregamento (shimmer).
+        * 2. Verifica se a aplicação está rodando localmente ou em um servidor.
+        * 3. Para desenvolvimento local, usa produtos simulados após um pequeno atraso.
+        * 4. Para implantação no servidor, busca produtos usando Google Apps Script.
+        * 5. Define a variável global dbProducts com os produtos obtidos ou simulados.
+        * 6. Exibe os produtos na página.
+        * 7. Armazena os produtos no localStorage para uso futuro.
+        * 
+        * @function
+        * @name init
+        * @returns {void}
+        */
+        function init() {
+            loadingShimmer();
+
+            if (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') {
+                setTimeout(() => {
+                    const products = getMockProducts();
+                    dbProducts = products; // Set the global dbProducts variable
+                    displayProducts(products);
+                    localStorage.setItem('dbProducts', JSON.stringify(products));
+                }, 1000);
+            } else {
+                google.script.run
+                    .withSuccessHandler((products) => {
+                        dbProducts = products; // Set the global dbProducts variable
+                        displayProducts(products);
+                        localStorage.setItem('dbProducts', JSON.stringify(products));
+                    })
+                    .withFailureHandler((error) => {
+                        console.error('Error:', error);
+                    })
+                    .getProducts();
+            }
+
+            updateShoppingCart()
+        }
+
+        /**
+         * Cria e exibe um efeito de carregamento (shimmer) na tabela de produtos.
+         *
+         * @function
+         * @name loadingShimmer
+         * @description
+         * Esta função gera linhas de placeholder na tabela de produtos para simular
+         * um efeito de carregamento. Ela cria 10 linhas com células que contêm
+         * elementos de placeholder, dando a aparência de conteúdo sendo carregado.
+         * 
+         * O efeito de shimmer é criado usando classes do Bootstrap como 'placeholder-glow'
+         * e 'placeholder', que aplicam animações de brilho aos elementos.
+         * 
+         * @returns {void}
+         */
+        function loadingShimmer() {
+            const tbody = document.querySelector('tbody');
+
+            Array.from({ length: 10 }, function (_, i) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="placeholder-glow ">
+                        <span class="placeholder col-4 rounded"></span>
+                        <p class="text-truncate mt-2">
+                            <span class="placeholder col-10 rounded"></span>
+                        </p>
+                    </td>
+                    <td class="placeholder-glow">
+                        <span class="placeholder col-3 rounded"></span>
+                    </td>
+                    <td class="placeholder-glow">
+                        <span class="placeholder col-3 rounded"></span>
+                    </td>
+                    <td class="placeholder-glow">
+                        <span class="btn brn-sm btn-primary disabled placeholder col-6 rounded"></span>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            })
+        }
+
+        /**
+         * Gera uma lista de produtos simulados para fins de teste e desenvolvimento.
+         *
+         * @function
+         * @name getMockProducts
+         * @returns {Array<Object>} Um array contendo 10 objetos de produtos simulados.
+         * @description
+         * Cada produto gerado possui as seguintes propriedades:
+         * - id: Um número único incrementado sequencialmente.
+         * - code: Um código de produto aleatório no formato 'ABC-XXX'.
+         * - name: Um nome genérico no formato 'Product X'.
+         * - price: Um preço aleatório entre 1 e 101, com duas casas decimais.
+         * - stock: Um valor fixo de 20 unidades para todos os produtos.
+         * - unit: 'M' (metro) ou 'UN' (unidade), com 90% de chance de ser 'M'.
+         */
+        function getMockProducts() {
+            return Array.from({ length: 10 }, (_, index) => {
+                return {
+                    id: index + 1,
+                    code: `PRODUTO-${Math.floor(Math.random() * 1000) + 1}`,
+                    name: `PRODUTO ${index + 1}`,
+                    price: parseFloat((Math.random() * 100 + 1).toFixed(2)),
+                    stock: 20,
+                    unit: Math.random() > 0.5 ? 'M' : 'UN'  // 40% chance of being 'M', otherwise 'UN'
+                };
+            });
+        }
+
+        /**
+         * Exibe os produtos na interface do usuário.
+         *
+         * @function
+         * @name displayProducts
+         * @param {Array<Object>} products - Array de objetos representando os produtos a serem exibidos.
+         * @throws {Error} Se o banco de dados de produtos (dbProducts) não estiver disponível.
+         * 
+         * @description
+         * Esta função realiza as seguintes operações:
+         * 1. Verifica se o banco de dados de produtos está disponível.
+         * 2. Limpa o conteúdo atual da tabela de produtos.
+         * 3. Para cada produto no array:
+         *    a. Cria uma nova linha na tabela.
+         *    b. Preenche a linha com informações do produto (código, nome, preço, estoque).
+         *    c. Formata o estoque com duas casas decimais se a unidade for 'M' (metros).
+         *    d. Adiciona um botão para adicionar o produto ao carrinho.
+         * 
+         * @example
+         * displayProducts(dbProducts);
+         */
+        function displayProducts(products) {
+            if (!dbProducts) {
+                console.error('Banco de dados de produtos não disponível');
+                location.reload();
+                return;
+            }
+
+            const tbody = document.querySelector('tbody');
+            tbody.innerHTML = '';
+
+            products.forEach(product => {
+                const tr = document.createElement('tr');
+
+                // Formata o estoque com base na unidade
+                const formattedStock = product.unit === 'M'
+                    ? product.stock.toFixed(2)
+                    : Math.floor(product.stock);
+
+                tr.innerHTML = `
+                    <td>
+                        <p class="d-inline-block text-truncate" style="max-width: 450px;">
+                            <small class="badge ${product.code ? "bg-secondary" : "bg-danger"}">${product.code || "SEM CADASTRO"}</small><br>
+                            ${product.name}
+                        </p>
+                    </td>
+                    <td class="align-middle">
+                        <span class="text-nowrap">${numberToBrazilianCurrency(product.price)}</span>
+                    </td>
+                    <td class="align-middle">
+                        <span class="text-nowrap" id="stock-${product.id}">${formattedStock}<small>${product.unit}</small></span>
+                    </td>
+                    <td class="align-middle">
+                        <button type="button" class="btn btn-outline-primary btn-sm text-uppercase"
+                            onclick="addToCart('${product.id}')"
+                            aria-label="Adicionar ${product.name} ao Carrinho">
+                            Adicionar
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        /**
+         * Atualiza a exibição do carrinho de compras na interface do usuário.
+         *
+         * @function
+         * @name updateShoppingCart
+         * @description
+         * Esta função realiza as seguintes operações:
+         * 1. Limpa o conteúdo atual do carrinho na interface.
+         * 2. Se o carrinho estiver vazio, exibe uma mensagem de "Carrinho vazio".
+         * 3. Se houver itens no carrinho:
+         *    a. Para cada produto, cria um elemento de lista com detalhes do produto.
+         *    b. Inclui botões para incrementar, decrementar e remover o produto.
+         *    c. Calcula e exibe o subtotal para cada produto.
+         * 4. Calcula o total final considerando o desconto aplicado.
+         * 5. Atualiza o valor total exibido.
+         * 6. Atualiza o indicador numérico (badge) do carrinho.
+         * 7. Salva o estado atual do carrinho no localStorage.
+         *
+         * @example
+         * // Atualiza a exibição do carrinho após qualquer modificação
+         * updateShoppingCart();
+         */
+        function updateShoppingCart() {
+            const cartList = document.getElementById('cartList');
+            const cartTotal = document.getElementById('cartTotal');
+            cartList.innerHTML = '';
+            let total = 0;
+
+            if (cart.length === 0) {
+                const emptyCartMessage = document.createElement('div');
+                emptyCartMessage.className = 'd-flex flex-column align-items-center justify-content-center h-100 text-center';
+                emptyCartMessage.innerHTML = `
+                    <div class="d-flex justify-content-center w-100 mt-5">
+                        <i class="fas fa-shopping-bag fa-10x opacity-50 p-5 text-danger"></i>
+                    </div>
+                    <p class="mt-3 text-muted text-uppercase">Carrinho vazio</p>
+                `;
+                cartList.appendChild(emptyCartMessage);
+            } else {
+                cart.forEach(product => {
+                    const subtotal = product.price * product.quantity;
+                    total += subtotal;
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item list-group-item-action mt-2';
+                    li.innerHTML = `
+                        <div class="w-100">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-truncate me-2">
+                                    <span class="badge ${product.code ? "bg-secondary" : "bg-danger"}">${product.code ? product.code : "SEM CADASTRO"}</span>
+                                </span>
+                                <button class="btn btn-outline-danger btn-sm" onclick="removeFromCart('${product.id}')">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                            <h6 class="mb-2 text-truncate">${product.name}</h6>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="input-group input-group-sm" style="max-width: 120px;">
+                                    <button class="btn btn-outline-secondary btn-sm" onclick="decrementQuantity('${product.id}')"><i class="fa-solid fa-minus"></i></button>
+                                    <input type="number" inputmode="numeric" id='priceInput-${product.id}' onblur=quantityUpdate(${product.id}) class="form-control form-control-sm text-center" min="1" value=${product.quantity} >
+                                    <button class="btn btn-outline-primary btn-sm" onclick="incrementQuantity('${product.id}')"><i class="fa-solid fa-plus"></i></button>
+                                </div>
+                                <span class="text-muted">
+                                    ${numberToBrazilianCurrency(product.price)}
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-end mt-2">
+                                <span class="fw-bold">Subtotal: ${numberToBrazilianCurrency(subtotal)}</span>
+                            </div>
+                        </div>
+
+                    `;
+                    cartList.appendChild(li);
+                });
+            }
+
+            const finalTotal = Math.max(total - discount, 0);
+            cartTotal.value = numberToBrazilianCurrency(finalTotal)
+            localStorage.setItem('cart', JSON.stringify(cart));
+            // updateCartBadge();
+        }
+
+        /**
+         * Adiciona um produto ao carrinho de compras ou incrementa sua quantidade se já estiver presente.
+         *
+         * @function
+         * @name addToCart
+         * @param {string} id - O ID do produto a ser adicionado ao carrinho.
+         * @description
+         * Esta função realiza as seguintes operações:
+         * 1. Verifica se o item já existe no carrinho.
+         * 2. Se existir, incrementa a quantidade em 1.
+         * 3. Se não existir:
+         *    a. Busca o produto no banco de dados.
+         *    b. Adiciona o produto ao carrinho com quantidade 1, excluindo o atributo de estoque.
+         * 4. Atualiza o estoque no dbProducts (permitindo estoque negativo).
+         * 5. Atualiza a exibição do carrinho de compras e do estoque na interface.
+         *
+         * @example
+         * // Adiciona o produto com ID '123' ao carrinho
+         * addToCart('123');
+         */
+        function addToCart(id) {
+            const existingItem = cart.find(item => item.id == id);
+            const product = dbProducts.find(product => product.id == id);
+
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                const { stock, ...productWithoutStock } = product;
+                cart.push({
+                    ...productWithoutStock,
+                    quantity: 1
+                });
+            }
+
+            // Atualiza o estoque no dbProducts (permitindo estoque negativo)
+            product.stock -= 1;
+
+            // Atualiza a exibição do carrinho e do estoque
+            updateShoppingCart();
+            updateProductStock(product);
+        }
+
+        /**
+         * Decrementa a quantidade de um item no carrinho de compras.
+         *
+         * @function
+         * @name decrementQuantity
+         * @param {string} id - O ID do produto cuja quantidade será decrementada.
+         * @description
+         * Esta função realiza as seguintes operações:
+         * 1. Procura um item existente no carrinho com o ID fornecido.
+         * 2. Se o item for encontrado:
+         *    a. Se a quantidade for 1, remove o item do carrinho.
+         *    b. Se a quantidade for maior que 1, decrementa a quantidade em 1.
+         * 3. Atualiza o estoque no dbProducts (permitindo estoque negativo).
+         * 4. Atualiza o carrinho no localStorage.
+         * 5. Atualiza a exibição do carrinho de compras e do estoque na interface.
+         *
+         * @example
+         * // Decrementa a quantidade do produto com ID '123' no carrinho
+         * decrementQuantity('123');
+         */
+        function decrementQuantity(id) {
+            const existingItem = cart.find(item => item.id == id);
+            const product = dbProducts.find(product => product.id == id);
+
+            if (existingItem) {
+                if (existingItem.quantity <= 1) {
+                    removeFromCart(id);
+                    return;
+                } else {
+                    existingItem.quantity -= 1;
+                }
+
+                // Atualiza o estoque no dbProducts (permitindo estoque positivo)
+                product.stock += 1;
+
+                localStorage.setItem('cart', JSON.stringify(cart));
+            }
+
+            updateShoppingCart();
+            updateProductStock(product);
+        }
+
+        /**
+         * Incrementa a quantidade de um item no carrinho de compras.
+         *
+         * @function
+         * @name incrementQuantity
+         * @param {string} id - O ID do produto cuja quantidade será incrementada.
+         * @description
+         * Esta função realiza as seguintes operações:
+         * 1. Procura um item existente no carrinho com o ID fornecido.
+         * 2. Se o item for encontrado, incrementa sua quantidade em 1.
+         * 3. Se o item não for encontrado, adiciona um novo item ao carrinho com quantidade 1.
+         * 4. Atualiza o estoque no dbProducts (permitindo estoque negativo).
+         * 5. Atualiza a exibição do carrinho de compras e do estoque na interface.
+         *
+         * @example
+         * // Incrementa a quantidade do produto com ID '123' no carrinho
+         * incrementQuantity('123');
+         */
+        function incrementQuantity(id) {
+            const existingItem = cart.find(item => item.id == id);
+            const product = dbProducts.find(product => product.id == id);
+
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                const { stock, ...productWithoutStock } = product;
+                cart.push({
+                    ...productWithoutStock,
+                    quantity: 1
+                });
+            }
+
+            // Atualiza o estoque no dbProducts (permitindo estoque negativo)
+            product.stock -= 1;
+
+            // Atualiza a exibição do carrinho e do estoque
+            updateShoppingCart();
+            updateProductStock(product);
+        }
+
+
+        /**
+         * Atualiza a exibição do estoque de um produto na interface.
+         *
+         * @function
+         * @name updateProductStock
+         * @param {Object} product - O objeto do produto contendo id, stock, e unit.
+         */
+        function updateProductStock(product) {
+            const stockElement = document.getElementById(`stock-${product.id}`);
+            if (stockElement) {
+                let stockText;
+
+                // Formata o texto do estoque com base na unidade do produto
+                if (product.unit === 'M') {
+                    // Para produtos medidos em metros, mostra duas casas decimais
+                    stockText = product.stock.toFixed(2);
+                } else {
+                    // Para outros produtos, mostra como número inteiro
+                    stockText = Math.floor(product.stock);
+                }
+
+                // Adiciona a unidade ao texto do estoque
+                stockElement.textContent = `${stockText}${product.unit}`;
+
+                // Aplica estilo baseado no valor do estoque
+                if (product.stock < 0) {
+                    stockElement.classList.add('text-danger');
+                } else {
+                    stockElement.classList.remove('text-danger');
+                }
+            }
+        }
+
+        /**
+         * Remove um item do carrinho de compras e atualiza o estoque.
+         *
+         * @function
+         * @name removeFromCart
+         * @param {string} id - O ID do produto a ser removido do carrinho.
+         * @description
+         * Esta função realiza as seguintes operações:
+         * 1. Localiza o item no carrinho pelo ID fornecido.
+         * 2. Se o item for encontrado:
+         *    a. Remove o item do array do carrinho.
+         *    b. Atualiza o estoque do produto em dbProducts, adicionando a quantidade removida de volta.
+         *    c. Atualiza a exibição do carrinho de compras na interface.
+         *    d. Atualiza o indicador numérico (badge) do carrinho.
+         * 3. Se o item não for encontrado, exibe uma mensagem de erro.
+         *
+         * @throws {Error} Exibe um toast de erro se o item não for encontrado no carrinho.
+         *
+         * @example
+         * // Remove o produto com ID '123' do carrinho
+         * removeFromCart('123');
+         */
+        function removeFromCart(id) {
+            const index = cart.findIndex(item => item.id == id);
+
+            const removedItem = cart.splice(index, 1)[0];
+
+            // Atualiza o estoque em dbProducts
+            const productIndex = dbProducts.findIndex(product => product.id == id);
+            if (productIndex !== -1) {
+                dbProducts[productIndex].stock += removedItem.quantity;
+                updateProductStock(dbProducts[productIndex]);
+            }
+
+            // Atualiza o localStorage
+            localStorage.setItem('cart', JSON.stringify(cart));
+
+            // Atualiza a interface
+            updateShoppingCart();
+            updateCartBadge();
+
+        }
+
+        /**
+         * Atualiza a quantidade de um produto no carrinho e ajusta o estoque.
+         *
+         * @function
+         * @name quantityUpdate
+         * @param {string} id - O ID do produto a ser atualizado.
+         * @description
+         * Esta função realiza as seguintes operações:
+         * 1. Obtém o valor atualizado da quantidade do input.
+         * 2. Valida e ajusta o valor da quantidade conforme necessário.
+         * 3. Atualiza a quantidade do item no carrinho.
+         * 4. Atualiza o estoque do produto em dbProducts.
+         * 5. Atualiza a interface do usuário, incluindo o carrinho e a exibição do estoque.
+         *
+         * @example
+         * // Atualiza a quantidade do produto com ID '123'
+         * quantityUpdate('123');
+         */
+        function quantityUpdate(id) {
+            const inputElement = document.getElementById(`priceInput-${id}`);
+            let value = inputElement.value.includes(',') ? inputElement.value.replace(/,/g, '.') : inputElement.value;
+            value = parseFloat(value);
+
+            if (isNaN(value) || value <= 0) {
+                value = 1;
+                inputElement.value = value;
+            }
+
+            const cartItem = cart.find(item => item.id == id);
+            const product = dbProducts.find(p => p.id == id);
+
+            if (cartItem && product) {
+                const oldQuantity = cartItem.quantity;
+                const newQuantity = cartItem.unit === 'M' ? parseFloat(value) : Math.floor(value);
+                const quantityDifference = newQuantity - oldQuantity;
+
+                cartItem.quantity = newQuantity;
+                product.stock = Math.max(0, product.stock - quantityDifference);
+
+                // Atualiza o valor no input
+                inputElement.value = cartItem.unit === 'M' ? newQuantity.toFixed(2) : newQuantity;
+
+                // Atualiza o estoque exibido
+                updateProductStock(product);
+
+                // Atualiza o carrinho e o localStorage
+                updateShoppingCart();
+                localStorage.setItem('cart', JSON.stringify(cart));
+            }
+        }
+
+        /**
+         * Converte um número para o formato de moeda brasileira.
+         *
+         * @function
+         * @name numberToBrazilianCurrency
+         * @param {number} number - O número a ser convertido para o formato de moeda brasileira.
+         * @returns {string} Uma string representando o valor no formato de moeda brasileira (ex: "R$ 1.234,56").
+         * @description
+         * Esta função utiliza o método toLocaleString para formatar o número de acordo com as convenções
+         * de moeda brasileira, incluindo o símbolo "R$", separadores de milhar e vírgula como separador decimal.
+         *
+         * @example
+         * // Retorna "R$ 1.234,56"
+         * numberToBrazilianCurrency(1234.56);
+         *
+         * @example
+         * // Retorna "R$ 1.000,00"
+         * numberToBrazilianCurrency(1000);
+         */
+        function numberToBrazilianCurrency(number) {
+            return parseFloat(number).toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+            });
+        }
+
+        /**
+         * Adiciona um produto personalizado ao carrinho de compras.
+         *
+         * @function
+         * @name addCustomProduct
+         * @description
+         * Esta função realiza as seguintes operações:
+         * 1. Obtém os valores dos campos do modal de produto personalizado.
+         * 2. Verifica se o produto já existe no banco de dados.
+         * 3. Se o produto existir e for vendido por metro:
+         *    a. Arredonda a medida para 2 casas decimais.
+         *    b. Atualiza o estoque do produto.
+         *    c. Adiciona ou atualiza o item no carrinho.
+         * 4. Se o produto não existir ou não for vendido por metro:
+         *    a. Cria um novo produto personalizado.
+         *    b. Adiciona o novo produto ao carrinho.
+         * 5. Atualiza a exibição do carrinho e fecha o modal.
+         * 6. Limpa os campos do modal após a adição.
+         *
+         * @throws {Error} Exibe um toast de erro se os campos necessários não forem preenchidos.
+         *
+         * @example
+         * // Chama a função quando o usuário confirma a adição de um produto personalizado
+         * addCustomProduct();
+         */
+        function addCustomProduct() {
+            const customProductName = document.getElementById('customProductName').value;
+            const customProductPrice = document.getElementById('customProductPrice').value;
+            const measureInput = document.getElementById('customProductMeasure');
+            const measure = parseFloat(measureInput.value.replace(',', '.'));
+
+            const product = dbProducts.find(product => product.name === customProductName);
+
+            if (product) {
+                if (product.unit === 'M') {
+                    // Arredonda para 2 casas decimais
+                    const roundedMeasure = Math.round(measure * 100) / 100;
+
+                    // Atualiza o estoque com precisão de 2 casas decimais
+                    product.stock = Math.round((product.stock - roundedMeasure) * 100) / 100;
+
+                    const existingItem = cart.find(item => item.id === product.id);
+                    if (existingItem) {
+                        existingItem.quantity = Math.round((existingItem.quantity + roundedMeasure) * 100) / 100;
+                    } else {
+                        cart.push({ ...product, quantity: roundedMeasure });
+                    }
+
+                    updateProductStock(product.id, 'add');
+                    updateShoppingCart();
+                    customSaleModal.hide();
+                }
+                else {
+                    // Lógica para adicionar um produto personalizado que não está no dbProducts
+                    if (customProductName && customProductPrice) {
+                        const customProduct = {
+                            id: Date.now().toString(),
+                            code: "",
+                            name: customProductName.toUpperCase(),
+                            price: brazilianCurrencyToNumber(customProductPrice),
+                            quantity: isNaN(measure) ? 1 : Math.round(measure * 100) / 100,
+                            unit: isNaN(measure) ? 'UN' : 'M'
+                        };
+                        cart.push(customProduct);
+                        updateShoppingCart();
+                        customSaleModal.hide();
+                    } else {
+                        showToast('Por favor, preencha todos os campos necessários.', 'error');
+                    }
+                }
+            }
+
+            // Limpa os campos do modal
+            document.getElementById('customProductName').value = '';
+            document.getElementById('customProductPrice').value = '';
+            measureInput.value = '';
+        }
+
+        /**
+         * Atualiza o indicador numérico (badge) do carrinho de compras.
+         *
+         * @function
+         * @name updateCartBadge
+         * @description
+         * Esta função realiza as seguintes operações:
+         * 1. Obtém o número de itens no carrinho.
+         * 2. Converte esse número para uma string.
+         * 3. Preenche a string com zeros à esquerda, garantindo que sempre tenha pelo menos 2 dígitos.
+         * 4. Atualiza o texto do elemento HTML com o id 'cartBadge' com esse valor.
+         *
+         * @example
+         * // Se o carrinho tiver 3 itens, o badge mostrará "03"
+         * // Se o carrinho tiver 12 itens, o badge mostrará "12"
+         * updateCartBadge();
+         */
+        function updateCartBadge() {
+            document.getElementById('cartBadge').textContent = String(cart.length).padStart(2, '0');
+        }
+
+        /**
+         * Exibe uma mensagem de toast com um tipo específico.
+         *
+         * @function
+         * @name showToast
+         * @param {string} message - A mensagem a ser exibida no toast.
+         * @param {string} type - O tipo de toast ('success', 'error', 'warning', ou 'info' por padrão).
+         * @description
+         * Esta função cria e exibe um toast personalizado com uma mensagem e um ícone
+         * correspondente ao tipo especificado. O toast é estilizado de acordo com o tipo,
+         * usando classes Bootstrap para cores de fundo e ícones Font Awesome.
+         *
+         * @example
+         * // Exibe um toast de sucesso
+         * showToast('Operação realizada com sucesso!', 'success');
+         *
+         * @example
+         * // Exibe um toast de erro
+         * showToast('Ocorreu um erro.', 'error');
+         */
+        function showToast(message, type) {
+            toastMessage.textContent = message;
+            const toastHeader = document.querySelector('.toast-header');
+            const toastIcon = document.createElement('i');
+
+            toastHeader.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-info');
+
+            switch (type) {
+                case 'success':
+                    toastHeader.classList.add('bg-success');
+                    toastIcon.className = 'fas fa-check-circle me-2';
+                    break;
+                case 'error':
+                    toastHeader.classList.add('bg-danger');
+                    toastIcon.className = 'fas fa-exclamation-circle me-2';
+                    break;
+                case 'warning':
+                    toastHeader.classList.add('bg-warning');
+                    toastIcon.className = 'fas fa-exclamation-triangle me-2';
+                    break;
+                default:
+                    toastHeader.classList.add('bg-info');
+                    toastIcon.className = 'fas fa-info-circle me-2';
+            }
+
+            const existingIcon = toastHeader.querySelector('i');
+            if (existingIcon) {
+                existingIcon.remove();
+            }
+
+            toastHeader.prepend(toastIcon);
+            toast.show();
+        }
+
+        /**
+         * Converte um valor em formato de moeda brasileira para um número.
+         *
+         * @function
+         * @name brazilianCurrencyToNumber
+         * @param {string} currency - O valor em formato de moeda brasileira (ex: "R$ 1.234,56").
+         * @returns {number} O valor convertido para número.
+         * @description
+         * Esta função realiza as seguintes operações:
+         * 1. Verifica se a string já inclui "R$", adicionando se necessário.
+         * 2. Remove o símbolo "R$" e espaços em branco.
+         * 3. Remove todos os pontos (separadores de milhar).
+         * 4. Substitui a vírgula (separador decimal) por ponto.
+         * 5. Converte a string resultante para um número de ponto flutuante.
+         *
+         * @example
+         * // Retorna 1234.56
+         * brazilianCurrencyToNumber("R$ 1.234,56");
+         *
+         * @example
+         * // Retorna 1234.56
+         * brazilianCurrencyToNumber("1.234,56");
+         */
+        function brazilianCurrencyToNumber(currency) {
+            if (!currency.includes("R$")) {
+                currency = `R$ ${currency}`
+            }
+
+            let cleanValue = currency.replace("R$", "").trim();
+            cleanValue = cleanValue.replace(/\./g, "");
+            cleanValue = cleanValue.replace(",", ".");
+            return parseFloat(cleanValue);
+        }
+
+        /**
+         * Abre o modal de pagamento e preenche com os detalhes do carrinho atual.
+         * 
+         * @function
+         * @name openPaymentModal
+         * @description
+         * Esta função realiza as seguintes operações:
+         * 1. Foca no campo de valor pago.
+         * 2. Verifica se o carrinho está vazio e exibe uma mensagem de erro se estiver.
+         * 3. Verifica se já existe um toast sendo exibido.
+         * 4. Reseta o formulário de pagamento.
+         * 5. Calcula o total da venda, considerando o desconto.
+         * 6. Preenche os campos de valor total e desconto no modal.
+         * 7. Limpa e preenche a lista de produtos no modal com os itens do carrinho.
+         * 8. Exibe o modal de pagamento.
+         * 
+         * @throws {Error} Exibe um toast de erro se o carrinho estiver vazio.
+         * 
+         * @example
+         * // Para abrir o modal de pagamento
+         * openPaymentModal();
+         */
+        function openPaymentModal() {
+            document.getElementById('paidAmount').focus()
+            if (cart.length === 0) {
+                showToast('O carrinho está vazio. Adicione itens antes de prosseguir com a venda.', 'error');
+                return;
+            }
+
+            if (toast._element.classList.contains('show')) return;
+
+            document.getElementById('paymentForm').reset();
+
+            const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0) - discount;
+            document.getElementById('totalAmount').value = numberToBrazilianCurrency(total);
+            document.getElementById('discountAmount').value = numberToBrazilianCurrency(discount);
+
+            modalProductList.innerHTML = '';
+            cart.forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                li.innerHTML = `
+                    <div class="d-flex flex-column w-100">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <small class="badge ${item.code ? 'bg-secondary' : 'bg-danger'}">${item.code ? item.code : 'SEM CADASTRO'}</small>
+                            <small class="text-muted">${item.quantity}x ${numberToBrazilianCurrency(item.price)}</small>
+                        </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-truncate ms-2" style="max-width: 400px;" title="${item.name}">${item.name}</small>
+                            <span class="text-danger fw-bold">${numberToBrazilianCurrency(item.price * item.quantity)}</span>
+                        </div>
+                    </div>
+                `;
+                modalProductList.appendChild(li);
+            });
+            paymentModal.show();
+        }
+
+        /**
+         * Processa o pagamento de uma venda.
+         *
+         * @async
+         * @function
+         * @name handlePayment
+         * @description
+         * Esta função gerencia o processo de pagamento, incluindo:
+         * - Validação do valor pago
+         * - Atualização da lista de métodos de pagamento
+         * - Cálculo de troco ou pagamento parcial
+         * - Preparação dos dados da venda
+         * - Registro da venda no sistema
+         * - Limpeza do carrinho após a conclusão da venda
+         *
+         * @returns {Promise<void>}
+         * @throws {Error} Lança um erro se houver problemas durante o processamento do pagamento.
+         *
+         * @example
+         * // Chamar a função quando o botão de pagamento for clicado
+         * paymentButton.addEventListener('click', handlePayment);
+         */
+        function getPaymentMethod() {
+            let paymentMethods = document.querySelectorAll(`[data-testid*="radio"]`);
+            let checkedRadio = Array.from(paymentMethods).find(radio => radio.checked);
+            return checkedRadio ? checkedRadio.dataset.payment || null : null;
+        }
+
+        /**
+         * Processa o pagamento de uma venda.
+         *
+         * @async
+         * @function
+         * @name handlePayment
+         * @description
+         * Esta função gerencia o processo de pagamento, incluindo:
+         * - Validação do valor pago
+         * - Atualização da lista de métodos de pagamento
+         * - Cálculo de troco ou pagamento parcial
+         * - Preparação dos dados da venda
+         * - Registro da venda no sistema
+         * - Limpeza do carrinho após a conclusão da venda
+         *
+         * @returns {Promise<void>}
+         * @throws {Error} Lança um erro se houver problemas durante o processamento do pagamento.
+         *
+         * @example
+         * // Chamar a função quando o botão de pagamento for clicado
+         * paymentButton.addEventListener('click', handlePayment);
+         */
+        async function handlePayment() {
+            const totalAmountEl = document.getElementById('totalAmount')
+            const discountAmountEl = document.getElementById('discountAmount')
+            const paidAmountEl = document.getElementById('paidAmount')
+            const changeAmountEl = document.getElementById('changeAmount')
+
+            if (!paidAmountEl.value.trim()) {
+                showToast('Por favor, insira o valor para pagamento.', 'error');
+                return;
+            }
+
+            let paidAmount = brazilianCurrencyToNumber(paidAmountEl.value)
+            let totalAmount = brazilianCurrencyToNumber(totalAmountEl.value)
+            let discountAmount = brazilianCurrencyToNumber(discountAmountEl.value)
+
+            if (paidAmount < totalAmount) {
+                updatePaymentMethodList(getPaymentMethod(), paidAmount);
+                paidAmountEl.value = '';
+                const newTotalAmount = totalAmount - paidAmount;
+                totalAmountEl.value = numberToBrazilianCurrency(newTotalAmount)
+                return;
+            }
+
+            updatePaymentMethodList(getPaymentMethod(), paidAmount);
+            paidAmountEl.value = '';
+            const newTotalAmount = totalAmount - paidAmount;
+            totalAmountEl.value = ''
+
+            let methodsPaid = Array.from(document.querySelectorAll('#paymentType')).map(el => el.innerText);
+            let amountPaid = Array.from(document.querySelectorAll('#amountPaid')).map(el => el.innerText);
+
+            let paymentMethods = methodsPaid.map((method, index) => ({
+                method,
+                amount: amountPaid[index]
+            }));
+
+            let products = cart.map(product => ({
+                id: product.id,
+                code: product.code,
+                name: product.name,
+                quantity: product.quantity,
+                price: product.price
+            }));
+
+            let formData = {
+                products,
+                discountAmount,
+                paymentMethods
+            };
+
+            loadingModal.show();
+
+            await postSale(formData);
+
+            cart = [];
+            showToast('Venda realizada com sucesso!', 'success');
+            paymentModal.hide();
+            updatePaymentMethodList("", 0, true);
+            init()
+        }
+
+        /**
+         * Envia os dados da venda para processamento no servidor usando Google Apps Script.
+         *
+         * @async
+         * @function
+         * @name postSale
+         * @param {Object} data - Os dados da venda a serem enviados.
+         * @param {Array} data.products - Lista de produtos vendidos.
+         * @param {number} data.discountAmount - Valor do desconto aplicado.
+         * @param {Array} data.paymentMethods - Métodos de pagamento utilizados.
+         * @returns {Promise<void>} Uma promessa que resolve quando a venda é processada com sucesso.
+         * @throws {Error} Lança um erro se houver falha no processamento da venda.
+         * @description
+         * Esta função faz o seguinte:
+         * 1. Envia os dados da venda para o servidor usando google.script.run.
+         * 2. Exibe uma mensagem de sucesso e limpa o carrinho se a venda for bem-sucedida.
+         * 3. Exibe uma mensagem de erro se houver falha no processamento.
+         * 4. Esconde o modal de carregamento após a conclusão, independentemente do resultado.
+         *
+         * @example
+         * // Exemplo de uso:
+         * const saleData = {
+         *   products: [{id: 1, name: 'Produto A', quantity: 2, price: 10.00}],
+         *   discountAmount: 5.00,
+         *   paymentMethods: [{method: 'Cartão', amount: 15.00}]
+         * };
+         * await postSale(saleData);
+         */
+        function postSale(data) {
+            return new Promise((resolve, reject) => {
+                google.script.run
+                    .withSuccessHandler(resolve)
+                    .withFailureHandler(reject)
+                    .postPaymentGAS(data);
+            }).then(response => {
+                console.log('Response:', response);
+                showToast('Venda finalizada com sucesso!', 'success');
+                clearCart();
+                paymentModal.hide();
+            }).catch(error => {
+                console.error('Error:', error);
+                showToast('Erro ao finalizar a venda. Tente novamente.', 'error');
+            }).finally(() => {
+                loadingModal.hide();
+            });
+        }
+
+        /**
+         * Atualiza a lista de métodos de pagamento no modal de pagamento.
+         *
+         * @function
+         * @name updatePaymentMethodList
+         * @param {string} [paymentType=''] - O tipo de pagamento a ser adicionado.
+         * @param {number} [amountPaid=0] - O valor pago com este método de pagamento.
+         * @param {boolean} [reset=false] - Se verdadeiro, limpa toda a lista de pagamentos.
+         * @description
+         * Esta função realiza as seguintes operações:
+         * 1. Se não for uma operação de reset, cria um novo item de lista com o tipo de pagamento e valor.
+         * 2. Adiciona o novo item à lista de pagamentos parciais.
+         * 3. Se for uma operação de reset, limpa toda a lista de pagamentos.
+         * 
+         * @returns {void}
+         */
+        function paymentDateFormatter(epochDateTimer, isBegin = false) {
+            const date = new Date(epochDateTimer);
+
+            if (isBegin) {
+                date.setDate(1)
+            }
+
+            return new Intl.DateTimeFormat("pt-BR", {
+                day: '2-digit',
+                year: 'numeric',
+                month: '2-digit'
+            }).format(date);
+        }
+
+        /**
+         * Atualiza a lista de métodos de pagamento no modal de pagamento.
+         *
+         * @function
+         * @name updatePaymentMethodList
+         * @param {string} [paymentType=''] - O tipo de pagamento a ser adicionado.
+         * @param {number} [amountPaid=0] - O valor pago com este método de pagamento.
+         * @param {boolean} [reset=false] - Se verdadeiro, limpa toda a lista de pagamentos.
+         * @description
+         * Esta função realiza as seguintes operações:
+         * 1. Se não for uma operação de reset, cria um novo item de lista com o tipo de pagamento e valor.
+         * 2. Adiciona o novo item à lista de pagamentos parciais.
+         * 3. Se for uma operação de reset, limpa toda a lista de pagamentos.
+         * 
+         * @returns {void}
+         */
+        function updatePaymentMethodList(paymentType = '', amountPaid = 0, reset = false) {
+            if (!reset) {
+                const listItem = document.createElement('li');
+                listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+                listItem.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center w-100">
+                        <span class="fw-bold" id="paymentType">${paymentType}</span>
+                        <div class="d-flex align-items-center">
+                            <span class="fw-bold text-danger" id="amountPaid">${numberToBrazilianCurrency(amountPaid)}</span>
+                        </div>
+                    </div>
+                `;
+                partialPaymentsList.appendChild(listItem);
+                return
+            }
+            partialPaymentsList.innerHTML = '';
+        }
+
+        /**
+         * Limpa o carrinho de compras, removendo todos os itens e redefinindo o desconto.
+         *
+         * @function
+         * @name clearCart
+         * @description
+         * Esta função realiza as seguintes operações:
+         * 1. Esvazia o array do carrinho.
+         * 2. Remove o carrinho do localStorage.
+         * 3. Limpa o campo de entrada de desconto.
+         * 4. Redefine o valor do desconto para zero.
+         * 5. Atualiza a exibição do carrinho de compras.
+         * 6. Atualiza o badge do carrinho.
+         * 
+         * @returns {void}
+         */
+        function clearCart() {
+            cart = [];
+            localStorage.removeItem('cart');
+            document.getElementById('discountInput').value = ''; // Clear discount input field
+            discount = 0
+            updateShoppingCart();
+            updateCartBadge();
+        }
+
+
         document.addEventListener('DOMContentLoaded', async function () {
             init()
         })
+
 
         /**
          * Manipula eventos de tecla pressionada para atalhos globais.
@@ -741,1067 +1763,6 @@
             document.getElementById('modalProductList').innerHTML = '';
             document.getElementById('partialPaymentsList').innerHTML = '';
         });
-
-        function quantityUpdate(id) {
-            console.log('BLUR', e)
-            let value = document.getElementById();
-            value = value.replace(/,/g, '.'); // Replace comma with dot for decimal
-
-            if (value === '') {
-                value = '1';
-            }
-
-            const [_, productId] = e.target.id.split('-')
-            const cartItem = cart.find(item => item.id == productId);
-
-            if (cartItem) {
-                if (cartItem.unit === 'M') {
-                    cartItem.quantity = parseFloat(value);
-
-                    // Update stock for 'M' unit products
-                    const product = dbProducts.find(p => p.id == productId);
-                    if (product) {
-                        const oldQuantity = parseFloat(e.target.dataset.oldValue || '0');
-                        const quantityDifference = cartItem.quantity - oldQuantity;
-                        product.stock = Math.max(0, (parseFloat(product.stock) - quantityDifference).toFixed(2));
-                        document.getElementById(`stock-${productId}`).textContent = product.stock + 'M';
-                    }
-
-                    // Store the current value for future comparison
-                    e.target.dataset.oldValue = cartItem.quantity;
-
-                    // Format the input value to 2 decimal places
-                    e.target.value = cartItem.quantity.toFixed(2);
-                } else {
-                    cartItem.quantity = parseInt(value, 10);
-                    e.target.value = cartItem.quantity;
-                }
-
-                updateShoppingCart();
-                updateProductStock(productId, 'update');
-            }
-        }
-
-        /**
-         * Exibe os produtos na interface do usuário.
-         *
-         * @function
-         * @name displayProducts
-         * @param {Array} products - Array de objetos representando os produtos a serem exibidos.
-         * @description
-         * Esta função realiza as seguintes operações:
-         * 1. Verifica se o banco de dados de produtos está disponível.
-         * 2. Limpa o conteúdo atual da tabela de produtos.
-         * 3. Para cada produto no array:
-         *    a. Cria uma nova linha na tabela.
-         *    b. Preenche a linha com informações do produto (código, nome, preço, estoque).
-         *    c. Adiciona um botão para adicionar o produto ao carrinho.
-         * 4. Atualiza a exibição do carrinho de compras.
-         *
-         * @example
-         * // Exibe uma lista filtrada de produtos
-         * const filteredProducts = dbProducts.filter(product => product.price < 100);
-         * displayProducts(filteredProducts);
-         */
-        function displayProducts(products) {
-            if (!dbProducts) {
-                location.reload();
-                return;
-            }
-            const tbody = document.querySelector('tbody');
-            tbody.innerHTML = ''
-
-            products.forEach(product => {
-                const tr = document.createElement('tr');
-
-                tr.innerHTML = `
-                  <td>
-                      <p class="d-inline-block text-truncate" style="max-width: 450px;">
-                          <small class="badge ${product.code ? "bg-secondary" : "bg-danger"}">${product.code ? product.code : "SEM CADASTRO"}</small></br>
-                          ${product.name}
-                      </p>
-                  </td>
-                  <td class="align-middle">
-                      <span class="text-nowrap">${numberToBrazilianCurrency(product.price)}</span>
-                  </td>
-                  <td class="align-middle">
-                      <span class="text-nowrap" id="stock-${product.id}">${product.stock}<small>${product.unit}</small></span>
-                  </td>
-                  <td class="align-middle">
-                      <button type="button" class="btn btn-outline-primary btn-sm text-uppercase"
-                          onclick="addToCart('${product.id}')"
-                          aria-label="Add ${product.name} to Cart">
-                          Adicionar
-                      </button>
-                  </td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            updateShoppingCart()
-        }
-
-        /**
-         * Atualiza a exibição do carrinho de compras na interface do usuário.
-         *
-         * @function
-         * @name updateShoppingCart
-         * @description
-         * Esta função realiza as seguintes operações:
-         * 1. Limpa o conteúdo atual do carrinho na interface.
-         * 2. Se o carrinho estiver vazio, exibe uma mensagem de "Carrinho vazio".
-         * 3. Se houver itens no carrinho:
-         *    a. Para cada produto, cria um elemento de lista com detalhes do produto.
-         *    b. Inclui botões para incrementar, decrementar e remover o produto.
-         *    c. Calcula e exibe o subtotal para cada produto.
-         * 4. Calcula o total final considerando o desconto aplicado.
-         * 5. Atualiza o valor total exibido.
-         * 6. Atualiza o indicador numérico (badge) do carrinho.
-         * 7. Salva o estado atual do carrinho no localStorage.
-         *
-         * @example
-         * // Atualiza a exibição do carrinho após qualquer modificação
-         * updateShoppingCart();
-         */
-        function updateShoppingCart() {
-            const cartList = document.getElementById('cartList');
-            const cartTotal = document.getElementById('cartTotal');
-            cartList.innerHTML = '';
-            let total = 0;
-
-            if (cart.length === 0) {
-                const emptyCartMessage = document.createElement('div');
-                emptyCartMessage.className = 'd-flex flex-column align-items-center justify-content-center h-100 text-center';
-                emptyCartMessage.innerHTML = `
-                    <div class="d-flex justify-content-center w-100 mt-5">
-                        <i class="fas fa-shopping-bag fa-10x opacity-50 p-5 text-danger"></i>
-                    </div>
-                    <p class="mt-3 text-muted text-uppercase">Carrinho vazio</p>
-                `;
-                cartList.appendChild(emptyCartMessage);
-            } else {
-                cart.forEach(product => {
-                    const subtotal = product.price * product.quantity;
-                    total += subtotal;
-                    const li = document.createElement('li');
-                    li.className = 'list-group-item list-group-item-action mt-2';
-                    li.innerHTML = `
-                        <div class="w-100">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="text-truncate me-2">
-                                    <span class="badge ${product.code ? "bg-secondary" : "bg-danger"}">${product.code ? product.code : "SEM CADASTRO"}</span>
-                                </span>
-                                <button class="btn btn-outline-danger btn-sm" onclick="removeFromCart('${product.id}')">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
-                            </div>
-                            <h6 class="mb-2 text-truncate">${product.name}</h6>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="input-group input-group-sm" style="max-width: 120px;">
-                                    <button class="btn btn-outline-secondary btn-sm" onclick="decrementQuantity('${product.id}')"><i class="fa-solid fa-minus"></i></button>
-                                    <input type="number" inputmode="numeric" id='priceInput-${product.id}' onblur=quantityUpdate(${product.id}) class="form-control form-control-sm text-center" min="1" value=${product.quantity} >
-                                    <button class="btn btn-outline-primary btn-sm" onclick="incrementQuantity('${product.id}')"><i class="fa-solid fa-plus"></i></button>
-                                </div>
-                                <span class="text-muted">
-                                    ${numberToBrazilianCurrency(product.price)}
-                                </span>
-                            </div>
-                            <div class="d-flex justify-content-end mt-2">
-                                <span class="fw-bold">Subtotal: ${numberToBrazilianCurrency(subtotal)}</span>
-                            </div>
-                        </div>
-
-                    `;
-                    cartList.appendChild(li);
-                });
-            }
-
-            const finalTotal = Math.max(total - discount, 0);
-            cartTotal.value = numberToBrazilianCurrency(finalTotal)
-            updateCartBadge();
-            localStorage.setItem('cart', JSON.stringify(cart));
-        }
-
-        /**
-         * Adiciona um produto ao carrinho de compras ou incrementa sua quantidade se já estiver presente.
-         *
-         * @function
-         * @name addToCart
-         * @param {string} id - O ID do produto a ser adicionado ao carrinho.
-         * @description
-         * Esta função realiza as seguintes operações:
-         * 1. Verifica se o item já existe no carrinho.
-         * 2. Se existir, incrementa a quantidade em 1.
-         * 3. Se não existir:
-         *    a. Busca o produto no banco de dados.
-         *    b. Se o produto for vendido por metro (M), abre um modal para especificar a metragem.
-         *    c. Se não for vendido por metro, adiciona o produto ao carrinho com quantidade 1.
-         * 4. Atualiza a exibição do carrinho de compras.
-         * 5. Atualiza o estoque do produto.
-         *
-         * @example
-         * // Adiciona o produto com ID '123' ao carrinho
-         * addToCart('123');
-         */
-        function addToCart(id) {
-            const existingItem = cart.find(item => item.id == id);
-
-            if (existingItem) {
-                existingItem.quantity += 1;
-            }
-
-            const product = dbProducts.find(product => product.id == id);
-            cart.push({ ...product, quantity: 1 });
-
-            updateShoppingCart();
-            updateProductStock(id, 'add');
-        }
-
-        /**
-         * Decrementa a quantidade de um item no carrinho de compras.
-         *
-         * @function
-         * @name decrementQuantity
-         * @param {string} id - O ID do produto cuja quantidade será decrementada.
-         * @description
-         * Esta função realiza as seguintes operações:
-         * 1. Procura um item existente no carrinho com o ID fornecido.
-         * 2. Se o item for encontrado:
-         *    a. Se a quantidade for 1 ou menos, remove o item do carrinho.
-         *    b. Se a quantidade for maior que 1, decrementa a quantidade em 1.
-         * 3. Atualiza o carrinho no localStorage.
-         * 4. Atualiza a exibição do carrinho de compras.
-         * 5. Atualiza o estoque do produto.
-         *
-         * @example
-         * // Decrementa a quantidade do produto com ID '123' no carrinho
-         * decrementQuantity('123');
-         */
-        function decrementQuantity(id) {
-            const existingItem = cart.find(item => item.id == id);
-
-            if (existingItem) {
-                if (existingItem.quantity <= 1) {
-                    removeFromCart(id);
-                    return
-                } else {
-                    existingItem.quantity -= 1;
-                }
-
-                localStorage.setItem('cart', JSON.stringify(cart));
-            }
-
-            updateShoppingCart();
-            updateProductStock(id, 'remove')
-        }
-
-        /**
-         * Incrementa a quantidade de um item no carrinho de compras.
-         *
-         * @function
-         * @name incrementQuantity
-         * @param {string} id - O ID do produto cuja quantidade será incrementada.
-         * @description
-         * Esta função realiza as seguintes operações:
-         * 1. Procura um item existente no carrinho com o ID fornecido.
-         * 2. Se o item for encontrado, incrementa sua quantidade em 1.
-         * 3. Se o item não for encontrado, adiciona um novo item ao carrinho com quantidade 1.
-         * 4. Atualiza a exibição do carrinho de compras.
-         * 5. Atualiza o estoque do produto.
-         *
-         * @example
-         * // Incrementa a quantidade do produto com ID '123' no carrinho
-         * incrementQuantity('123');
-         */
-        function incrementQuantity(id) {
-            const existingItem = cart.find(item => item.id == id);
-
-            if (existingItem) {
-                existingItem.quantity += 1;
-            } else {
-                cart.push({ ...product, quantity: 1 });
-            }
-
-            updateShoppingCart();
-            updateProductStock(id, 'add')
-        }
-
-        /**
-         * Atualiza o estoque de um produto após uma operação de adição, remoção ou atualização.
-         *
-         * @function
-         * @name updateProductStock
-         * @param {string} id - O ID do produto cujo estoque será atualizado.
-         * @param {string} action - A ação a ser realizada ('add', 'remove' ou 'update').
-         * @param {number} [quantity] - A quantidade a ser atualizada (necessária para 'update').
-         * @description
-         * Esta função realiza as seguintes operações:
-         * 1. Encontra o produto no banco de dados usando o ID fornecido.
-         * 2. Atualiza o estoque do produto com base na ação:
-         *    - Se a ação for 'add', diminui o estoque.
-         *    - Se a ação for 'remove', aumenta o estoque.
-         *    - Se a ação for 'update', ajusta o estoque baseado na diferença entre a nova quantidade e a antiga.
-         * 3. Trata de forma diferente produtos vendidos por unidade (UN) e por metro (M).
-         * 4. Permite que o estoque fique negativo.
-         * 5. Atualiza a exibição do estoque na interface do usuário.
-         */
-        function updateProductStock(id, action, quantity) {
-            // Encontra o produto no banco de dados
-            const product = dbProducts.find(product => product.id == id);
-            const cartItem = cart.find(item => item.id == id);
-
-            if (product) {
-                if (action === 'add') {
-                    // Diminui o estoque ao adicionar ao carrinho
-                    product.stock -= (product.unit === 'M' ? parseFloat(cartItem.quantity) : 1);
-                } else if (action === 'remove') {
-                    // Aumenta o estoque ao remover do carrinho
-                    product.stock += (product.unit === 'M' ? parseFloat(cartItem.quantity) : 1);
-                } else if (action === 'update' && quantity !== undefined) {
-                    // Ajusta o estoque com base na diferença entre a nova e a antiga quantidade
-                    const oldQuantity = parseFloat(cartItem.quantity);
-                    const newQuantity = parseFloat(quantity);
-                    const difference = newQuantity - oldQuantity;
-                    product.stock -= difference;
-                }
-
-                // Arredonda para 2 casas decimais para unidade 'M'
-                product.stock = product.unit === 'M' ? parseFloat(product.stock.toFixed(2)) : Math.round(product.stock);
-
-                // Atualiza a exibição do estoque na interface
-                const stockElement = document.getElementById(`stock-${product.id}`);
-                stockElement.textContent = `${product.stock}${product.unit}`;
-
-                // Atualiza dbProducts no localStorage
-                localStorage.setItem('dbProducts', JSON.stringify(dbProducts));
-            }
-        }
-
-        /**
-         * Adiciona um produto personalizado ao carrinho de compras.
-         *
-         * @function
-         * @name addCustomProduct
-         * @description
-         * Esta função realiza as seguintes operações:
-         * 1. Obtém os valores dos campos do modal de produto personalizado.
-         * 2. Verifica se o produto já existe no banco de dados.
-         * 3. Se o produto existir e for vendido por metro:
-         *    a. Arredonda a medida para 2 casas decimais.
-         *    b. Atualiza o estoque do produto.
-         *    c. Adiciona ou atualiza o item no carrinho.
-         * 4. Se o produto não existir ou não for vendido por metro:
-         *    a. Cria um novo produto personalizado.
-         *    b. Adiciona o novo produto ao carrinho.
-         * 5. Atualiza a exibição do carrinho e fecha o modal.
-         * 6. Limpa os campos do modal após a adição.
-         *
-         * @throws {Error} Exibe um toast de erro se os campos necessários não forem preenchidos.
-         *
-         * @example
-         * // Chama a função quando o usuário confirma a adição de um produto personalizado
-         * addCustomProduct();
-         */
-        function addCustomProduct() {
-            const customProductName = document.getElementById('customProductName').value;
-            const customProductPrice = document.getElementById('customProductPrice').value;
-            const measureInput = document.getElementById('customProductMeasure');
-            const measure = parseFloat(measureInput.value.replace(',', '.'));
-
-            const product = dbProducts.find(product => product.name === customProductName);
-
-            if (product) {
-                if (product.unit === 'M') {
-                    // Arredonda para 2 casas decimais
-                    const roundedMeasure = Math.round(measure * 100) / 100;
-
-                    // Atualiza o estoque com precisão de 2 casas decimais
-                    product.stock = Math.round((product.stock - roundedMeasure) * 100) / 100;
-
-                    const existingItem = cart.find(item => item.id === product.id);
-                    if (existingItem) {
-                        existingItem.quantity = Math.round((existingItem.quantity + roundedMeasure) * 100) / 100;
-                    } else {
-                        cart.push({ ...product, quantity: roundedMeasure });
-                    }
-
-                    updateProductStock(product.id, 'add');
-                    updateShoppingCart();
-                    customSaleModal.hide();
-                }
-                else {
-                    // Lógica para adicionar um produto personalizado que não está no dbProducts
-                    if (customProductName && customProductPrice) {
-                        const customProduct = {
-                            id: Date.now().toString(),
-                            code: "",
-                            name: customProductName.toUpperCase(),
-                            price: brazilianCurrencyToNumber(customProductPrice),
-                            quantity: isNaN(measure) ? 1 : Math.round(measure * 100) / 100,
-                            unit: isNaN(measure) ? 'UN' : 'M'
-                        };
-                        cart.push(customProduct);
-                        updateShoppingCart();
-                        customSaleModal.hide();
-                    } else {
-                        showToast('Por favor, preencha todos os campos necessários.', 'error');
-                    }
-                }
-            }
-
-            // Limpa os campos do modal
-            document.getElementById('customProductName').value = '';
-            document.getElementById('customProductPrice').value = '';
-            measureInput.value = '';
-        }
-
-        /**
-         * Atualiza o indicador numérico (badge) do carrinho de compras.
-         *
-         * @function
-         * @name updateCartBadge
-         * @description
-         * Esta função realiza as seguintes operações:
-         * 1. Obtém o número de itens no carrinho.
-         * 2. Converte esse número para uma string.
-         * 3. Preenche a string com zeros à esquerda, garantindo que sempre tenha pelo menos 2 dígitos.
-         * 4. Atualiza o texto do elemento HTML com o id 'cartBadge' com esse valor.
-         *
-         * @example
-         * // Se o carrinho tiver 3 itens, o badge mostrará "03"
-         * // Se o carrinho tiver 12 itens, o badge mostrará "12"
-         * updateCartBadge();
-         */
-        function updateCartBadge() {
-            document.getElementById('cartBadge').textContent = String(cart.length).padStart(2, '0');
-        }
-
-        /**
-         * Remove um item do carrinho de compras e atualiza o estoque.
-         *
-         * @function
-         * @name removeFromCart
-         * @param {string} id - O ID do produto a ser removido do carrinho.
-         * @description
-         * Esta função realiza as seguintes operações:
-         * 1. Localiza o item no carrinho pelo ID fornecido.
-         * 2. Se o item for encontrado:
-         *    a. Remove o item do array do carrinho.
-         *    b. Atualiza o estoque do produto, adicionando a quantidade removida de volta.
-         *    c. Atualiza a exibição do carrinho de compras na interface.
-         *    d. Atualiza o indicador numérico (badge) do carrinho.
-         *
-         * @example
-         * // Remove o produto com ID '123' do carrinho
-         * removeFromCart('123');
-         */
-        function removeFromCart(id) {
-            const index = cart.findIndex(item => item.id == id);
-            if (index !== -1) {
-                const removedItem = cart.splice(index, 1)[0];
-
-                updateProductStock(id, 'remove');
-                updateShoppingCart();
-                updateCartBadge();
-            }
-        }
-
-        /**
-         * Atualiza a quantidade de um item no carrinho e ajusta o estoque correspondente.
-         *
-         * @function
-         * @name updateQuantity
-         * @param {string} id - O ID do produto a ser atualizado.
-         * @param {number|string} newQuantity - A nova quantidade do produto. Pode ser um número ou uma string que representa um número.
-         * @description
-         * Esta função realiza as seguintes operações:
-         * 1. Encontra o item no carrinho e o produto correspondente no banco de dados.
-         * 2. Converte a nova quantidade para um número, tratando casos de inteiros e decimais.
-         * 3. Valida se a nova quantidade é um número válido e maior que zero.
-         * 4. Calcula a diferença entre a nova quantidade e a antiga.
-         * 5. Atualiza a quantidade do item no carrinho.
-         * 6. Atualiza o estoque do produto no banco de dados.
-         * 7. Atualiza a exibição do estoque na interface do usuário.
-         * 8. Salva as alterações no localStorage.
-         * 9. Atualiza a exibição do carrinho de compras.
-         *
-         * @throws {Error} Exibe um toast de erro se a quantidade fornecida for inválida.
-         *
-         * @example
-         * // Atualiza a quantidade de um produto para 5
-         * updateQuantity('123', 5);
-         *
-         * @example
-         * // Atualiza a quantidade de um produto para 2,5 (para produtos vendidos por peso ou medida)
-         * updateQuantity('456', '2,5');
-         */
-        function updateQuantity(id, newQuantity) {
-            const existingItem = cart.find(item => item.id == id);
-            var quantityDifference = 0
-
-            if (existingItem) {
-                if (Number.isInteger(newQuantity)) {
-                    newQuantity = parseInt(newQuantity);
-                } else {
-                    newQuantity = parseFloat(newQuantity.replace(',', '.'));
-                }
-
-                if (isNaN(newQuantity) || newQuantity < 1) {
-                    showToast('Quantidade inválida. Por favor, insira um número maior que  0(zero).', 'error');
-                    return;
-                }
-
-                const oldQuantity = item.quantity;
-                quantityDifference = newQuantity - oldQuantity;
-
-                existingItem.quantity = newQuantity;
-                localStorage.setItem('cart', JSON.stringify(cart));
-
-            }
-
-            const product = dbProducts.find(product => product.id == id);
-
-            // const stockElement = document.getElementById(`stock-${product.id}`);
-            // stockElement.textContent = `${product.stock}${product.unit}`;
-
-            if (product) {
-                product.stock -= quantityDifference;
-                document.getElementById(`stock-${product.id}`).textContent = `${product.stock}${product.unit}`;
-                localStorage.setItem('dbProducts', JSON.stringify(dbProducts));
-            }
-
-            updateShoppingCart();
-        }
-
-        /**
-         * Exibe uma mensagem de toast com um tipo específico.
-         *
-         * @function
-         * @name showToast
-         * @param {string} message - A mensagem a ser exibida no toast.
-         * @param {string} type - O tipo de toast ('success', 'error', 'warning', ou 'info' por padrão).
-         * @description
-         * Esta função cria e exibe um toast personalizado com uma mensagem e um ícone
-         * correspondente ao tipo especificado. O toast é estilizado de acordo com o tipo,
-         * usando classes Bootstrap para cores de fundo e ícones Font Awesome.
-         *
-         * @example
-         * // Exibe um toast de sucesso
-         * showToast('Operação realizada com sucesso!', 'success');
-         *
-         * @example
-         * // Exibe um toast de erro
-         * showToast('Ocorreu um erro.', 'error');
-         */
-        function showToast(message, type) {
-            toastMessage.textContent = message;
-            const toastHeader = document.querySelector('.toast-header');
-            const toastIcon = document.createElement('i');
-
-            toastHeader.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-info');
-
-            switch (type) {
-                case 'success':
-                    toastHeader.classList.add('bg-success');
-                    toastIcon.className = 'fas fa-check-circle me-2';
-                    break;
-                case 'error':
-                    toastHeader.classList.add('bg-danger');
-                    toastIcon.className = 'fas fa-exclamation-circle me-2';
-                    break;
-                case 'warning':
-                    toastHeader.classList.add('bg-warning');
-                    toastIcon.className = 'fas fa-exclamation-triangle me-2';
-                    break;
-                default:
-                    toastHeader.classList.add('bg-info');
-                    toastIcon.className = 'fas fa-info-circle me-2';
-            }
-
-            const existingIcon = toastHeader.querySelector('i');
-            if (existingIcon) {
-                existingIcon.remove();
-            }
-
-            toastHeader.prepend(toastIcon);
-            toast.show();
-        }
-
-        /**
-         * Converte um número para o formato de moeda brasileira.
-         *
-         * @function
-         * @name numberToBrazilianCurrency
-         * @param {number} number - O número a ser convertido para o formato de moeda brasileira.
-         * @returns {string} Uma string representando o valor no formato de moeda brasileira (ex: "R$ 1.234,56").
-         * @description
-         * Esta função utiliza o método toLocaleString para formatar o número de acordo com as convenções
-         * de moeda brasileira, incluindo o símbolo "R$", separadores de milhar e vírgula como separador decimal.
-         *
-         * @example
-         * // Retorna "R$ 1.234,56"
-         * numberToBrazilianCurrency(1234.56);
-         *
-         * @example
-         * // Retorna "R$ 1.000,00"
-         * numberToBrazilianCurrency(1000);
-         */
-        function numberToBrazilianCurrency(number) {
-            return parseFloat(number).toLocaleString("pt-BR", {
-                style: "currency",
-                currency: "BRL",
-            });
-        }
-
-        /**
-         * Converte um valor em formato de moeda brasileira para um número.
-         *
-         * @function
-         * @name brazilianCurrencyToNumber
-         * @param {string} currency - O valor em formato de moeda brasileira (ex: "R$ 1.234,56").
-         * @returns {number} O valor convertido para número.
-         * @description
-         * Esta função realiza as seguintes operações:
-         * 1. Verifica se a string já inclui "R$", adicionando se necessário.
-         * 2. Remove o símbolo "R$" e espaços em branco.
-         * 3. Remove todos os pontos (separadores de milhar).
-         * 4. Substitui a vírgula (separador decimal) por ponto.
-         * 5. Converte a string resultante para um número de ponto flutuante.
-         *
-         * @example
-         * // Retorna 1234.56
-         * brazilianCurrencyToNumber("R$ 1.234,56");
-         *
-         * @example
-         * // Retorna 1234.56
-         * brazilianCurrencyToNumber("1.234,56");
-         */
-        function brazilianCurrencyToNumber(currency) {
-            if (!currency.includes("R$")) {
-                currency = `R$ ${currency}`
-            }
-
-            let cleanValue = currency.replace("R$", "").trim();
-            cleanValue = cleanValue.replace(/\./g, "");
-            cleanValue = cleanValue.replace(",", ".");
-            return parseFloat(cleanValue);
-        }
-
-        /**
-         * Abre o modal de pagamento e preenche com os detalhes do carrinho atual.
-         * 
-         * @function
-         * @name openPaymentModal
-         * @description
-         * Esta função realiza as seguintes operações:
-         * 1. Foca no campo de valor pago.
-         * 2. Verifica se o carrinho está vazio e exibe uma mensagem de erro se estiver.
-         * 3. Verifica se já existe um toast sendo exibido.
-         * 4. Reseta o formulário de pagamento.
-         * 5. Calcula o total da venda, considerando o desconto.
-         * 6. Preenche os campos de valor total e desconto no modal.
-         * 7. Limpa e preenche a lista de produtos no modal com os itens do carrinho.
-         * 8. Exibe o modal de pagamento.
-         * 
-         * @throws {Error} Exibe um toast de erro se o carrinho estiver vazio.
-         * 
-         * @example
-         * // Para abrir o modal de pagamento
-         * openPaymentModal();
-         */
-        function openPaymentModal() {
-            document.getElementById('paidAmount').focus()
-            if (cart.length === 0) {
-                showToast('O carrinho está vazio. Adicione itens antes de prosseguir com a venda.', 'error');
-                return;
-            }
-
-            if (toast._element.classList.contains('show')) return;
-
-            document.getElementById('paymentForm').reset();
-
-            const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0) - discount;
-            document.getElementById('totalAmount').value = numberToBrazilianCurrency(total);
-            document.getElementById('discountAmount').value = numberToBrazilianCurrency(discount);
-
-            modalProductList.innerHTML = '';
-            cart.forEach(item => {
-                const li = document.createElement('li');
-                li.className = 'list-group-item d-flex justify-content-between align-items-center';
-                li.innerHTML = `
-                    <div class="d-flex flex-column w-100">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <small class="badge ${item.code ? 'bg-secondary' : 'bg-danger'}">${item.code ? item.code : 'SEM CADASTRO'}</small>
-                            <small class="text-muted">${item.quantity}x ${numberToBrazilianCurrency(item.price)}</small>
-                        </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <small class="text-truncate ms-2" style="max-width: 400px;" title="${item.name}">${item.name}</small>
-                            <span class="text-danger fw-bold">${numberToBrazilianCurrency(item.price * item.quantity)}</span>
-                        </div>
-                    </div>
-                `;
-                modalProductList.appendChild(li);
-            });
-            paymentModal.show();
-        }
-
-        /**
-         * Processa o pagamento de uma venda.
-         *
-         * @async
-         * @function
-         * @name handlePayment
-         * @description
-         * Esta função gerencia o processo de pagamento, incluindo:
-         * - Validação do valor pago
-         * - Atualização da lista de métodos de pagamento
-         * - Cálculo de troco ou pagamento parcial
-         * - Preparação dos dados da venda
-         * - Registro da venda no sistema
-         * - Limpeza do carrinho após a conclusão da venda
-         *
-         * @returns {Promise<void>}
-         * @throws {Error} Lança um erro se houver problemas durante o processamento do pagamento.
-         *
-         * @example
-         * // Chamar a função quando o botão de pagamento for clicado
-         * paymentButton.addEventListener('click', handlePayment);
-         */
-        function getPaymentMethod() {
-            let paymentMethods = document.querySelectorAll(`[data-testid*="radio"]`);
-            let checkedRadio = Array.from(paymentMethods).find(radio => radio.checked);
-            return checkedRadio ? checkedRadio.dataset.payment || null : null;
-        }
-
-        /**
-         * Processa o pagamento de uma venda.
-         *
-         * @async
-         * @function
-         * @name handlePayment
-         * @description
-         * Esta função gerencia o processo de pagamento, incluindo:
-         * - Validação do valor pago
-         * - Atualização da lista de métodos de pagamento
-         * - Cálculo de troco ou pagamento parcial
-         * - Preparação dos dados da venda
-         * - Registro da venda no sistema
-         * - Limpeza do carrinho após a conclusão da venda
-         *
-         * @returns {Promise<void>}
-         * @throws {Error} Lança um erro se houver problemas durante o processamento do pagamento.
-         *
-         * @example
-         * // Chamar a função quando o botão de pagamento for clicado
-         * paymentButton.addEventListener('click', handlePayment);
-         */
-        async function handlePayment() {
-            const totalAmountEl = document.getElementById('totalAmount')
-            const discountAmountEl = document.getElementById('discountAmount')
-            const paidAmountEl = document.getElementById('paidAmount')
-            const changeAmountEl = document.getElementById('changeAmount')
-
-            if (!paidAmountEl.value.trim()) {
-                showToast('Por favor, insira o valor para pagamento.', 'error');
-                return;
-            }
-
-            let paidAmount = brazilianCurrencyToNumber(paidAmountEl.value)
-            let totalAmount = brazilianCurrencyToNumber(totalAmountEl.value)
-            let discountAmount = brazilianCurrencyToNumber(discountAmountEl.value)
-
-            if (paidAmount < totalAmount) {
-                updatePaymentMethodList(getPaymentMethod(), paidAmount);
-                paidAmountEl.value = '';
-                const newTotalAmount = totalAmount - paidAmount;
-                totalAmountEl.value = numberToBrazilianCurrency(newTotalAmount)
-                return;
-            }
-
-            updatePaymentMethodList(getPaymentMethod(), paidAmount);
-            paidAmountEl.value = '';
-            const newTotalAmount = totalAmount - paidAmount;
-            totalAmountEl.value = ''
-
-            let methodsPaid = Array.from(document.querySelectorAll('#paymentType')).map(el => el.innerText);
-            let amountPaid = Array.from(document.querySelectorAll('#amountPaid')).map(el => el.innerText);
-
-            let paymentMethods = methodsPaid.map((method, index) => ({
-                method,
-                amount: amountPaid[index]
-            }));
-
-            let products = cart.map(product => ({
-                id: product.id,
-                code: product.code,
-                name: product.name,
-                quantity: product.quantity,
-                price: product.price
-            }));
-
-            let formData = {
-                products,
-                discountAmount,
-                paymentMethods
-            };
-
-            loadingModal.show();
-
-            await postSale(formData);
-
-            cart = [];
-            showToast('Venda realizada com sucesso!', 'success');
-            paymentModal.hide();
-            updatePaymentMethodList("", 0, true);
-            init()
-        }
-
-        /**
-         * Envia os dados da venda para processamento no servidor usando Google Apps Script.
-         *
-         * @async
-         * @function
-         * @name postSale
-         * @param {Object} data - Os dados da venda a serem enviados.
-         * @param {Array} data.products - Lista de produtos vendidos.
-         * @param {number} data.discountAmount - Valor do desconto aplicado.
-         * @param {Array} data.paymentMethods - Métodos de pagamento utilizados.
-         * @returns {Promise<void>} Uma promessa que resolve quando a venda é processada com sucesso.
-         * @throws {Error} Lança um erro se houver falha no processamento da venda.
-         * @description
-         * Esta função faz o seguinte:
-         * 1. Envia os dados da venda para o servidor usando google.script.run.
-         * 2. Exibe uma mensagem de sucesso e limpa o carrinho se a venda for bem-sucedida.
-         * 3. Exibe uma mensagem de erro se houver falha no processamento.
-         * 4. Esconde o modal de carregamento após a conclusão, independentemente do resultado.
-         *
-         * @example
-         * // Exemplo de uso:
-         * const saleData = {
-         *   products: [{id: 1, name: 'Produto A', quantity: 2, price: 10.00}],
-         *   discountAmount: 5.00,
-         *   paymentMethods: [{method: 'Cartão', amount: 15.00}]
-         * };
-         * await postSale(saleData);
-         */
-        function postSale(data) {
-            return new Promise((resolve, reject) => {
-                google.script.run
-                    .withSuccessHandler(resolve)
-                    .withFailureHandler(reject)
-                    .postPaymentGAS(data);
-            }).then(response => {
-                console.log('Response:', response);
-                showToast('Venda finalizada com sucesso!', 'success');
-                clearCart();
-                paymentModal.hide();
-            }).catch(error => {
-                console.error('Error:', error);
-                showToast('Erro ao finalizar a venda. Tente novamente.', 'error');
-            }).finally(() => {
-                loadingModal.hide();
-            });
-        }
-
-        /**
-         * Atualiza a lista de métodos de pagamento no modal de pagamento.
-         *
-         * @function
-         * @name updatePaymentMethodList
-         * @param {string} [paymentType=''] - O tipo de pagamento a ser adicionado.
-         * @param {number} [amountPaid=0] - O valor pago com este método de pagamento.
-         * @param {boolean} [reset=false] - Se verdadeiro, limpa toda a lista de pagamentos.
-         * @description
-         * Esta função realiza as seguintes operações:
-         * 1. Se não for uma operação de reset, cria um novo item de lista com o tipo de pagamento e valor.
-         * 2. Adiciona o novo item à lista de pagamentos parciais.
-         * 3. Se for uma operação de reset, limpa toda a lista de pagamentos.
-         * 
-         * @returns {void}
-         */
-        function paymentDateFormatter(epochDateTimer, isBegin = false) {
-            const date = new Date(epochDateTimer);
-
-            if (isBegin) {
-                date.setDate(1)
-            }
-
-            return new Intl.DateTimeFormat("pt-BR", {
-                day: '2-digit',
-                year: 'numeric',
-                month: '2-digit'
-            }).format(date);
-        }
-
-        /**
-         * Atualiza a lista de métodos de pagamento no modal de pagamento.
-         *
-         * @function
-         * @name updatePaymentMethodList
-         * @param {string} [paymentType=''] - O tipo de pagamento a ser adicionado.
-         * @param {number} [amountPaid=0] - O valor pago com este método de pagamento.
-         * @param {boolean} [reset=false] - Se verdadeiro, limpa toda a lista de pagamentos.
-         * @description
-         * Esta função realiza as seguintes operações:
-         * 1. Se não for uma operação de reset, cria um novo item de lista com o tipo de pagamento e valor.
-         * 2. Adiciona o novo item à lista de pagamentos parciais.
-         * 3. Se for uma operação de reset, limpa toda a lista de pagamentos.
-         * 
-         * @returns {void}
-         */
-        function updatePaymentMethodList(paymentType = '', amountPaid = 0, reset = false) {
-            if (!reset) {
-                const listItem = document.createElement('li');
-                listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
-                listItem.innerHTML = `
-                    <div class="d-flex justify-content-between align-items-center w-100">
-                        <span class="fw-bold" id="paymentType">${paymentType}</span>
-                        <div class="d-flex align-items-center">
-                            <span class="fw-bold text-danger" id="amountPaid">${numberToBrazilianCurrency(amountPaid)}</span>
-                        </div>
-                    </div>
-                `;
-                partialPaymentsList.appendChild(listItem);
-                return
-            }
-            partialPaymentsList.innerHTML = '';
-        }
-
-        /**
-         * Limpa o carrinho de compras, removendo todos os itens e redefinindo o desconto.
-         *
-         * @function
-         * @name clearCart
-         * @description
-         * Esta função realiza as seguintes operações:
-         * 1. Esvazia o array do carrinho.
-         * 2. Remove o carrinho do localStorage.
-         * 3. Limpa o campo de entrada de desconto.
-         * 4. Redefine o valor do desconto para zero.
-         * 5. Atualiza a exibição do carrinho de compras.
-         * 6. Atualiza o badge do carrinho.
-         * 
-         * @returns {void}
-         */
-        function clearCart() {
-            cart = [];
-            localStorage.removeItem('cart');
-            document.getElementById('discountInput').value = ''; // Clear discount input field
-            discount = 0
-            updateShoppingCart();
-            updateCartBadge();
-        }
-
-        /**
-         * Cria e exibe um efeito de carregamento (shimmer) na tabela de produtos.
-         *
-         * @function
-         * @name loadingShimmer
-         * @description
-         * Esta função gera linhas de placeholder na tabela de produtos para simular
-         * um efeito de carregamento. Ela cria 10 linhas com células que contêm
-         * elementos de placeholder, dando a aparência de conteúdo sendo carregado.
-         * 
-         * O efeito de shimmer é criado usando classes do Bootstrap como 'placeholder-glow'
-         * e 'placeholder', que aplicam animações de brilho aos elementos.
-         * 
-         * @returns {void}
-         */
-        function loadingShimmer() {
-            const tbody = document.querySelector('tbody');
-
-            Array.from({ length: 10 }, function (_, i) {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="placeholder-glow ">
-                        <span class="placeholder col-4 rounded"></span>
-                        <p class="text-truncate mt-2">
-                            <span class="placeholder col-10 rounded"></span>
-                        </p>
-                    </td>
-                    <td class="placeholder-glow">
-                        <span class="placeholder col-3 rounded"></span>
-                    </td>
-                    <td class="placeholder-glow">
-                        <span class="placeholder col-3 rounded"></span>
-                    </td>
-                    <td class="placeholder-glow">
-                        <span class="btn brn-sm btn-primary disabled placeholder col-6 rounded"></span>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            })
-        }
-
-        /**
-         * Inicializa a aplicação carregando e exibindo os produtos.
-         * 
-         * Esta função realiza as seguintes tarefas:
-         * 1. Exibe um efeito de carregamento (shimmer).
-         * 2. Verifica se a aplicação está rodando localmente ou em um servidor.
-         * 3. Para desenvolvimento local, usa produtos simulados após um pequeno atraso.
-         * 4. Para implantação no servidor, busca produtos usando Google Apps Script.
-         * 5. Define a variável global dbProducts com os produtos obtidos ou simulados.
-         * 6. Exibe os produtos na página.
-         * 7. Armazena os produtos no localStorage para uso futuro.
-         * 
-         * @function
-         * @name init
-         * @returns {void}
-         */
-        function init() {
-            loadingShimmer();
-
-            if (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') {
-                setTimeout(() => {
-                    const products = getMockProducts();
-                    console.log(products);
-                    dbProducts = products; // Set the global dbProducts variable
-                    displayProducts(products);
-                    localStorage.setItem('dbProducts', JSON.stringify(products));
-                }, 1000);
-            } else {
-                google.script.run
-                    .withSuccessHandler((products) => {
-                        console.log(products);
-                        dbProducts = products; // Set the global dbProducts variable
-                        displayProducts(products);
-                        localStorage.setItem('dbProducts', JSON.stringify(products));
-                    })
-                    .withFailureHandler((error) => {
-                        console.error('Error:', error);
-                    })
-                    .getProducts();
-            }
-        }
-
-        /**
-         * Gera uma lista de produtos simulados para fins de teste e desenvolvimento.
-         *
-         * @function
-         * @name getMockProducts
-         * @returns {Array<Object>} Um array contendo 10 objetos de produtos simulados.
-         * @description
-         * Cada produto gerado possui as seguintes propriedades:
-         * - id: Um número único incrementado sequencialmente.
-         * - code: Um código de produto aleatório no formato 'ABC-XXX'.
-         * - name: Um nome genérico no formato 'Product X'.
-         * - price: Um preço aleatório entre 1 e 101, com duas casas decimais.
-         * - stock: Um valor fixo de 20 unidades para todos os produtos.
-         * - unit: 'M' (metro) ou 'UN' (unidade), com 90% de chance de ser 'M'.
-         */
-        function getMockProducts() {
-            return Array.from({ length: 10 }, (_, index) => {
-                return {
-                    id: index + 1,
-                    code: `PRODUTO-${Math.floor(Math.random() * 1000) + 1}`,
-                    name: `PRODUTO ${index + 1}`,
-                    price: parseFloat((Math.random() * 100 + 1).toFixed(2)),
-                    stock: 20,
-                    unit: Math.random() > 0.1 ? 'M' : 'UN'  // 40% chance of being 'M', otherwise 'UN'
-                };
-            });
-        }
     </script>
 </body>
 
