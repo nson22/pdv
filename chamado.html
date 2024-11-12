@@ -16,45 +16,41 @@
 
 <body>
   <div class="container">
-    <nav class="navbar bg-body-light fixed-top">
-      <div class="container-fluid">
-        <div class="d-flex justify-content-center w-100">
-          <img src="https://cache2net4.com/Repositorio/13384/Logo/logo%20site2.png" alt="Logo" style="width: 12rem;"
-            class="navbar-brand">
-        </div>
-      </div>
-    </nav>
+    <div class="d-flex justify-content-center w-100">
+      <img src="https://cache2net4.com/Repositorio/13384/Logo/logo%20site2.png" alt="Logo" style="width: 12rem;"
+        class="navbar-brand">
+    </div>
 
-    <h3 class="text-uppercase text-center mt-5 pt-5">Chamado de Manutenção</h3>
-    <form id="maintenanceForm" class="needs-validation" novalidate>
+    <h3 class="text-uppercase text-center fw-bold mt-3">Chamado de Manutenção</h3>
+    <form id="maintenanceForm" class="needs-validation mt-3" novalidate>
       <div class="row g-3">
-        <div class="col-12">
-          <label for="solicitantes" class="form-label text-uppercase">Solicitante</label>
+        <div class="col-12 mb-3">
+          <label for="solicitantes" class="form-label text-uppercase fw-semibold">Solicitante</label>
           <select class="form-select" id="solicitantes" required>
             <option value="">Selecionar</option>
           </select>
           <div class="invalid-feedback">Por favor, selecione um solicitante.</div>
         </div>
-        <div class="col-12">
-          <label for="departamentos" class="form-label text-uppercase">Departamento</label>
+        <div class="col-12 mb-3">
+          <label for="departamentos" class="form-label text-uppercase fw-semibold">Departamento</label>
           <select class="form-select" id="departamentos" required>
             <option value="">Selecionar</option>
           </select>
           <div class="invalid-feedback">Por favor, selecione um departamento.</div>
         </div>
-        <div class="col-12">
-          <label for="equipamentos" class="form-label text-uppercase">Equipamento</label>
+        <div class="col-12 mb-3">
+          <label for="equipamentos" class="form-label text-uppercase fw-semibold">Equipamento</label>
           <select class="form-select" id="equipamentos" required>
             <option value="">Selecionar</option>
           </select>
           <div class="invalid-feedback">Por favor, selecione um equipamento.</div>
         </div>
-        <div class="col-12">
-          <label for="descricao" class="form-label text-uppercase">Descrição</label>
+        <div class="col-12 mb-1">
+          <label for="descricao" class="form-label text-uppercase fw-semibold">Descrição</label>
           <textarea class="form-control" rows="3" id="descricao" style="resize: none" required></textarea>
           <div class="invalid-feedback">Por favor, forneça uma descrição.</div>
         </div>
-        <div class="col-12">
+        <div class="col-12 mb-3">
           <button type="submit" class="btn btn-primary btn-lg w-100 text-uppercase fw-semibold mt-3">
             Abrir Chamado
           </button>
@@ -90,6 +86,225 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+    const tables = ['solicitantes', 'departamentos', 'equipamentos']
+
+    /**
+     * Evento que é disparado quando o DOM é completamente carregado.
+     * Verifica se a aplicação está rodando em localhost e carrega os dados apropriadamente.
+     * @listens DOMContentLoaded
+     * Se não estiver em localhost, faz uma chamada para o Google Apps Script.
+     * @function google.script.run
+     * 
+     */
+    document.addEventListener('DOMContentLoaded', function () {
+      if (isLocalhost()) {
+        setTimeout(() => {
+          mockData();
+        }, 5000);
+      } else {
+        google.script.run
+          .withSuccessHandler((response) => {
+            populateSelect(table, response);
+            Utils.hideLoading();
+          })
+          .withFailureHandler((error) => {
+            console.error(`Erro ao carregar ${table}:`, error);
+          })
+          .read(table);
+      }
+    });
+
+    /**
+     * Adiciona um event listener para o evento de submissão do formulário de manutenção.
+     * Valida o formulário, processa os dados e exibe uma notificação.
+     * 
+     * @listens submit
+     * @param {Event} event - O evento de submissão do formulário.
+     */
+    document.getElementById("maintenanceForm").addEventListener("submit", function (event) {
+      event.preventDefault();
+      if (this.checkValidity()) {
+        const formData = {
+          solicitante: document.getElementById('solicitantes').value,
+          departamento: document.getElementById('departamentos').value,
+          equipamento: document.getElementById('equipamentos').value,
+          descricao: document.getElementById('descricao').value
+        };
+
+        console.log("Form Data:", formData);
+
+        const formDataString = Object.entries(formData)
+          .map(([key, value]) => `${key}: ${value}`)
+          .join('\n');
+
+        showNotification(`Chamado aberto:\n${formDataString}`, 'success');
+
+        this.reset();
+        this.classList.remove("was-validated");
+      } else {
+        this.classList.add("was-validated");
+      }
+    });
+
+    /**
+     * Preenche um elemento select com opções baseadas nos dados fornecidos.
+     * 
+     * @param {string} id - O ID do elemento select a ser preenchido.
+     * @param {Array<string>} data - Um array de strings contendo os valores para as opções.
+     * @returns {void}
+     * 
+     * @description
+     * Esta função realiza as seguintes operações:
+     * 1. Seleciona o elemento select com base no ID fornecido.
+     * 2. Limpa o conteúdo existente do select e adiciona uma opção padrão "Selecionar".
+     * 3. Itera sobre o array de dados, criando e adicionando uma nova opção para cada item.
+     * 4. Remove o atributo "disabled" do select, tornando-o interativo.
+     */
+    function populateSelect(id, data) {
+      const select = document.getElementById(id);
+      select.innerHTML = '<option value="">Selecionar</option>';
+      data.forEach(item => {
+        const option = document.createElement("option");
+        option.value = item;
+        option.textContent = item;
+        select.appendChild(option);
+      });
+      select.removeAttribute("disabled");
+    }
+
+    /**
+     * Exibe uma notificação toast com a mensagem e o tipo especificados.
+     * 
+     * @param {string} message - A mensagem a ser exibida na notificação.
+     * @param {string} type - O tipo de notificação, que determina a cor de fundo (ex: 'success', 'danger').
+     * 
+     * @description
+     * Esta função realiza as seguintes operações:
+     * 1. Seleciona os elementos do toast e do corpo da mensagem.
+     * 2. Remove as classes de cor de fundo existentes.
+     * 3. Adiciona a classe de cor de fundo com base no tipo fornecido.
+     * 4. Define o texto da mensagem no corpo do toast.
+     * 5. Cria uma nova instância de Bootstrap Toast.
+     * 6. Exibe a notificação toast.
+     */
+    function showNotification(message, type) {
+      const toast = document.getElementById('notificationToast');
+      const toastBody = document.getElementById('toastMessage');
+
+      toast.classList.remove('bg-success', 'bg-danger');
+      toast.classList.add(`bg-${type}`);
+      toastBody.textContent = message;
+
+      const bsToast = new bootstrap.Toast(toast);
+      bsToast.show();
+    }
+
+    /**
+     * Aplica um efeito de shimmer (carregamento) ao formulário de manutenção.
+     * 
+     * @function
+     * @name shimmer
+     * 
+     * @description
+     * Esta função substitui o conteúdo do formulário de manutenção por elementos HTML
+     * que simulam um estado de carregamento. Utiliza classes do Bootstrap para criar
+     * um efeito de shimmer nos campos do formulário.
+     * 
+     * @returns {void}
+     * 
+     * @example
+     * shimmer();
+     * 
+     * @notes
+     * - Utiliza a classe 'placeholder-glow' para criar o efeito de shimmer.
+     * - Os campos são desabilitados e preenchidos com placeholders.
+     * - O botão de submissão é substituído por um elemento âncora desabilitado.
+     */
+    function shimmer() {
+      document.querySelector("#maintenanceForm").innerHTML =
+        ` <div class="col-12 placeholder-glow mb-3">
+          <label for="solicitante" class="form-label text-uppercase fw-semibold">Solicitante</label>
+          <select class="form-select placeholder col-7" disabled id="solicitante" required>
+          </select>
+        </div>
+        <div class="col-12 placeholder-glow mb-3">
+          <label for="departamento" class="form-label text-uppercase fw-semibold">Departamento</label>
+          <select class="form-select placeholder col-7" disabled id="departamento" required>
+          </select>
+        </div>
+        <div class="col-12 placeholder-glow mb-3">
+          <label for="equipamento" class="form-label text-uppercase fw-semibold">Equipamento</label>
+          <select class="form-select placeholder col-7" disabled id="equipamento" required>
+          </select>
+        </div>
+        <div class="col-12 placeholder-glow mb-3">
+          <label for="descricao" class="form-label text-uppercase fw-semibold">Descrição</label>
+          <textarea class="form-control placeholder col-7" rows="3" id="descricao" disabled style="resize: none" required></textarea>
+        </div>
+        <a class="btn btn-lg btn-primary w-100 disabled placeholder col-4" aria-disabled="true"></a>
+      `
+    }
+
+    /**
+   * Preenche os campos do formulário com dados simulados para fins de teste.
+   * 
+   * @function
+   * @name mockData
+   * 
+   * @description
+   * Esta função cria arrays de dados simulados para solicitantes, departamentos e equipamentos,
+   * e os utiliza para preencher os respectivos campos de seleção no formulário. Também habilita
+   * o campo de descrição e o botão de submissão.
+   * 
+   * @returns {void}
+   * 
+   * @example
+   * mockData();
+   * 
+   * @notes
+   * - Cria arrays de dados simulados para solicitantes, departamentos e equipamentos.
+   * - Utiliza a função populateSelect para preencher os campos de seleção.
+   * - Remove o atributo "disabled" do campo de descrição.
+   * - Remove a classe "disabled" do botão de submissão.
+   */
+    function mockData() {
+      const mockSolicitantes = ["João Silva", "Maria Santos", "Carlos Oliveira"];
+      const mockDepartamentos = ["TI", "RH", "Financeiro", "Marketing"];
+      const mockEquipamentos = ["Computador", "Impressora", "Telefone", "Projetor"];
+
+      populateSelect("solicitantes", mockSolicitantes);
+      populateSelect("departamentos", mockDepartamentos);
+      populateSelect("equipamentos", mockEquipamentos);
+
+      document.querySelector("#descricao").removeAttribute("disabled");
+      document.querySelector("button[type='submit']").classList.remove("disabled");
+    }
+
+    /**
+   * Verifica se a aplicação está sendo executada em um ambiente local.
+   * 
+   * @function
+   * @name isLocalhost
+   * 
+   * @description
+   * Esta função checa se o hostname atual é "localhost" ou "127.0.0.1",
+   * indicando que a aplicação está sendo executada em um ambiente de desenvolvimento local.
+   * 
+   * @returns {boolean} Retorna true se a aplicação estiver rodando localmente, false caso contrário.
+   * 
+   * @example
+   * if (isLocalhost()) {
+   *   console.log("Executando em ambiente local");
+   * } else {
+   *   console.log("Executando em ambiente de produção");
+   * }
+   */
+    function isLocalhost() {
+      return window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+    }
+
+  </script>
+  <!-- <script>
     // UI Components
     const UI = {
       modal: {
@@ -211,7 +426,7 @@
       const formData = FormHandlers.getFormData();
       API.submitForm(formData);
     });
-  </script>
+  </script> -->
 </body>
 
 </html>
