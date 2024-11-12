@@ -29,188 +29,152 @@
 
 <body>
     <div class="container">
-        <nav class="navbar bg-body-light fixed-top">
-            <div class="container-fluid">
-                <div class="d-flex justify-content-center w-100">
-                    <img src="https://cache2net4.com/Repositorio/13384/Logo/logo%20site2.png" style="width: 12rem;"
-                        class="navbar-brand">
-                </div>
-            </div>
-        </nav>
-        <div class="row my-5 pt-4">
-            <h5 class="text-uppercase text-center mb-4">Ordem de serviços</h5>
-            <div class="btn-group" role="group">
-                <input type="radio" class="btn-check" name="btnradio" id="btnRadioOpen" autocomplete="off" checked>
-                <label class="btn btn-lg btn-outline-primary" for="btnRadioOpen">Abertos</label>
-                <input type="radio" class="btn-check" name="btnradio" id="btnRadioInProgress" autocomplete="off">
-                <label class="btn btn-lg btn-outline-primary" for="btnRadioInProgress">Em progresso</label>
-            </div>
-            <div id="container">
-                
-            </div>
-            <!-- <ul class="nav nav-pills mb-3 px-2 justify-content-between" id="pills-tab" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link fw-semibold active" id="pills-open-tab" data-bs-toggle="pill"
-                        data-bs-target="#pills-open" type="button" role="tab" aria-controls="pills-open"
-                        aria-selected="true">Abertos</button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link fw-semibold" id="pills-progress-tab" data-bs-toggle="pill"
-                        data-bs-target="#pills-progress" type="button" role="tab" aria-controls="pills-progress"
-                        aria-selected="false">Em progresso</button>
-                </li>
-            </ul>
-            <div class="tab-content p-0" id="pills-tabContent">
-                <div class="tab-pane fade show active" id="pills-open" role="tabpanel" aria-labelledby="pills-open-tab"
-                    tabindex="0">
-                    <div class="col-12" id="openList"></div>
-                </div>
-                <div class="tab-pane fade" id="pills-progress" role="tabpanel" aria-labelledby="pills-progress-tab"
-                    tabindex="0">
-                    <div class="col-12" id="progressList"></div>
-                </div>
-                <div class="tab-pane fade" id="pills-done" role="tabpanel" aria-labelledby="pills-done-tab"
-                    tabindex="0">
-                    <div class="col-12" id="doneList"></div>
-                </div>
-            </div> -->
+        <div class="d-flex justify-content-center w-100 mb-3 mt-3">
+            <img src="https://cache2net4.com/Repositorio/13384/Logo/logo%20site2.png" alt="Logo" style="width: 12rem;"
+                class="navbar-brand">
+        </div>
+        <h5 class="text-uppercase text-center fw-bold mb-3">Ordem de serviços</h5>
+        <ul class="nav nav-pills nav-justified" id="pills-tab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-semibold active" id="pills-open-tab" data-bs-toggle="pill"
+                    data-bs-target="#pills-open" type="button" role="tab" aria-controls="pills-open"
+                    aria-selected="true">Em aberto</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-semibold" id="pills-progress-tab" data-bs-toggle="pill"
+                    data-bs-target="#pills-progress" type="button" role="tab" aria-controls="pills-progress"
+                    aria-selected="false">Em progresso</button>
+            </li>
+        </ul>
+        <div class="row mt-3" id="orders">
         </div>
     </div>
-    <div class="modal fade" id="loadingModal" tabindex="-1" aria-labelledby="loadingModalLabel" aria-hidden="true">
+    <!-- Loading Modal -->
+    <div class="modal fade" id="loadingModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-body text-center">
                     <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
+                        <span class="visually-hidden">Carregando...</span>
                     </div>
-                    <p class="mt-3" id="modal-loading-message">Aguarde carregando chamados...</p>
+                    <p class="mt-3" id="loadingMessage"></p>
                 </div>
             </div>
         </div>
     </div>
-    <div class="modal fade" id="setPersonInChargeModal" tabindex="-1" aria-labelledby="setPersonInChargeModalLabel"
-        aria-hidden="true">
+
+    <!-- Message Modal -->
+    <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-body">
-                    <h5 class="fw-bold mb-3 text-uppercase">Atualizar status da OS</h5>
-                    <form id="setPersonInChargeForm">
-                        <div class="row g-3 mb-3">
-                            <div class="col-12">
-                                <label for="personInCharge" class="form-label text-uppercase">Matrícula</label>
-                                <input type="search" inputmode="numeric" class="form-control" id="personInCharge"
-                                    required>
-                            </div>
-                            <div class="col-12 mb-2">
-                                <label for="personInChargeCode" class="form-label text-uppercase">Código</label>
-                                <input type="password" inputmode="numeric" class="form-control" id="personInChargeCode"
-                                    required>
-                            </div>
-                            <div class="col-12" id="erroMessageModal">
-                            </div>
-                            <div class="col-6">
-                                <button type="button" class="btn btn-danger w-100 mt-3" id="cancelButtonUpdateStatus"
-                                    onclick="resetModalData()">Cancelar</button>
-                            </div>
-                            <div class="col-6">
-                                <button type="button" id="confirmButtonUpdateStatus"
-                                    class="btn btn-primary w-100 mt-3">Confirmar</button>
-                            </div>
-                        </div>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="messageModalLabel">Mensagem</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-            </div>
-        </div>
-    </div>
-    <div class="toast-container position-fixed bottom-0 end-0 p-3">
-        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header">
-                <strong class="me-auto">Mensagem</strong>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body">
-                <p id="toast-message"></p>
+                <div class="modal-body">
+                    <p id="messageModalBody"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Fechar</button>
+                </div>
             </div>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const orders = Array.from({length: 10}, (_, i) => {
-            return {
-                id: i + 1,
-                createdAt: new Date(),
-                requester: 'Nilson Silva',
-                department: 'TI',
-                equipment: 'Servidor',
-                description: "Servidor caiu",
-                status: 'Aberto',
+        document.addEventListener('DOMContentLoaded', () => {
+            showLoadingModal('Carregando dados, aguarde...');
+
+            if (isLocalhost()) {
+                setTimeout(() => {
+                    renderOrders(mockData());
+                    hideLoadingModal();
+                }, 3000);
+
+            } else {
+                const tables = ['defeitos', 'solucao']
+
+                const promises = tables.map(table =>
+                    new Promise((resolve, reject) => {
+                        google.script.run
+                            .withSuccessHandler(response => {
+                                populateSelect(table, response);
+                                resolve();
+                            })
+                            .withFailureHandler(error => {
+                                console.error(`Erro ao carregar ${table}:`, error);
+                                reject(error);
+                            })
+                            .read(table);
+                    })
+                );
+
+                Promise.all(promises)
+                    .then(() => {
+                        hideLoadingModal();
+                    })
+                    .catch(error => {
+                        console.error('Erro ao carregar dados:', error);
+                        hideLoadingModal();
+                        showMessageModal('Erro ao carregar dados. Por favor, tente novamente.', 'Erro', false);
+                    });
             }
         })
 
-        document.addEventListener('DOMContentLoaded', () => {
-            renderOrders(orders)
-        })
-        // const url = 'https://script.google.com/macros/s/AKfycbzOfaFuTy7G9AD9Vr8HpsGuJxAEFbViLinio9ZDXUbdfWgY1h0HCSGC0swGjzWhrzKjPg/exec';
+        /**
+         * Exibe o modal de carregamento com uma mensagem personalizada.
+         * 
+         * @param {string} message - A mensagem a ser exibida no modal de carregamento.
+         */
+        function showLoadingModal(message) {
+            const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+            document.getElementById('loadingMessage').textContent = message;
+            loadingModal.show();
+        }
 
-        // async function fetchData(action, table) {
-        //     const res = await axios.get(`${url}?action=${action}&table=${table}`);
-        //     return res.data.data;
-        // }
+        /**
+         * Verifica se a aplicação está sendo executada em um ambiente local.
+         * 
+         * @function
+         * @name isLocalhost
+         * 
+         * @description
+         * Esta função checa se o hostname atual é "localhost" ou "127.0.0.1",
+         * indicando que a aplicação está sendo executada em um ambiente de desenvolvimento local.
+         * 
+         * @returns {boolean} Retorna true se a aplicação estiver rodando localmente, false caso contrário.
+         * 
+         * @example
+         * if (isLocalhost()) {
+         *   console.log("Executando em ambiente local");
+         * } else {
+         *   console.log("Executando em ambiente de produção");
+         * }
+         */
+        function isLocalhost() {
+            return window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+        }
 
-        // const modalLoading = new bootstrap.Modal(document.getElementById('loadingModal'), {
-        //     backdrop: 'static',
-        //     keyboard: false
-        // });
-
-        // const setPersonInChargeModal = new bootstrap.Modal(document.getElementById('setPersonInChargeModal'));
-
-        // document.addEventListener('DOMContentLoaded', () => {
-        //     modalLoading.show();
-        //     document.getElementById('openList').innerHTML = '';
-        //     fetchOrdersWithStatus('Aberto', 'openList').finally(() => modalLoading.hide());
-        // });
-
-        // document.getElementById('pills-open-tab').addEventListener('click', async () => {
-        //     document.getElementById('openList').innerHTML = '';
-        //     modalLoading.show();
-        //     await fetchOrdersWithStatus('Aberto', 'openList').finally(() => modalLoading.hide());
-        // });
-
-        // document.getElementById('pills-progress-tab').addEventListener('click', async () => {
-        //     document.getElementById('progressList').innerHTML = '';
-        //     modalLoading.show();
-        //     await fetchOrdersWithStatus('Em progresso', 'progressList').finally(() => modalLoading.hide());
-        // });
-
-        // document.getElementById('pills-done-tab').addEventListener('click', async () => {
-        //     document.getElementById('doneList').innerHTML = '';
-        //     modalLoading.show();
-        //     await fetchOrdersWithStatus('Concluir', 'doneList').finally(() => modalLoading.hide());
-        // });
-
-        // function resetModalData() {
-        //     setPersonInChargeModal.hide();
-        //     document.getElementById('personInCharge').value = '';
-        //     document.getElementById('personInChargeCode').value = '';
-        //     document.getElementById('erroMessageModal').innerHTML = '';
-        // }
-
-        // async function fetchOrdersWithStatus(status, containerId) {
-        //     const orderList = document.getElementById(containerId);
-        //     const data = await fetchData('read', 'Chamados');
-
-        //     if (data.some(order => order.status === status)) {
-        //         renderOrders(data, status, orderList);
-        //     } else {
-        //         orderList.innerHTML = `
-        //                 <div class="alert alert-warning mx-2" role="alert">
-        //                     Não há chamados ${status.toLowerCase()}.
-        //                 </div>
-        //             `;
-        //     }
-        // }
+        /**
+        * Oculta o modal de carregamento.
+        */
+        function hideLoadingModal() {
+            const loadingModalElement = document.getElementById('loadingModal');
+            const loadingModal = bootstrap.Modal.getInstance(loadingModalElement);
+            if (loadingModal) {
+                loadingModal.hide();
+            }
+        }
 
         function renderOrders(data) {
-            container.innerHTML = '';
+            const container = document.querySelector('#orders')
+            
+            
+            if(data.length === 0){
+                container.innerHTML = '<div class="alert alert-warning mx-2" role="alert">Nenhum chamado encontrado.</div>';
+                return;
+            }
+
             data.forEach(order => {
                 container.innerHTML += `
                     <div class="accordion accordion-flush" id="orderAccordion">
@@ -260,17 +224,12 @@
                                         </li>
                                         <li class="list-group-item">
                                             <div>
-                                                <h6 class="card-subtitle mb-2 fw-semibold">Lista</h6>
+                                                <h6 class="card-subtitle mb-2 fw-semibold">Descrição do Defeito / Motivo da Parada de Máquina</h6>
                                                 <input class="form-control" list="defectList" id="defect" placeholder="Filtrar defeitos">
                                                 <datalist id="defectList">
-                                                    <option value="M01">Alarme de emergência</option>
-                                                    <option value="M02">Alarme de erro de sistema do robô</option>
-                                                    <option value="M03">Alarme no inversor</option>
-                                                    <option value="M04">Alarme no servo amplificador</option>
-                                                    <option value="M05">Aquecimento do óleo</option>
-                                                    <option value="M06">Armário de manuais desorganizados</option>
-                                                    <option value="M07">Choque elétrico</option>
-                                                    <option value="M08">Contaminação do produto</option>
+                                                    <option value="Alarme de emergência">M01</option>
+                                                    <option value="Alarme de erro de sistema do robô">M02</option>
+                                                    <option value="Alarme no inversor">M03</option>
                                                 </datalist>
                                             </div>
                                         </li>
@@ -282,8 +241,8 @@
                                         </li>
                                         <li class="list-group-item">
                                             <div class="d-flex justify-content-between">
-                                                <button type="button" class="btn btn-lg btn-danger fw-semibold w-50 me-1" onclick="cancelOrder(${order.id})">Cancelar</button>
-                                                <button type="button" class="btn btn-lg btn-primary fw-semibold w-50 me-1" onclick="updateOrderStatus(${order.id})">Em progresso</button>
+                                                <button type="button" class="btn btn-danger fw-semibold w-50 me-1" onclick="cancelOrder(${order.id})">Cancelar</button>
+                                                <button type="button" class="btn btn-primary fw-semibold w-50 me-1" onclick="updateOrderStatus(${order.id})">Em progresso</button>
                                             </div>
                                         </li>
                                     </ul>
@@ -295,184 +254,24 @@
             });
         }
 
-        // <button type="button" class="btn btn-primary fw-semibold w-50 ms-1" onclick="setPersonInCharge(${order.id}, '${order.status}')">${updateStatus(order.status)}</button>
-
-
-        // async function setPersonInCharge(id, status) {
-        //     const personInCharge = document.getElementById('personInCharge');
-        //     const personInChargeCode = document.getElementById('personInChargeCode');
-        //     const erroMessageModal = document.getElementById('erroMessageModal');
-        //     personInCharge.value = '';
-        //     personInChargeCode.value = '';
-
-        //     setPersonInChargeModal.show();
-
-        //     document.getElementById('confirmButtonUpdateStatus').addEventListener('click', async () => {
-        //         erroMessageModal.innerHTML = `
-        //                 <div class="d-flex justify-content-center">
-        //                     <div class="spinner-border text-primary" role="status">
-        //                         <span class="visually-hidden">Loading...</span>
-        //                     </div>
-        //                 </div>
-        //             `;
-
-        //         if (!personInCharge.value || !personInChargeCode.value) {
-        //             showError('Informe a matrícula e o código', 'warning');
-        //             personInCharge.focus();
-        //             return;
-        //         }
-
-        //         try {
-        //             toggleFormElements(true);
-        //             const response = await axios.get(`${url}?action=read&table=Funcionarios&id=${personInCharge.value}&code=${personInChargeCode.value}`);
-
-        //             if (!response.data.data) {
-        //                 showError('Matrícula ou código inválidos', 'danger');
-        //                 return;
-        //             }
-
-        //             const personCode = response.data.data.code;
-        //             await updateOrderStatus(id, status, personCode);
-
-        //         } catch (error) {
-        //             showError('Erro ao verificar matrícula e código', 'danger');
-        //         } finally {
-        //             resetModalData();
-        //         }
-        //     });
-        // }
-
-        // function toggleFormElements(disable) {
-        //     const elements = ['cancelButtonUpdateStatus', 'confirmButtonUpdateStatus', 'personInCharge', 'personInChargeCode'];
-        //     elements.forEach(id => document.getElementById(id).disabled = disable);
-        // }
-
-        // function showError(message, type) {
-        //     const erroMessageModal = document.getElementById('erroMessageModal');
-        //     erroMessageModal.innerHTML = `
-        //             <div class="alert alert-${type}" role="alert">
-        //                 ${message}
-        //             </div>
-        //         `;
-        // }
-
-        // function updateStatus(status) {
-        //     switch (status) {
-        //         case 'Aberto':
-        //             return 'Em progresso';
-        //         case 'Em progresso':
-        //             return 'Concluir';
-        //         case 'Concluir':
-        //             return 'Finalizado';
-        //     }
-        // }
-
-        // async function updateOrderStatus(id, status, personCode) {
-        //     const newStatus = updateStatus(status);
-        //     await axios.get(`${url}?action=update&table=Chamados&id=${id}&data={"status":"${newStatus}", "updatedAt": "${new Date().toISOString()}", "personCode": "${personCode}"}`);
-
-        //     if (newStatus === 'Aberto') {
-        //         await fetchOrdersWithStatus('Aberto', 'openList').finally(() => modalLoading.hide());
-        //         return;
-        //     }
-
-        //     if (newStatus === "Em progresso") {
-        //         await fetchOrdersWithStatus('Em progresso', 'progressList').finally(() => modalLoading.hide());
-        //         await fetchOrdersWithStatus('Aberto', 'openList');
-        //         return;
-        //     }
-
-        //     if (newStatus === "Concluir") {
-        //         await fetchOrdersWithStatus('Concluir', 'doneList').finally(() => modalLoading.hide());
-        //         await fetchOrdersWithStatus('Em progresso', 'progressList').finally(() => modalLoading.hide());
-        //         return;
-        //     }
-
-        //     if (newStatus === "Cancelado") {
-        //         await fetchOrdersWithStatus('Aberto', 'openList').finally(() => modalLoading.hide());
-        //         return;
-        //     }
-        // }
-
-        // async function cancelOrder(id) {
-        //     const personInCharge = document.getElementById('personInCharge');
-        //     const personInChargeCode = document.getElementById('personInChargeCode');
-        //     const erroMessageModal = document.getElementById('erroMessageModal');
-        //     personInCharge.value = '';
-        //     personInChargeCode.value = '';
-
-        //     setPersonInChargeModal.show();
-
-        //     document.getElementById('confirmButtonUpdateStatus').addEventListener('click', async () => {
-        //         erroMessageModal.innerHTML = `
-        //                 <div class="d-flex justify-content-center">
-        //                     <div class="spinner-border text-primary" role="status">
-        //                         <span class="visually-hidden">Loading...</span>
-        //                     </div>
-        //                 </div>
-        //             `;
-
-        //         if (!personInCharge.value || !personInChargeCode.value) {
-        //             showError('Informe a matrícula e o código', 'warning');
-        //             personInCharge.focus();
-        //             return;
-        //         }
-
-        //         try {
-        //             toggleFormElements(true);
-        //             const response = await axios.get(`${url}?action=read&table=Funcionarios&id=${personInCharge.value}&code=${personInChargeCode.value}`);
-
-        //             if (!response.data.data) {
-        //                 showError('Matrícula ou código inválidos', 'danger');
-        //                 return;
-        //             }
-
-        //             const personCode = response.data.data.code;
-        //             await updateOrderStatus(id, 'Cancelado', personCode);
-
-        //         } catch (error) {
-        //             showError('Erro ao verificar matrícula e código', 'danger');
-        //         } finally {
-        //             resetModalData();
-        //         }
-        //     });
-        // }
-
-        // async function handleStatusChange(newStatus) {
-        //     const statusMap = {
-        //         "Em progresso": ['Em progresso', 'Aberto'],
-        //         "Concluir": ['Concluir', 'Em progresso'],
-        //         "Cancelado": ['Aberto']
-        //     };
-
-        //     if (statusMap[newStatus]) {
-        //         for (const status of statusMap[newStatus]) {
-        //             await fetchOrdersWithStatus(status, getListId(status)).finally(() => modalLoading.hide());
-        //         }
-        //     }
-        // }
-
-        // function getListId(status) {
-        //     const listIdMap = {
-        //         'Em progresso': 'progressList',
-        //         'Aberto': 'openList',
-        //         'Concluir': 'doneList'
-        //     };
-        //     return listIdMap[status];
-        // }
-
         function toLocateDate(date) {
             const options = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' };
             return new Date(date).toLocaleDateString('pt-BR', options).replace(',', ' às');
         }
 
-        // function showToast(message, type) {
-        //     const toast = new bootstrap.Toast(document.getElementById('liveToast'));
-        //     const toastMessage = document.getElementById('toast-message');
-        //     toastMessage.textContent = message;
-        //     toastMessage.className = `text-${type}`;
-        //     toast.show();
-        // }
+        function mockData() {
+            return Array.from({ length: 0 }, (_, i) => {
+                return {
+                    id: i + 1,
+                    createdAt: new Date(),
+                    requester: 'Nilson Silva',
+                    department: 'TI',
+                    equipment: 'Servidor',
+                    description: "Servidor caiu",
+                    status: 'Aberto',
+                }
+            })
+        }
     </script>
 </body>
 
