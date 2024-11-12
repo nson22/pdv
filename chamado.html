@@ -20,7 +20,6 @@
       <img src="https://cache2net4.com/Repositorio/13384/Logo/logo%20site2.png" alt="Logo" style="width: 12rem;"
         class="navbar-brand">
     </div>
-
     <h3 class="text-uppercase text-center fw-bold mt-3">Chamado de Manutenção</h3>
     <form id="maintenanceForm" class="needs-validation mt-3" novalidate>
       <div class="row g-3">
@@ -67,20 +66,27 @@
           <div class="spinner-border text-primary" role="status">
             <span class="visually-hidden">Carregando...</span>
           </div>
-          <p class="mt-3" id="modalMessage"></p>
+          <p class="mt-3" id="loadingMessage"></p>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Toast -->
-  <div class="toast-container position-fixed bottom-0 end-0 p-3">
-    <div id="notificationToast" class="toast bg-success" role="alert" aria-live="assertive" aria-atomic="true">
-      <div class="toast-header">
-        <strong class="me-auto">Mensagem</strong>
-        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+  <!-- Message Modal -->
+  <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="messageModalLabel">Mensagem</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p id="messageModalBody"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Fechar</button>
+        </div>
       </div>
-      <div class="toast-body" id="toastMessage"></div>
     </div>
   </div>
 
@@ -97,20 +103,38 @@
      * 
      */
     document.addEventListener('DOMContentLoaded', function () {
+      showLoadingModal('Carregando dados, aguarde...');
+
       if (isLocalhost()) {
         setTimeout(() => {
           mockData();
-        }, 5000);
+          hideLoadingModal();
+        }, 3000);
       } else {
-        google.script.run
-          .withSuccessHandler((response) => {
-            populateSelect(table, response);
-            Utils.hideLoading();
+        const promises = tables.map(table =>
+          new Promise((resolve, reject) => {
+            google.script.run
+              .withSuccessHandler(response => {
+                populateSelect(table, response);
+                resolve();
+              })
+              .withFailureHandler(error => {
+                console.error(`Erro ao carregar ${table}:`, error);
+                reject(error);
+              })
+              .read(table);
           })
-          .withFailureHandler((error) => {
-            console.error(`Erro ao carregar ${table}:`, error);
+        );
+
+        Promise.all(promises)
+          .then(() => {
+            hideLoadingModal();
           })
-          .read(table);
+          .catch(error => {
+            console.error('Erro ao carregar dados:', error);
+            hideLoadingModal();
+            showMessageModal('Erro ao carregar dados. Por favor, tente novamente.', 'Erro', false);
+          });
       }
     });
 
@@ -131,21 +155,40 @@
           descricao: document.getElementById('descricao').value
         };
 
-        console.log("Form Data:", formData);
+        console.log(formData);
 
-        const formDataString = Object.entries(formData)
-          .map(([key, value]) => `${key}: ${value}`)
-          .join('\n');
 
-        showNotification(`Chamado aberto:\n${formDataString}`, 'success');
+        // Show loading modal
+        showLoadingModal('Enviando chamado, aguarde...');
 
-        this.reset();
-        this.classList.remove("was-validated");
+        if (isLocalhost()) {
+          // Simulate API call for localhost
+          setTimeout(() => {
+            hideLoadingModal();
+            showMessageModal('Chamado aberto com sucesso!', 'Sucesso', true);
+            this.reset();
+            this.classList.remove("was-validated");
+          }, 2000);
+        } else {
+          // Real API call for production
+          google.script.run
+            .withSuccessHandler(response => {
+              hideLoadingModal();
+              showMessageModal('Chamado aberto com sucesso!', 'Sucesso', true);
+              this.reset();
+              this.classList.remove("was-validated");
+            })
+            .withFailureHandler(error => {
+              hideLoadingModal();
+              showMessageModal('Erro ao abrir o chamado. Por favor, tente novamente.', 'Erro', false);
+              console.error('Erro ao enviar chamado:', error);
+            })
+            .post(formData);
+        }
       } else {
         this.classList.add("was-validated");
       }
     });
-
     /**
      * Preenche um elemento select com opções baseadas nos dados fornecidos.
      * 
@@ -173,100 +216,111 @@
     }
 
     /**
-     * Exibe uma notificação toast com a mensagem e o tipo especificados.
+     * Exibe o modal de carregamento com uma mensagem personalizada.
      * 
-     * @param {string} message - A mensagem a ser exibida na notificação.
-     * @param {string} type - O tipo de notificação, que determina a cor de fundo (ex: 'success', 'danger').
-     * 
-     * @description
-     * Esta função realiza as seguintes operações:
-     * 1. Seleciona os elementos do toast e do corpo da mensagem.
-     * 2. Remove as classes de cor de fundo existentes.
-     * 3. Adiciona a classe de cor de fundo com base no tipo fornecido.
-     * 4. Define o texto da mensagem no corpo do toast.
-     * 5. Cria uma nova instância de Bootstrap Toast.
-     * 6. Exibe a notificação toast.
+     * @param {string} message - A mensagem a ser exibida no modal de carregamento.
      */
-    function showNotification(message, type) {
-      const toast = document.getElementById('notificationToast');
-      const toastBody = document.getElementById('toastMessage');
-
-      toast.classList.remove('bg-success', 'bg-danger');
-      toast.classList.add(`bg-${type}`);
-      toastBody.textContent = message;
-
-      const bsToast = new bootstrap.Toast(toast);
-      bsToast.show();
+    function showLoadingModal(message) {
+      const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+      document.getElementById('loadingMessage').textContent = message;
+      loadingModal.show();
     }
 
     /**
-     * Aplica um efeito de shimmer (carregamento) ao formulário de manutenção.
+     * Oculta o modal de carregamento.
+     */
+    function hideLoadingModal() {
+      const loadingModalElement = document.getElementById('loadingModal');
+      const loadingModal = bootstrap.Modal.getInstance(loadingModalElement);
+      if (loadingModal) {
+        loadingModal.hide();
+      }
+    }
+
+    /**
+     * Exibe o modal de mensagem com uma mensagem personalizada e estilo apropriado,
+     * e o fecha automaticamente após um período especificado.
+     * 
+     * @param {string} message - A mensagem a ser exibida no modal.
+     * @param {string} [title='Mensagem'] - O título do modal (opcional).
+     * @param {boolean} [isSuccess=true] - Indica se a mensagem é de sucesso (true) ou erro (false).
+     * @param {number} [autoCloseDelay=3000] - Tempo em milissegundos antes do modal fechar automaticamente.
+     */
+    function showMessageModal(message, title = 'Mensagem', isSuccess = true, autoCloseDelay = 3000) {
+      const messageModal = new bootstrap.Modal(document.getElementById('messageModal'));
+      const modalElement = document.getElementById('messageModal');
+      const headerElement = modalElement.querySelector('.modal-header');
+      const titleElement = document.getElementById('messageModalLabel');
+      const bodyElement = document.getElementById('messageModalBody');
+      const closeButton = modalElement.querySelector('.modal-footer .btn-primary');
+
+      // Set the title and message
+      titleElement.textContent = title;
+      bodyElement.textContent = message;
+
+      // Set the appropriate background color and text color for the header
+      if (isSuccess) {
+        headerElement.classList.remove('bg-danger', 'text-white');
+        headerElement.classList.add('bg-success', 'text-white');
+      } else {
+        headerElement.classList.remove('bg-success', 'text-white');
+        headerElement.classList.add('bg-danger', 'text-white');
+      }
+
+      // Update close button text with countdown
+      const updateCloseButtonText = (secondsLeft) => {
+        closeButton.textContent = `Fechar (${secondsLeft}s)`;
+      };
+
+      // Start countdown
+      let secondsLeft = Math.ceil(autoCloseDelay / 1000);
+      updateCloseButtonText(secondsLeft);
+
+      const countdownInterval = setInterval(() => {
+        secondsLeft--;
+        updateCloseButtonText(secondsLeft);
+        if (secondsLeft <= 0) {
+          clearInterval(countdownInterval);
+        }
+      }, 1000);
+
+      messageModal.show();
+
+      // Automatically close the modal after the specified delay
+      setTimeout(() => {
+        messageModal.hide();
+        clearInterval(countdownInterval);
+      }, autoCloseDelay);
+
+      // Reset the button text when the modal is hidden
+      modalElement.addEventListener('hidden.bs.modal', () => {
+        closeButton.textContent = 'Fechar';
+        clearInterval(countdownInterval);
+      });
+    }
+
+    /**
+     * Preenche os campos do formulário com dados simulados para fins de teste.
      * 
      * @function
-     * @name shimmer
+     * @name mockData
      * 
      * @description
-     * Esta função substitui o conteúdo do formulário de manutenção por elementos HTML
-     * que simulam um estado de carregamento. Utiliza classes do Bootstrap para criar
-     * um efeito de shimmer nos campos do formulário.
+     * Esta função cria arrays de dados simulados para solicitantes, departamentos e equipamentos,
+     * e os utiliza para preencher os respectivos campos de seleção no formulário. Também habilita
+     * o campo de descrição e o botão de submissão.
      * 
      * @returns {void}
      * 
      * @example
-     * shimmer();
+     * mockData();
      * 
      * @notes
-     * - Utiliza a classe 'placeholder-glow' para criar o efeito de shimmer.
-     * - Os campos são desabilitados e preenchidos com placeholders.
-     * - O botão de submissão é substituído por um elemento âncora desabilitado.
+     * - Cria arrays de dados simulados para solicitantes, departamentos e equipamentos.
+     * - Utiliza a função populateSelect para preencher os campos de seleção.
+     * - Remove o atributo "disabled" do campo de descrição.
+     * - Remove a classe "disabled" do botão de submissão.
      */
-    function shimmer() {
-      document.querySelector("#maintenanceForm").innerHTML =
-        ` <div class="col-12 placeholder-glow mb-3">
-          <label for="solicitante" class="form-label text-uppercase fw-semibold">Solicitante</label>
-          <select class="form-select placeholder col-7" disabled id="solicitante" required>
-          </select>
-        </div>
-        <div class="col-12 placeholder-glow mb-3">
-          <label for="departamento" class="form-label text-uppercase fw-semibold">Departamento</label>
-          <select class="form-select placeholder col-7" disabled id="departamento" required>
-          </select>
-        </div>
-        <div class="col-12 placeholder-glow mb-3">
-          <label for="equipamento" class="form-label text-uppercase fw-semibold">Equipamento</label>
-          <select class="form-select placeholder col-7" disabled id="equipamento" required>
-          </select>
-        </div>
-        <div class="col-12 placeholder-glow mb-3">
-          <label for="descricao" class="form-label text-uppercase fw-semibold">Descrição</label>
-          <textarea class="form-control placeholder col-7" rows="3" id="descricao" disabled style="resize: none" required></textarea>
-        </div>
-        <a class="btn btn-lg btn-primary w-100 disabled placeholder col-4" aria-disabled="true"></a>
-      `
-    }
-
-    /**
-   * Preenche os campos do formulário com dados simulados para fins de teste.
-   * 
-   * @function
-   * @name mockData
-   * 
-   * @description
-   * Esta função cria arrays de dados simulados para solicitantes, departamentos e equipamentos,
-   * e os utiliza para preencher os respectivos campos de seleção no formulário. Também habilita
-   * o campo de descrição e o botão de submissão.
-   * 
-   * @returns {void}
-   * 
-   * @example
-   * mockData();
-   * 
-   * @notes
-   * - Cria arrays de dados simulados para solicitantes, departamentos e equipamentos.
-   * - Utiliza a função populateSelect para preencher os campos de seleção.
-   * - Remove o atributo "disabled" do campo de descrição.
-   * - Remove a classe "disabled" do botão de submissão.
-   */
     function mockData() {
       const mockSolicitantes = ["João Silva", "Maria Santos", "Carlos Oliveira"];
       const mockDepartamentos = ["TI", "RH", "Financeiro", "Marketing"];
@@ -281,152 +335,34 @@
     }
 
     /**
-   * Verifica se a aplicação está sendo executada em um ambiente local.
-   * 
-   * @function
-   * @name isLocalhost
-   * 
-   * @description
-   * Esta função checa se o hostname atual é "localhost" ou "127.0.0.1",
-   * indicando que a aplicação está sendo executada em um ambiente de desenvolvimento local.
-   * 
-   * @returns {boolean} Retorna true se a aplicação estiver rodando localmente, false caso contrário.
-   * 
-   * @example
-   * if (isLocalhost()) {
-   *   console.log("Executando em ambiente local");
-   * } else {
-   *   console.log("Executando em ambiente de produção");
-   * }
-   */
+     * Verifica se a aplicação está sendo executada em um ambiente local.
+     * 
+     * @function
+     * @name isLocalhost
+     * 
+     * @description
+     * Esta função checa se o hostname atual é "localhost" ou "127.0.0.1",
+     * indicando que a aplicação está sendo executada em um ambiente de desenvolvimento local.
+     * 
+     * @returns {boolean} Retorna true se a aplicação estiver rodando localmente, false caso contrário.
+     * 
+     * @example
+     * if (isLocalhost()) {
+     *   console.log("Executando em ambiente local");
+     * } else {
+     *   console.log("Executando em ambiente de produção");
+     * }
+     */
     function isLocalhost() {
       return window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
     }
 
+    function getAllOrders(status = 'Aberto') {
+      const data = ss.getSheetByName('chamados').getDataRange().getValues()
+      Logger.log(data)
+    }
+
   </script>
-  <!-- <script>
-    // UI Components
-    const UI = {
-      modal: {
-        element: new bootstrap.Modal(document.getElementById('loadingModal')),
-        message: document.getElementById('modalMessage')
-      },
-      toast: {
-        element: new bootstrap.Toast(document.getElementById('notificationToast')),
-        container: document.getElementById('notificationToast'),
-        message: document.getElementById('toastMessage')
-      },
-      form: document.getElementById('maintenanceForm')
-    };
-
-    // Configuration
-    const CONFIG = {
-      tables: ['solicitantes', 'departamentos', 'equipamentos']
-    };
-
-    // Utility Functions
-    const Utils = {
-      showLoading: (message) => {
-        UI.modal.message.textContent = message;
-        UI.modal.element.show();
-      },
-      hideLoading: () => {
-        UI.modal.element.hide();
-      },
-      showNotification: (message, type) => {
-        UI.toast.container.className = 'toast';
-        UI.toast.container.classList.add(`bg-${type}`, 'text-white');
-        UI.toast.message.textContent = message;
-        UI.toast.element.show();
-
-      }
-    };
-
-    // Form Handlers
-    const FormHandlers = {
-      populateSelect: (elementId, data) => {
-        const select = document.getElementById(elementId);
-        select.innerHTML = '<option value="">Selecionar</option>';
-
-        data.forEach(item => {
-          const option = document.createElement('option');
-          option.value = item;
-          option.textContent = item;
-          select.appendChild(option);
-        });
-      },
-
-      getFormData: () => {
-        return {
-          solicitante: document.getElementById('solicitantes').value,
-          departamento: document.getElementById('departamentos').value,
-          equipamento: document.getElementById('equipamentos').value,
-          descricao: document.getElementById('descricao').value
-        };
-      },
-
-      resetForm: () => {
-        UI.form.reset();
-        UI.form.classList.remove('was-validated');
-      }
-    };
-
-    // API Handlers
-    const API = {
-      loadData: () => {
-        Utils.showLoading('Carregando dados, aguarde...');
-
-        CONFIG.tables.forEach(table => {
-          google.script.run
-            .withSuccessHandler((response) => {
-              FormHandlers.populateSelect(table, response);
-              Utils.hideLoading();
-            })
-            .withFailureHandler((error) => {
-              console.error(`Erro ao carregar ${table}:`, error);
-              Utils.showNotification(`Erro ao carregar ${table}`, 'danger');
-              Utils.hideLoading();
-            })
-            .read(table);
-        });
-      },
-
-      submitForm: (formData) => {
-        Utils.showLoading('Abrindo chamado, aguarde...');
-
-        google.script.run
-          .withSuccessHandler(() => {
-            Utils.hideLoading();
-            Utils.showNotification('Chamado aberto com sucesso!', 'success');
-            FormHandlers.resetForm();
-          })
-          .withFailureHandler((error) => {
-            console.error('Erro ao abrir chamado:', error);
-            Utils.hideLoading();
-            Utils.showNotification('Falha ao abrir o chamado!', 'danger');
-          })
-          .post(formData);
-      }
-    };
-
-    // Event Listeners
-    document.addEventListener('DOMContentLoaded', () => {
-      API.loadData();
-    });
-
-    UI.form.addEventListener('submit', (event) => {
-      event.preventDefault();
-
-      if (!UI.form.checkValidity()) {
-        event.stopPropagation();
-        UI.form.classList.add('was-validated');
-        return;
-      }
-
-      const formData = FormHandlers.getFormData();
-      API.submitForm(formData);
-    });
-  </script> -->
 </body>
 
 </html>
