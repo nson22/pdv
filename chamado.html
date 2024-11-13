@@ -21,7 +21,7 @@
         class="navbar-brand">
     </div>
 
-    <h3 class="text-uppercase text-center fw-bold mt-3">Chamado de Manutenção</h3>
+    <h3 class="text-uppercase text-center fw-bold mt-3">OS Manutenção</h3>
     <form id="maintenanceForm" class="needs-validation mt-3" novalidate>
       <div class="row g-3">
         <div class="col-12 mb-3">
@@ -91,10 +91,24 @@
     const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
     const modalMessage = document.getElementById('modalMessage');
 
+    /**
+     * Adiciona um evento de escuta para o carregamento do DOM.
+     * Quando o DOM estiver completamente carregado, esta função será executada.
+     * Ela exibe um modal de carregamento e busca dados para preencher os selects.
+     *
+     * @listens DOMContentLoaded
+     * @function
+     * @async
+     */
     document.addEventListener('DOMContentLoaded', function () {
       modalMessage.textContent = 'Carregando dados...';
       loadingModal.show();
 
+      /**
+       * Itera sobre cada tabela definida e busca seus dados.
+       * 
+       * @param {string} table - O nome da tabela a ser buscada.
+       */
       tables.forEach((table) => {
         fetch(`${url}?action=read&table=${table}`)
           .then(response => response.json())
@@ -102,7 +116,7 @@
             populateSelect(table, data);
           })
           .catch(error => {
-            console.error(`Error fetching ${table}:`, error);
+            console.error(`Erro ao buscar ${table}:`, error);
             showNotification(`Erro ao carregar ${table}. Por favor, tente novamente.`, 'danger');
           }).finally(() => {
             loadingModal.hide();
@@ -110,21 +124,27 @@
       });
     });
 
+
     /**
-     * Adiciona um event listener para o evento de submissão do formulário de manutenção.
-     * Valida o formulário, processa os dados e exibe uma notificação.
-     * 
+     * Adiciona um evento de escuta para o envio do formulário de manutenção.
+     * Esta função gerencia o processo de validação e envio dos dados do formulário.
+     *
      * @listens submit
-     * @param {Event} event - O evento de submissão do formulário.
+     * @function
+     * @async
      */
     document.getElementById("maintenanceForm").addEventListener("submit", function (event) {
       event.preventDefault();
 
       if (this.checkValidity()) {
+        /**
+         * Objeto contendo os dados do formulário a serem enviados.
+         * @type {Object}
+         */
         const formData = {
           id: '',
           month_year: new Date().toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/^\d{2}/, '01'),
-          created_at: new Date().toLocaleString('pt-BR'),
+          created_at: new Date(),
           owner: document.getElementById('solicitantes').value,
           department: document.getElementById('departamentos').value,
           equipment: document.getElementById('equipamentos').value,
@@ -140,6 +160,10 @@
         modalMessage.textContent = 'Enviando dados...';
         loadingModal.show();
 
+        /**
+         * Envia os dados do formulário para o servidor.
+         * @returns {Promise<Object>} Promessa que resolve com a resposta do servidor.
+         */
         fetch(`${url}?action=insert&table=os&data=${JSON.stringify(formData)}`)
           .then(response => response.json())
           .then(data => {
@@ -165,44 +189,42 @@
       }
     });
 
+
+    /**
+     * Exibe uma notificação toast na interface do usuário.
+     * 
+     * @function
+     * @param {string} message - A mensagem a ser exibida na notificação.
+     * @param {string} type - O tipo de notificação (ex: 'success', 'danger').
+     *                        Isso afeta a cor de fundo do cabeçalho do toast.
+     */
     function showNotification(message, type) {
       const toast = document.getElementById('notificationToast');
       const toastHeader = toast.querySelector('.toast-header');
       const toastMessage = document.getElementById('toastMessage');
 
-      // Remove previous color classes from the header
+      // Remove classes de estilo anteriores
       toastHeader.classList.remove('bg-success', 'bg-danger', 'text-white');
-
-      // Add new color class to the header
+      // Adiciona novas classes de estilo baseadas no tipo
       toastHeader.classList.add(`bg-${type}`, 'text-white');
-
-      // Ensure the toast body is white
       toast.querySelector('.toast-body').classList.add('bg-white');
 
-      // Set the message
+      // Define a mensagem do toast
       toastMessage.innerHTML = message;
 
-      // Show the toast
+      // Cria e exibe o toast
       const bsToast = new bootstrap.Toast(toast);
       bsToast.show();
     }
 
     /**
-   * Preenche um elemento select com opções baseadas nos dados fornecidos.
-   * 
-   * @param {string} id - O ID do elemento select a ser preenchido.
-   * @param {Array<Object>} data - Um array de objetos contendo os dados para as opções.
-   * @returns {void}
-   * 
-   * @description
-   * Esta função realiza as seguintes operações:
-   * 1. Seleciona o elemento select com base no ID fornecido.
-   * 2. Limpa o conteúdo existente do select e adiciona uma opção padrão "Selecionar".
-   * 3. Verifica se os dados são válidos e não estão vazios.
-   * 4. Itera sobre o array de dados, criando e adicionando uma nova opção para cada item.
-   * 5. Remove o atributo "disabled" do select, tornando-o interativo.
-   * 6. Se houver um erro, exibe uma notificação.
-   */
+     * Preenche um elemento select com opções baseadas nos dados fornecidos.
+     *
+     * @function
+     * @param {string} id - O ID do elemento select a ser preenchido.
+     * @param {Array} data - Um array de objetos contendo os dados para as opções.
+     * @throws {Error} Lança um erro se os dados forem inválidos ou vazios.
+     */
     function populateSelect(id, data) {
       const select = document.getElementById(id);
       select.innerHTML = '<option value="">Selecionar</option>';
@@ -218,10 +240,11 @@
         });
         select.removeAttribute("disabled");
       } else {
-        console.error(`Invalid or empty data for ${id}`);
+        console.error(`Dados inválidos ou vazios para ${id}`);
         showNotification(`Erro ao carregar dados para ${id}. Por favor, tente novamente.`, 'danger');
       }
     }
+
   </script>
 </body>
 
