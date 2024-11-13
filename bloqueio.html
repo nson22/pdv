@@ -63,18 +63,24 @@
 
                 <div class="col-3">
                     <label for="linha" class="fw-semibold">Linha</label>
-                    <select class="form-select" id="linha" name="linha" required data-liberar>
+                    <select class="form-select" id="linha" name="linha" required data-liberar
+                        onchange="buscarSkus(this)">
                         <option value="Selecionar" disabled selected>Selecionar</option>
+                        <!-- Other options will be populated dynamically -->
                     </select>
+
                 </div>
             </div>
 
             <div class="row mb-3">
                 <div class="col-3">
                     <label for="sku" class="fw-semibold">SKU do Produto</label>
-                    <input type="text" class="form-control" id="sku" placeholder="" name="sku"
+                    <input type="text" class="form-control" id="sku" placeholder="" name="sku" list="skuList"
                         style="text-transform:uppercase;" pattern="(B|b|C|c)(L|l|B|b|C|c|M|m|P|p)([A-Z0-9]|[a-z0-9]){8}"
                         required data-liberar>
+                    <datalist id='skuList'>
+
+                    </datalist>
                 </div>
                 <div class="col-3">
                     <label for="tpBloqueio" class="fw-semibold">Tipo bloqueio</label>
@@ -148,8 +154,6 @@
             </div>
         </form>
 
-        </form>
-
         <!-- Loading Modal -->
         <div class="modal fade" id="loadingModal" tabindex="-1" aria-labelledby="loadingModalLabel" aria-hidden="true"
             data-bs-backdrop="static" data-bs-keyboard="false">
@@ -175,25 +179,10 @@
         const modalMessage = document.querySelector("#modalMessage")
 
         document.addEventListener('DOMContentLoaded', () => {
+            toggleRequiredFields()
             modalMessage.textContent = "Carregando dados, aguarde."
             loadingModal.show()
-
-            document.querySelector("#year").textContent = new Date().getFullYear()
-            const currentUrl = window.location.hostname;
-            if (currentUrl === '127.0.0.1' || currentUrl === 'localhost') {
-                let countdown = 0.5;
-                const loadingInterval = setInterval(() => {
-                    modalMessage.textContent = `Carregando dados, aguarde..`;
-                    countdown--;
-                    if (countdown < 0) {
-                        clearInterval(loadingInterval);
-                        populateFormData(getFormDataMock());
-                        loadingModal.hide();
-                    }
-                }, 1000);
-            } else {
-                fetchDataFromServer()
-            }
+            fetchDataFromServer()
         })
 
         function fetchDataFromServer() {
@@ -204,11 +193,7 @@
         }
 
         function populateFormData(data) {
-            console.log(data)
-            // Populate plantas
             populateSelect('planta', data.plantas);
-
-            // Populate other fields
             populateSelect('local', data.locais);
             populateSelect('solicitante', data.solicitantes);
             populateSelect('linha', data.linhas);
@@ -234,22 +219,10 @@
             });
         }
 
-        function getFormDataMock() {
-            return {
-                plantas: ['Manaus', 'Rio Claro'],
-                locais: ['Depósito 1', 'Depósito 2', 'Depósito 3'],
-                solicitantes: ['João', 'Maria', 'Pedro'],
-                linhas: ['Linha 1', 'Linha 2', 'Linha 3'],
-                tiposBloqueio: ['Tipo 1', 'Tipo 2', 'Tipo 3'],
-                indicadores: ['Indicador 1', 'Indicador 2', 'Indicador 3'],
-                ids: ['ID 1', 'ID 2', 'ID 3']
-            };
-        }
-
         function toggleRequiredFields() {
-            const idRegStatus = document.getElementById("idReg");
             const status = document.querySelector('input[name="status"]:checked').value;
             const elements = document.querySelectorAll('[data-liberar]');
+            const idRegStatus = document.getElementById("idReg");
 
             if (status === 'bloqueio') {
                 idRegStatus.setAttribute("disabled", true);
@@ -269,6 +242,32 @@
             }
         }
 
+        function buscarSkus(e) {
+            modalMessage.textContent = "Carregando dados, aguarde."
+            loadingModal.show()
+            const line = e.value.split(' ')[1]
+            google.script.run.withSuccessHandler((data) => {
+                console.log(data)
+                populateSkus(data)
+                loadingModal.hide()
+            }).withFailureHandler((error) => { console.error(error) }).retornaSKU(line);
+        }
+
+        function populateSkus(skus) {
+            const datalist = document.getElementById("skuList");
+            datalist.innerHTML = ''; // Clear existing options
+
+            skus.forEach(sku => {
+                const optionElement = document.createElement('option');
+                optionElement.value = sku;
+                datalist.appendChild(optionElement);
+            });
+
+            // Clear the SKU input field
+            document.getElementById('sku').value = '';
+        }
+
+
         function handleFormSubmit(form) {
             event.preventDefault();
 
@@ -278,26 +277,17 @@
             const formData = new FormData(form);
             const formObject = Object.fromEntries(formData);
 
-            if (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') {
-                setTimeout(() => {
-                    console.log("Form submitted:", formObject);
+            google.script.run
+                .withSuccessHandler(() => {
                     loadingModal.hide();
                     form.reset();
                     toggleRequiredFields();
-                }, 2000);
-            } else {
-                google.script.run
-                    .withSuccessHandler(() => {
-                        loadingModal.hide();
-                        form.reset();
-                        toggleRequiredFields();
-                    })
-                    .withFailureHandler((error) => {
-                        loadingModal.hide();
-                        console.error(error);
-                    })
-                    .processForm(formObject);
-            }
+                })
+                .withFailureHandler((error) => {
+                    loadingModal.hide();
+                    console.error(error);
+                })
+                .processForm(formObject);
         }
 
     </script>
