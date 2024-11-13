@@ -29,25 +29,26 @@
 
 <body>
     <div class="container">
-        <nav class="navbar bg-body-light fixed-top">
-            <div class="container-fluid">
-                <div class="d-flex justify-content-center w-100">
-                    <img src="https://cache2net4.com/Repositorio/13384/Logo/logo%20site2.png" style="width: 12rem;"
-                        class="navbar-brand">
-                </div>
-            </div>
+        <div class="d-flex justify-content-center w-100 m-3">
+            <img src="https://cache2net4.com/Repositorio/13384/Logo/logo%20site2.png" style="width: 12rem;"
+                class="navbar-brand">
+        </div>
+        <h5 class="text-uppercase text-center mb-4">Ordem de serviços</h5>
+        <nav class="nav nav-pills flex-column flex-sm-row nav-justified">
+            <button class="nav-link fw-semibold active" id="pills-open-tab" data-bs-toggle="pill"
+                data-bs-target="#pills-open" type="button" role="tab" aria-controls="pills-open"
+                aria-selected="true">Em aberto</button>
+            <button class="nav-link fw-semibold" id="pills-progress-tab" data-bs-toggle="pill"
+                data-bs-target="#pills-progress" type="button" role="tab" aria-controls="pills-progress"
+                aria-selected="false">Em progresso</button>
         </nav>
-        <div class="row my-5 pt-4">
-            <h5 class="text-uppercase text-center mb-4">Ordem de serviços</h5>
-            <div class="btn-group" role="group">
+        <div class="row" id="orders">
+            <!-- <div class="btn-group" role="group">
                 <input type="radio" class="btn-check" name="btnradio" id="btnRadioOpen" autocomplete="off" checked>
-                <label class="btn btn-lg btn-outline-primary" for="btnRadioOpen">Abertos</label>
+                <label class="btn btn-lg btn-outline-primary" for="btnRadioOpen">Em aberto</label>
                 <input type="radio" class="btn-check" name="btnradio" id="btnRadioInProgress" autocomplete="off">
                 <label class="btn btn-lg btn-outline-primary" for="btnRadioInProgress">Em progresso</label>
-            </div>
-            <div id="container">
-                
-            </div>
+            </div> -->
             <!-- <ul class="nav nav-pills mb-3 px-2 justify-content-between" id="pills-tab" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link fw-semibold active" id="pills-open-tab" data-bs-toggle="pill"
@@ -76,18 +77,20 @@
             </div> -->
         </div>
     </div>
-    <div class="modal fade" id="loadingModal" tabindex="-1" aria-labelledby="loadingModalLabel" aria-hidden="true">
+    <!-- Loading Modal -->
+    <div class="modal fade" id="loadingModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-body text-center">
                     <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
+                        <span class="visually-hidden">Carregando...</span>
                     </div>
-                    <p class="mt-3" id="modal-loading-message">Aguarde carregando chamados...</p>
+                    <p class="mt-3" id="modalMessage"></p>
                 </div>
             </div>
         </div>
     </div>
+
     <div class="modal fade" id="setPersonInChargeModal" tabindex="-1" aria-labelledby="setPersonInChargeModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -134,21 +137,172 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const orders = Array.from({length: 10}, (_, i) => {
-            return {
-                id: i + 1,
-                createdAt: new Date(),
-                requester: 'Nilson Silva',
-                department: 'TI',
-                equipment: 'Servidor',
-                description: "Servidor caiu",
-                status: 'Aberto',
-            }
-        })
+        var status = 'Aberto'
+        const url = 'https://script.google.com/macros/s/AKfycbx9J6XVTPzVj0XEK_JAscQB58Njqxk6gyaWRat_unYBT0zdjZuo6tDfTLQW6-QmAPPo/exec'
+        const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
 
         document.addEventListener('DOMContentLoaded', () => {
-            renderOrders(orders)
-        })
+            showLoadingModal(`Carregando ordens de serviço em ${status.toLocaleLowerCase()}...`);
+
+            fetch(`${url}?action=read&table=os&status=${status}`)
+                .then(response => response.json())
+                .then(({ data }) => {
+                    console.dir(data);
+                    renderOrders(data);
+                })
+                .catch(error => {
+                    console.error(`Erro ao buscar OS:`, error);
+                })
+                .finally(() => {
+                    fetchDefects();
+                    loadingModal.hide();
+                });
+        });
+
+        function renderOrders(data) {
+            const container = document.querySelector('#orders');
+
+            if (data.length === 0) {
+                container.innerHTML = `<div class="alert alert-warning mt-5" role="alert">Nenhuma OS em ${status.toLocaleLowerCase()} encontrada.</div>`;
+                return;
+            }
+
+            data.forEach(order => {
+                container.innerHTML += `
+                    <div class="accordion accordion-flush" id="orderAccordion">
+                        <div class="accordion-item mx-2 mt-3">
+                            <h2 class="accordion-header" id="flush-heading${order.id}">
+                                <button class="accordion-button collapsed d-flex justify-content-between align-items-center"
+                                    type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse${order.id}">
+                                    <div>
+                                        <span class="card-title fw-bold">OS</span>
+                                        <span class="card-title fw-semibold text-muted" id="order-number-${order.id}">${String(order.id).padStart(9, 0)}</span>
+                                    </div>
+                                </button>
+                            </h2>
+                            <div id="flush-collapse${order.id}" class="accordion-collapse collapse"
+                                aria-labelledby="flush-heading${order.id}" data-bs-parent="#orderAccordion">
+                                <div class="accordion-body">
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item">
+                                            <div>
+                                                <h6 class="card-subtitle mb-2 fw-semibold">Data</h6>
+                                                <span class="text-muted ms-1" id="data-${order.id}">${toLocateDate(order.created_at)}</span>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div>
+                                                <h6 class="card-subtitle mb-2 fw-semibold">Solicitante</h6>
+                                                <span class="text-muted" id="solicitante-${order.id}">${order.owner}</span>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div>
+                                                <h6 class="card-subtitle mb-2 fw-semibold">Setor</h6>
+                                                <span class="text-muted" id="departamento-${order.id}">${order.department}</span>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div>
+                                                <h6 class="card-subtitle mb-2 fw-semibold">Equipamento</h6>
+                                                <span class="text-muted" id="equipamento-${order.id}">${order.equipment}</span>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div>
+                                                <h6 class="card-subtitle mb-2 fw-semibold">Descrição</h6>
+                                                <span class="text-muted" id="descricao-${order.id}">${order.description}</span>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div>
+                                                <h6 class="card-subtitle mb-2 fw-semibold">Lista</h6>
+                                                <input class="form-control" list="defectList" id="defect" placeholder="Filtrar defeitos">
+                                                <datalist id="defectList">
+                                                </datalist>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div>
+                                                <h6 class="card-subtitle mb-2 fw-semibold">Comentário</h6>
+                                                <textarea type="search" rows=4 class="form-control" placeholder="Adicionar comentário" id="comentario-${order.id}" style="resize: none"></textarea>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div class="d-flex justify-content-between">
+                                                <button type="button" class="btn btn-danger fw-semibold w-50 me-1" onclick="cancelOrder(${order.id})">Cancelar</button>
+                                                <button type="button" class="btn btn-primary fw-semibold w-50 me-1" onclick="updateOrderStatus(${order.id})">Em progresso</button>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function fetchDefects() {
+            let savedDefects = [];
+            try {
+                const savedDefectsString = localStorage.getItem('defects');
+                if (savedDefectsString) {
+                    savedDefects = JSON.parse(savedDefectsString);
+                }
+            } catch (error) {
+                console.error('Error parsing saved defects:', error);
+                savedDefects = [];
+            }
+
+            const defectList = document.getElementById('defectList');
+
+            if (savedDefects.length === 0) {
+                showLoadingModal('Carregando lista de defeitos...');
+                fetch(`${url}?action=read&table=defeitos`)
+                    .then(response => response.json())
+                    .then(({ data }) => {
+                        console.dir(data);
+                        localStorage.setItem('defects', JSON.stringify(data));
+                        populateDefectsList(data);
+                    })
+                    .catch(error => {
+                        console.error(`Erro ao buscar defeitos:`, error);
+                    })
+                    .finally(() => {
+                        loadingModal.hide()
+                    });
+            } else {
+                populateDefectsList(savedDefects);
+            }
+        }
+
+        function populateDefectsList(defects) {
+            const defectList = document.getElementById('defectList');
+            defectList.innerHTML = ''; // Clear existing options
+            defects.forEach(defect => {
+                const option = document.createElement('option');
+                option.value = defect.name;
+                option.textContent = defect.id;
+                defectList.appendChild(option);
+            });
+        }
+
+        function showLoadingModal(message) {
+            document.getElementById('modalMessage').textContent = message;
+            loadingModal.show();
+        }
+
+        function showLoadingModal(message) {
+            document.getElementById('modalMessage').textContent = message;
+            loadingModal.show();
+        }
+
+        function toLocateDate(date) {
+            const options = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+            return new Date(date).toLocaleDateString('pt-BR', options).replace(',', ' às');
+        }
+
         // const url = 'https://script.google.com/macros/s/AKfycbzOfaFuTy7G9AD9Vr8HpsGuJxAEFbViLinio9ZDXUbdfWgY1h0HCSGC0swGjzWhrzKjPg/exec';
 
         // async function fetchData(action, table) {
@@ -208,92 +362,6 @@
         //             `;
         //     }
         // }
-
-        function renderOrders(data) {
-            container.innerHTML = '';
-            data.forEach(order => {
-                container.innerHTML += `
-                    <div class="accordion accordion-flush" id="orderAccordion">
-                        <div class="accordion-item mx-2 mt-3">
-                            <h2 class="accordion-header" id="flush-heading${order.id}">
-                                <button class="accordion-button collapsed d-flex justify-content-between align-items-center"
-                                    type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse${order.id}">
-                                    <div>
-                                        <span class="card-title fw-bold">OS</span>
-                                        <span class="card-title fw-semibold text-muted" id="order-number-${order.id}">${String(order.id).padStart(9, 0)}</span>
-                                    </div>
-                                </button>
-                            </h2>
-                            <div id="flush-collapse${order.id}" class="accordion-collapse collapse"
-                                aria-labelledby="flush-heading${order.id}" data-bs-parent="#orderAccordion">
-                                <div class="accordion-body">
-                                    <ul class="list-group list-group-flush">
-                                        <li class="list-group-item">
-                                            <div>
-                                                <h6 class="card-subtitle mb-2 fw-semibold">Data</h6>
-                                                <span class="text-muted ms-1" id="data-${order.id}">${toLocateDate(order.createdAt)}</span>
-                                            </div>
-                                        </li>
-                                        <li class="list-group-item">
-                                            <div>
-                                                <h6 class="card-subtitle mb-2 fw-semibold">Solicitante</h6>
-                                                <span class="text-muted" id="solicitante-${order.id}">${order.requester}</span>
-                                            </div>
-                                        </li>
-                                        <li class="list-group-item">
-                                            <div>
-                                                <h6 class="card-subtitle mb-2 fw-semibold">Setor</h6>
-                                                <span class="text-muted" id="departamento-${order.id}">${order.department}</span>
-                                            </div>
-                                        </li>
-                                        <li class="list-group-item">
-                                            <div>
-                                                <h6 class="card-subtitle mb-2 fw-semibold">Equipamento</h6>
-                                                <span class="text-muted" id="equipamento-${order.id}">${order.equipment}</span>
-                                            </div>
-                                        </li>
-                                        <li class="list-group-item">
-                                            <div>
-                                                <h6 class="card-subtitle mb-2 fw-semibold">Descrição</h6>
-                                                <span class="text-muted" id="descricao-${order.id}">${order.description}</span>
-                                            </div>
-                                        </li>
-                                        <li class="list-group-item">
-                                            <div>
-                                                <h6 class="card-subtitle mb-2 fw-semibold">Lista</h6>
-                                                <input class="form-control" list="defectList" id="defect" placeholder="Filtrar defeitos">
-                                                <datalist id="defectList">
-                                                    <option value="M01">Alarme de emergência</option>
-                                                    <option value="M02">Alarme de erro de sistema do robô</option>
-                                                    <option value="M03">Alarme no inversor</option>
-                                                    <option value="M04">Alarme no servo amplificador</option>
-                                                    <option value="M05">Aquecimento do óleo</option>
-                                                    <option value="M06">Armário de manuais desorganizados</option>
-                                                    <option value="M07">Choque elétrico</option>
-                                                    <option value="M08">Contaminação do produto</option>
-                                                </datalist>
-                                            </div>
-                                        </li>
-                                        <li class="list-group-item">
-                                            <div>
-                                                <h6 class="card-subtitle mb-2 fw-semibold">Comentário</h6>
-                                                <textarea type="search" rows=4 class="form-control" placeholder="Adicionar comentário" id="comentario-${order.id}" style="resize: none"></textarea>
-                                            </div>
-                                        </li>
-                                        <li class="list-group-item">
-                                            <div class="d-flex justify-content-between">
-                                                <button type="button" class="btn btn-lg btn-danger fw-semibold w-50 me-1" onclick="cancelOrder(${order.id})">Cancelar</button>
-                                                <button type="button" class="btn btn-lg btn-primary fw-semibold w-50 me-1" onclick="updateOrderStatus(${order.id})">Em progresso</button>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-        }
 
         // <button type="button" class="btn btn-primary fw-semibold w-50 ms-1" onclick="setPersonInCharge(${order.id}, '${order.status}')">${updateStatus(order.status)}</button>
 
@@ -461,11 +529,6 @@
         //     return listIdMap[status];
         // }
 
-        function toLocateDate(date) {
-            const options = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' };
-            return new Date(date).toLocaleDateString('pt-BR', options).replace(',', ' às');
-        }
-
         // function showToast(message, type) {
         //     const toast = new bootstrap.Toast(document.getElementById('liveToast'));
         //     const toastMessage = document.getElementById('toast-message');
@@ -473,6 +536,9 @@
         //     toastMessage.className = `text-${type}`;
         //     toast.show();
         // }
+
+
+
     </script>
 </body>
 
