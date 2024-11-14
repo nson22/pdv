@@ -19,7 +19,7 @@
         h1,
         h2,
         h3,
-        h4,
+        h6,
         h5,
         h6 {
             font-family: 'Montserrat', sans-serif;
@@ -34,7 +34,7 @@
                 class="navbar-brand">
         </div>
         <h5 class="text-uppercase text-center mb-4">Ordem de serviços</h5>
-        <nav class="nav nav-pills flex-column flex-sm-row nav-justified">
+        <nav class="nav nav-pills  nav-justified">
             <button class="nav-link fw-semibold active" id="pills-open-tab" data-bs-toggle="pill"
                 data-bs-target="#pills-open" type="button" role="tab" aria-controls="pills-open" aria-selected="true">Em
                 aberto</button>
@@ -238,10 +238,22 @@
                                     <ul class="list-group list-group-flush">
                                         <li class="list-group-item">
                                             <div>
-                                                <h6 class="card-subtitle mb-2 fw-semibold">Data</h6>
-                                                <span class="text-muted ms-1" id="data-${order.id}">${toLocateDate(order.created_at)}</span>
+                                                <h6 class="card-subtitle mb-2 fw-semibold">Data da abertura</h6>
+                                                <span class="text-muted ms-1" id="open-data-${order.id}">${toLocateDate(order.created_at)}</span>
                                             </div>
                                         </li>
+                                        ${order.in_progress_date ? `<li class="list-group-item">
+                                            <div>
+                                                <h6 class="card-subtitle mb-2 fw-semibold">Atualizado em</h6>
+                                                ${order.in_progress_date ? `<span class="text-muted ms-1" id="in-progressdata-${order.id}">${toLocateDate(order.in_progress_date)}</span>` : ''}
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div>
+                                                <h6 class="card-subtitle mb-2 fw-semibold">Em execução há</h6>
+                                                <span class="text-muted ms-1" id="diff-date-${order.id}">${calculateTimeDifference(order.created_at, order.in_progress_date)}</span>
+                                            </div>
+                                        </li>` : ``}
                                         <li class="list-group-item">
                                             <div>
                                                 <h6 class="card-subtitle mb-2 fw-semibold">Solicitante</h6>
@@ -267,17 +279,22 @@
                                             </div>
                                         </li>
                                         <li class="list-group-item">
-                                            <div>
-                                                <h6 class="card-subtitle mb-2 fw-semibold">Descrição do Defeito</h6>
-                                                <input class="form-control" list="defeitosList" id="defect" placeholder="Motivo da Parada de Máquina">
+                                            ${order.status === 'Aberto' ? `<div>
+                                                <h6 class="card-subtitle mb-2 fw-semibold">Descrição do defeito</h6>
+                                                <input class="form-control" list="defeitosList" id="defect" placeholder="Motivo da parada de máquina">
                                                 <datalist id="defeitosList">
                                                 </datalist>
+                                            </div>`: `
+                                            <div>
+                                                <h6 class="card-subtitle mb-2 fw-semibold">Descrição do defeito</h6>
+                                                <span class="text-muted" id="defect_code-${order.id}">${order.defect_code} - ${order.defect_description}</span>
                                             </div>
+                                            `}
                                         </li>
                                         ${order.status === 'Em progresso' ? `<li class="list-group-item">
                                             <div>
                                                 <h6 class="card-subtitle mb-2 fw-semibold">Solução da Parada</h6>
-                                                <input class="form-control" list="solucoesList" id="defect" placeholder="Descrição da Solução da Parada">
+                                                <input class="form-control" list="solucoesList" id="defect" placeholder="Descrição da solução da parada">
                                                 <datalist id="solucoesList">
                                                 </datalist>
                                             </div>
@@ -290,10 +307,10 @@
                                         </li>
                                         <li class="list-group-item">
                                             <div class="d-flex justify-content-between">
-                                                ${order.status === 'Aberto' ? `<button type="button" class="btn btn-danger fw-semibold w-50 me-1" onclick="cancelOrder(${order.id})">Cancelar</button>` : ''}
-                                                ${order.status === 'Em progress' ? 
-                                                `<button type="button" class="btn btn-danger fw-semibold w-50 me-1" onclick="cancelOrder(${order.id})">Finalizar</button>` : 
-                                                `<button type="button" class="btn btn-primary fw-semibold w-50 me-1" onclick="cancelOrder(${order.id})">Em progresso</button>`}
+                                                ${order.status === 'Aberto'
+                        ? `<button type="button" class="btn btn-danger fw-semibold w-50 me-1" onclick="changeStatus(${order.id})">Cancelar</button>
+                                                 <button type="but ton" class="btn btn-primary fw-semibold w-50 me-1" onclick="changeStatus(${order.id})">Em progresso</button>`
+                        : `<button type="button" class="btn btn-primary fw-semibold w-100 me-1" onclick="cancelOrder(${order.id})">Finalizar</button>`}
                                             </div>
                                         </li>
                                     </ul>
@@ -304,6 +321,13 @@
                 `;
             });
         }
+
+        // ${order.status === 'Aberto' 
+        //                                         ? `<button type="button" class="btn btn-danger fw-semibold w-50 me-1" onclick="changeStatus(${order.id})">Cancelar</button>` 
+        //                                         : `<button type="button" class="btn btn-primary fw-semibold w-50 me-1" onclick="changeStatus(${order.id})">Em progresso</button>`}
+        //                                         ${order.status === 'Em progresso' ? 
+        //                                         `` : 
+        //                                         `<button type="button" class="btn btn-primary fw-semibold w-100 me-1" onclick="cancelOrder(${order.id})">Finalizar</button>`}
 
         function populateDatalist(listName, data) {
             const datalist = document.getElementById(`${listName}List`);
@@ -344,6 +368,23 @@
         function toLocateDate(date) {
             const options = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' };
             return new Date(date).toLocaleDateString('pt-BR', options).replace(',', ' às');
+        }
+
+        function calculateTimeDifference(startDate, endDate) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            const diffInMilliseconds = Math.abs(end - start);
+
+            const days = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diffInMilliseconds % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diffInMilliseconds % (1000 * 60 * 60)) / (1000 * 60));
+
+            let result = '';
+            if (days > 0) result += `${days}d `;
+            if (hours > 0) result += `${hours}h `;
+            if (minutes > 0) result += `${minutes}m`;
+
+            return result.trim() || '0m';
         }
 
         // const url = 'https://script.google.com/macros/s/AKfycbzOfaFuTy7G9AD9Vr8HpsGuJxAEFbViLinio9ZDXUbdfWgY1h0HCSGC0swGjzWhrzKjPg/exec';
