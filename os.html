@@ -220,10 +220,12 @@
             }
 
             data.forEach(order => {
+                console.log(order);
+
                 container.innerHTML += `
                     <div class="accordion accordion-flush" id="orderAccordion">
                         <div class="accordion-item mx-2 mt-3">
-                            <h2 class="accordion-header" id="flush-heading${order.id}">
+                            <h2 class="accordion-header" id="flush-heading-${order.id}">
                                 <button class="accordion-button collapsed d-flex justify-content-between align-items-center"
                                     type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse${order.id}">
                                     <div>
@@ -308,9 +310,9 @@
                                         <li class="list-group-item">
                                             <div class="d-flex justify-content-between">
                                                 ${order.status === 'Aberto'
-                        ? `<button type="button" class="btn btn-danger fw-semibold w-50 me-1" onclick="changeStatus(${order.id})">Cancelar</button>
-                                                 <button type="but ton" class="btn btn-primary fw-semibold w-50 me-1" onclick="changeStatus(${order.id})">Em progresso</button>`
-                        : `<button type="button" class="btn btn-primary fw-semibold w-100 me-1" onclick="cancelOrder(${order.id})">Finalizar</button>`}
+                        ? `<button type="button" class="btn btn-danger fw-semibold w-50 me-1" onclick="changeOrderStatus('${order.id}')">Cancelar</button>
+                                                 <button type="but ton" class="btn btn-primary fw-semibold w-50 me-1" onclick="changeOrderStatus('${order.id}')">Em progresso</button>`
+                        : `<button type="button" class="btn btn-primary fw-semibold w-100 me-1" onclick="changeOrderStatus('${order.id}')">Finalizar</button>`}
                                             </div>
                                         </li>
                                     </ul>
@@ -322,12 +324,9 @@
             });
         }
 
-        // ${order.status === 'Aberto' 
-        //                                         ? `<button type="button" class="btn btn-danger fw-semibold w-50 me-1" onclick="changeStatus(${order.id})">Cancelar</button>` 
-        //                                         : `<button type="button" class="btn btn-primary fw-semibold w-50 me-1" onclick="changeStatus(${order.id})">Em progresso</button>`}
-        //                                         ${order.status === 'Em progresso' ? 
-        //                                         `` : 
-        //                                         `<button type="button" class="btn btn-primary fw-semibold w-100 me-1" onclick="cancelOrder(${order.id})">Finalizar</button>`}
+        function changeOrderStatus(id) {
+            console.log(`Changing status of order ${id}`);
+        }
 
         function populateDatalist(listName, data) {
             const datalist = document.getElementById(`${listName}List`);
@@ -386,243 +385,6 @@
 
             return result.trim() || '0m';
         }
-
-        // const url = 'https://script.google.com/macros/s/AKfycbzOfaFuTy7G9AD9Vr8HpsGuJxAEFbViLinio9ZDXUbdfWgY1h0HCSGC0swGjzWhrzKjPg/exec';
-
-        // async function fetchData(action, table) {
-        //     const res = await axios.get(`${url}?action=${action}&table=${table}`);
-        //     return res.data.data;
-        // }
-
-        // const modalLoading = new bootstrap.Modal(document.getElementById('loadingModal'), {
-        //     backdrop: 'static',
-        //     keyboard: false
-        // });
-
-        // const setPersonInChargeModal = new bootstrap.Modal(document.getElementById('setPersonInChargeModal'));
-
-        // document.addEventListener('DOMContentLoaded', () => {
-        //     modalLoading.show();
-        //     document.getElementById('openList').innerHTML = '';
-        //     fetchOrdersWithStatus('Aberto', 'openList').finally(() => modalLoading.hide());
-        // });
-
-        // document.getElementById('pills-open-tab').addEventListener('click', async () => {
-        //     document.getElementById('openList').innerHTML = '';
-        //     modalLoading.show();
-        //     await fetchOrdersWithStatus('Aberto', 'openList').finally(() => modalLoading.hide());
-        // });
-
-        // document.getElementById('pills-progress-tab').addEventListener('click', async () => {
-        //     document.getElementById('progressList').innerHTML = '';
-        //     modalLoading.show();
-        //     await fetchOrdersWithStatus('Em progresso', 'progressList').finally(() => modalLoading.hide());
-        // });
-
-        // document.getElementById('pills-done-tab').addEventListener('click', async () => {
-        //     document.getElementById('doneList').innerHTML = '';
-        //     modalLoading.show();
-        //     await fetchOrdersWithStatus('Concluir', 'doneList').finally(() => modalLoading.hide());
-        // });
-
-        // function resetModalData() {
-        //     setPersonInChargeModal.hide();
-        //     document.getElementById('personInCharge').value = '';
-        //     document.getElementById('personInChargeCode').value = '';
-        //     document.getElementById('erroMessageModal').innerHTML = '';
-        // }
-
-        // async function fetchOrdersWithStatus(status, containerId) {
-        //     const orderList = document.getElementById(containerId);
-        //     const data = await fetchData('read', 'Chamados');
-
-        //     if (data.some(order => order.status === status)) {
-        //         renderOrders(data, status, orderList);
-        //     } else {
-        //         orderList.innerHTML = `
-        //                 <div class="alert alert-warning mx-2" role="alert">
-        //                     Não há chamados ${status.toLowerCase()}.
-        //                 </div>
-        //             `;
-        //     }
-        // }
-
-        // <button type="button" class="btn btn-primary fw-semibold w-50 ms-1" onclick="setPersonInCharge(${order.id}, '${order.status}')">${updateStatus(order.status)}</button>
-
-
-        // async function setPersonInCharge(id, status) {
-        //     const personInCharge = document.getElementById('personInCharge');
-        //     const personInChargeCode = document.getElementById('personInChargeCode');
-        //     const erroMessageModal = document.getElementById('erroMessageModal');
-        //     personInCharge.value = '';
-        //     personInChargeCode.value = '';
-
-        //     setPersonInChargeModal.show();
-
-        //     document.getElementById('confirmButtonUpdateStatus').addEventListener('click', async () => {
-        //         erroMessageModal.innerHTML = `
-        //                 <div class="d-flex justify-content-center">
-        //                     <div class="spinner-border text-primary" role="status">
-        //                         <span class="visually-hidden">Loading...</span>
-        //                     </div>
-        //                 </div>
-        //             `;
-
-        //         if (!personInCharge.value || !personInChargeCode.value) {
-        //             showError('Informe a matrícula e o código', 'warning');
-        //             personInCharge.focus();
-        //             return;
-        //         }
-
-        //         try {
-        //             toggleFormElements(true);
-        //             const response = await axios.get(`${url}?action=read&table=Funcionarios&id=${personInCharge.value}&code=${personInChargeCode.value}`);
-
-        //             if (!response.data.data) {
-        //                 showError('Matrícula ou código inválidos', 'danger');
-        //                 return;
-        //             }
-
-        //             const personCode = response.data.data.code;
-        //             await updateOrderStatus(id, status, personCode);
-
-        //         } catch (error) {
-        //             showError('Erro ao verificar matrícula e código', 'danger');
-        //         } finally {
-        //             resetModalData();
-        //         }
-        //     });
-        // }
-
-        // function toggleFormElements(disable) {
-        //     const elements = ['cancelButtonUpdateStatus', 'confirmButtonUpdateStatus', 'personInCharge', 'personInChargeCode'];
-        //     elements.forEach(id => document.getElementById(id).disabled = disable);
-        // }
-
-        // function showError(message, type) {
-        //     const erroMessageModal = document.getElementById('erroMessageModal');
-        //     erroMessageModal.innerHTML = `
-        //             <div class="alert alert-${type}" role="alert">
-        //                 ${message}
-        //             </div>
-        //         `;
-        // }
-
-        // function updateStatus(status) {
-        //     switch (status) {
-        //         case 'Aberto':
-        //             return 'Em progresso';
-        //         case 'Em progresso':
-        //             return 'Concluir';
-        //         case 'Concluir':
-        //             return 'Finalizado';
-        //     }
-        // }
-
-        // async function updateOrderStatus(id, status, personCode) {
-        //     const newStatus = updateStatus(status);
-        //     await axios.get(`${url}?action=update&table=Chamados&id=${id}&data={"status":"${newStatus}", "updatedAt": "${new Date().toISOString()}", "personCode": "${personCode}"}`);
-
-        //     if (newStatus === 'Aberto') {
-        //         await fetchOrdersWithStatus('Aberto', 'openList').finally(() => modalLoading.hide());
-        //         return;
-        //     }
-
-        //     if (newStatus === "Em progresso") {
-        //         await fetchOrdersWithStatus('Em progresso', 'progressList').finally(() => modalLoading.hide());
-        //         await fetchOrdersWithStatus('Aberto', 'openList');
-        //         return;
-        //     }
-
-        //     if (newStatus === "Concluir") {
-        //         await fetchOrdersWithStatus('Concluir', 'doneList').finally(() => modalLoading.hide());
-        //         await fetchOrdersWithStatus('Em progresso', 'progressList').finally(() => modalLoading.hide());
-        //         return;
-        //     }
-
-        //     if (newStatus === "Cancelado") {
-        //         await fetchOrdersWithStatus('Aberto', 'openList').finally(() => modalLoading.hide());
-        //         return;
-        //     }
-        // }
-
-        // async function cancelOrder(id) {
-        //     const personInCharge = document.getElementById('personInCharge');
-        //     const personInChargeCode = document.getElementById('personInChargeCode');
-        //     const erroMessageModal = document.getElementById('erroMessageModal');
-        //     personInCharge.value = '';
-        //     personInChargeCode.value = '';
-
-        //     setPersonInChargeModal.show();
-
-        //     document.getElementById('confirmButtonUpdateStatus').addEventListener('click', async () => {
-        //         erroMessageModal.innerHTML = `
-        //                 <div class="d-flex justify-content-center">
-        //                     <div class="spinner-border text-primary" role="status">
-        //                         <span class="visually-hidden">Loading...</span>
-        //                     </div>
-        //                 </div>
-        //             `;
-
-        //         if (!personInCharge.value || !personInChargeCode.value) {
-        //             showError('Informe a matrícula e o código', 'warning');
-        //             personInCharge.focus();
-        //             return;
-        //         }
-
-        //         try {
-        //             toggleFormElements(true);
-        //             const response = await axios.get(`${url}?action=read&table=Funcionarios&id=${personInCharge.value}&code=${personInChargeCode.value}`);
-
-        //             if (!response.data.data) {
-        //                 showError('Matrícula ou código inválidos', 'danger');
-        //                 return;
-        //             }
-
-        //             const personCode = response.data.data.code;
-        //             await updateOrderStatus(id, 'Cancelado', personCode);
-
-        //         } catch (error) {
-        //             showError('Erro ao verificar matrícula e código', 'danger');
-        //         } finally {
-        //             resetModalData();
-        //         }
-        //     });
-        // }
-
-        // async function handleStatusChange(newStatus) {
-        //     const statusMap = {
-        //         "Em progresso": ['Em progresso', 'Aberto'],
-        //         "Concluir": ['Concluir', 'Em progresso'],
-        //         "Cancelado": ['Aberto']
-        //     };
-
-        //     if (statusMap[newStatus]) {
-        //         for (const status of statusMap[newStatus]) {
-        //             await fetchOrdersWithStatus(status, getListId(status)).finally(() => modalLoading.hide());
-        //         }
-        //     }
-        // }
-
-        // function getListId(status) {
-        //     const listIdMap = {
-        //         'Em progresso': 'progressList',
-        //         'Aberto': 'openList',
-        //         'Concluir': 'doneList'
-        //     };
-        //     return listIdMap[status];
-        // }
-
-        // function showToast(message, type) {
-        //     const toast = new bootstrap.Toast(document.getElementById('liveToast'));
-        //     const toastMessage = document.getElementById('toast-message');
-        //     toastMessage.textContent = message;
-        //     toastMessage.className = `text-${type}`;
-        //     toast.show();
-        // }
-
-
-
     </script>
 </body>
 
