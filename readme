@@ -1,0 +1,136 @@
+# Página de Listagem do Produto
+
+**Pré-condição:**
+1. Estoque do produto disponível
+2. Usuário com cadastro
+3. Área de disponibilidade válida
+
+**Passos do Teste:**
+1. Acessar https://qa.ziyou.com.br/categoria/bike-spinning
+2. Clicar no botão `Escolher Plano`
+
+
+**Resultado Esperado:**
+1. `Bike Spinning ZiYou 150-S` deve ser exibido.
+    1. Preço de lista `De R$ 299,90` deve ser exibido.
+    2. Preço de assinatura `A partir de R$ 149,00 por mês` deve ser exibido.
+    3. Preço de compra `De R$ 4.799,00` deve ser exibido.
+    4. Plano de parcelamento `Em até 12x de R$ 333,25 sem juros` deve ser exibido.
+    5. Preço `ou R$ 3.999,00 à vista` deve ser exibido.
+    6. Botões `Escolher Plano` e `Comprar` sejam exibidos corretamente.    
+
+**Pós-condição:**
+1. Página de detalhes deve ser exibida. 
+
+
+**Comentário**
+1. Garantir que a imagem do equipamento de exercício bike spinning esteja exibida corretamente.
+2. Verificar links quebrados ou recursos ausentes.
+3. Validar a responsividade da página e o correto funcionamento em diferentes dispositivos e tamanhos de tela.
+
+# Página Detalhes do Produto
+
+**Pré-condição:**
+1. Estoque do produto disponível
+2. Usuário com cadastro
+3. Área de disponibilidade válida
+
+**Passos do Teste:**
+1. Acessar https://qa.ziyou.com.br/categoria/bike-spinning
+
+**Resultado Esperado:**
+1. Página de detalhes deve ser exibida
+    1. Botão de seleção `ZiYou 150-S` deve está marcado.
+    2. Link `Comparar Bike Spinning` deve ser exibido.
+    3. `Bike Spinning ZiYou 150-S` deve ser exibido.
+    4. `Botão de compartilhar` deve ser exibido.
+    5. `Avaliações do Google` deve ser exibido.
+    6. Lista de Tags deve ser exibido.
+    7. Botão de seleção de `Assinatura` deve esta marcado.
+    8. Período do plano: `9 meses`, `6 meses`, `3 meses` devem ser exibido, com `9 meses` marcado.
+    9. Preço mensal: `R$ 299,00` deve ser exibido.
+    10. Preço mensal: `R$ 149,00 mensais` deve ser exibido.
+    11. Acessórios `Tablet Android HD - Tela 10.1" Polegadas` deve ser exibido.
+    12. Preço mensal: `+R$ 50,00 mensais` deve ser exibido.
+    13. Aplicar cupom `93QQR` deve ser exibido.
+    14. Botão `Assinar` deve ser exibido.
+    14. Verificação de CEP deve ser exibido.
+    14. `Card de Compra` deve ser exibido se produto disponível pra Compra.
+    15. Se `Card de Compra` `R$ 4799,00` deve ser exibido se produto disponível pra Compra.
+    15. Se `Card de Compra` `R$ 3999,00` deve ser exibido se produto disponível pra Compra.
+    15. Se `Card de Compra` `Em ate 12x de R$ 333,25 sem juros` deve ser exibido se produto disponível pra Compra.
+    
+
+**Pós-condição:**
+1. Página Intermediaria deve ser exibida. 
+
+**Comentário**
+1. Garantir que a imagem do equipamento de exercício bike spinning esteja exibida corretamente.
+2. Verificar links quebrados ou recursos ausentes.
+3. Validar a responsividade da página e o correto funcionamento em diferentes dispositivos e tamanhos de tela.
+
+# Página de Intermediária
+
+**Pré-condição:**
+1. Acessar a página de detalhes do produto https://qa.ziyou.com.br/categoria/bike-spinning
+
+**Passos do Teste:**
+1. Clicar no botão `Assinar`
+2. Clicar em `Adicionar tablet`
+
+**Resultado Esperado:**
+1. Página intermediária deve ser exibida
+    1. `Bike Spinning ZiYou 150-S` deve ser exibido.
+    2. `Tablet Android HD - Tela 10.1" Polegadas` deve ser exibido.
+    3. Checkbox `+R$ 50,00/mês` deve estar marcado.
+    4. `Produto R$ 149,00/mês` deve ser exibido.
+    5. `Acessórios R$ 50,00/mês` deve ser exibido.
+    6. `Subtotal R$ 199,00/mês` deve ser exibido.
+    7. Botão `Adicionar tablet` deve ser exibido.
+    8. Botão `Seguir sem tablet` deve ser exibido.
+2. Página de carrinho deve ser exibida
+    1. `Bike Spinning ZiYou 150-S` deve ser exibido.
+    2. Preço de lista `De R$ 299,90/m` deve ser exibido.
+    3. Preço de assinatura `R$ 149,00/m` deve ser exibido.
+    4. `Assinatura mínima de 9 meses` deve ser exibido.
+
+**Pós-condição:**
+1. Página Intermediaria deve ser exibida. 
+
+**Comentário**
+1. Garantir que a imagem do equipamento de exercício bike spinning esteja exibida corretamente.
+2. Verificar links quebrados ou recursos ausentes.
+3. Validar a responsividade da página e o correto funcionamento em diferentes dispositivos e tamanhos de tela.
+
+# Página de Carrinho
+
+**Pré-condição:**
+1. Acessar a página de detalhes do produto https://qa.ziyou.com.br/categoria/bike-spinning
+
+**Passos do Teste:**
+1. Clicar no botão `Assinar`
+2. Clicar em `Adicionar tablet`
+
+**Resultado Esperado:**
+1. Página intermediária deve ser exibida
+    1. `Bike Spinning ZiYou 150-S` deve ser exibido.
+    2. `Tablet Android HD - Tela 10.1" Polegadas` deve ser exibido.
+    3. Checkbox `+R$ 50,00/mês` deve estar marcado.
+    4. `Produto R$ 149,00/mês` deve ser exibido.
+    5. `Acessórios R$ 50,00/mês` deve ser exibido.
+    6. `Subtotal R$ 199,00/mês` deve ser exibido.
+    7. Botão `Adicionar tablet` deve ser exibido.
+    8. Botão `Seguir sem tablet` deve ser exibido.
+2. Página de carrinho deve ser exibida
+    1. `Bike Spinning ZiYou 150-S` deve ser exibido.
+    2. Preço de lista `De R$ 299,90/m` deve ser exibido.
+    3. Preço de assinatura `R$ 149,00/m` deve ser exibido.
+    4. `Assinatura mínima de 9 meses` deve ser exibido.
+
+**Pós-condição:**
+1. Página Intermediaria deve ser exibida. 
+
+**Comentário**
+1. Garantir que a imagem do equipamento de exercício bike spinning esteja exibida corretamente.
+2. Verificar links quebrados ou recursos ausentes.
+3. Validar a responsividade da página e o correto funcionamento em diferentes dispositivos e tamanhos de tela.
