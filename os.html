@@ -63,8 +63,7 @@
         </div>
     </div>
 
-    <div class="modal fade" id="setPersonInChargeModal" tabindex="-1" aria-labelledby="setPersonInChargeModalLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-fullscreen">
             <div class="modal-content">
                 <div class="modal-body">
@@ -113,6 +112,26 @@
         </div>
     </div>
 
+    <div class="modal fade" id="cancelMotiveModal" tabindex="-1" aria-labelledby="cancelMotiveModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cancelMotiveModalLabel">Motivo do Cancelamento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <textarea id="cancelMotiveText" class="form-control" rows="3" required
+                        style="resize: none;"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-primary" id="confirmCancelButton">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="toast-container position-fixed bottom-0 end-0 p-3">
         <div id="notificationToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="toast-header">
@@ -127,17 +146,26 @@
     <script>
         const url = 'https://script.google.com/macros/s/AKfycbxc-4K3nm3dNqo8RfpQUmL1Eew9heNSQ7vthVOsU1LNhVHDkKYBmlxU6tYqN3b9GoTuLw/exec'
         const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
-        const personInChargeModal = new bootstrap.Modal(document.getElementById('setPersonInChargeModal'));
+        const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+        const cancelMotiveModal = new bootstrap.Modal(document.getElementById('cancelMotiveModal'));
+        const containerId = document.querySelector('#orders')
         var personInChargeName = localStorage.getItem('personInChargeName') || null
         var currentOrderId;
 
-
         document.addEventListener('DOMContentLoaded', () => {
+
             if (!personInChargeName || personInChargeName === 'undefined') {
-                personInChargeModal.show();
-            } else {
-                fetchOrdersWithStatus('Aberto');
-                checkAndSetTimer();
+                loginModal.show();
+                return
+            }
+
+            if (checkAndSetTimer()) {
+                try {
+                    fetchOrdersWithStatus('Aberto');
+                } catch (error) {
+
+                }
+                return
             }
         });
 
@@ -159,6 +187,26 @@
             this.classList.add('was-validated');
         });
 
+        /**
+         * Realiza o processo de login do usuário.
+         * 
+         * Esta função é responsável por:
+         * - Obter os valores de matrícula e código do usuário
+         * - Enviar uma requisição de autenticação para o servidor
+         * - Armazenar o nome do usuário no localStorage se a autenticação for bem-sucedida
+         * - Fechar o modal de login e iniciar o temporizador de sessão
+         * - Buscar as ordens de serviço com status 'Aberto' após o login bem-sucedido
+         * - Lidar com erros de autenticação e exibir notificações apropriadas
+         *
+         * @async
+         * @function
+         * @name login
+         * @throws {Error} Lança um erro se houver falha na comunicação com o servidor
+         * 
+         * @example
+         * // Chamada da função login (geralmente acionada por um evento de submissão de formulário)
+         * await login();
+         */
         async function login() {
             const personInCharge = document.getElementById('personInCharge');
             const personInChargeCode = document.getElementById('personInChargeCode');
@@ -172,15 +220,16 @@
                 const { data } = await response.json();
 
                 if (data.length === 0) {
-                    showNotification('Matrícula e código inválidos. Verifique suas credenciais.', 'danger');
+                    showNotification('Matrícula e/ou código inválidos. Verifique suas credenciais.', 'danger');
                     return;
                 }
 
                 localStorage.setItem('personInChargeName', data[0].name);
-                personInChargeModal.hide();
-                fetchOrdersWithStatus('Aberto');
-                checkAndSetTimer();
-                selectOpenTab(); // Add this line to select the "Em aberto" tab after login
+                loginModal.hide();
+
+                if (checkAndSetTimer()) {
+                    fetchOrdersWithStatus('Aberto');
+                }
             } catch (error) {
                 console.error('Error:', error);
             } finally {
@@ -188,34 +237,89 @@
             }
         }
 
+        /**
+         * Realiza o processo de login do usuário.
+         * 
+         * Esta função é responsável por:
+         * - Obter os valores de matrícula e código do usuário
+         * - Enviar uma requisição de autenticação para o servidor
+         * - Armazenar o nome do usuário no localStorage se a autenticação for bem-sucedida
+         * - Fechar o modal de login e iniciar o temporizador de sessão
+         * - Buscar as ordens de serviço com status 'Aberto' após o login bem-sucedido
+         * - Lidar com erros de autenticação e exibir notificações apropriadas
+         *
+         * @async
+         * @function
+         * @name login
+         * @throws {Error} Lança um erro se houver falha na comunicação com o servidor
+         * 
+         * @example
+         * // Chamada da função login (geralmente acionada por um evento de submissão de formulário)
+         * await login();
+         */
         function logout() {
             localStorage.removeItem('personInChargeName');
+            localStorage.removeItem('defeitosLocalData')
+            localStorage.removeItem('solucoesLocalData')
             resetLoginForm();
-            personInChargeModal.show();
+            loginModal.show();
         }
 
+        /**
+         * Verifica se há um usuário logado e configura um temporizador para expiração da sessão.
+         * 
+         * Esta função é responsável por:
+         * - Verificar se existe um nome de usuário armazenado no localStorage
+         * - Se existir, configurar um temporizador para expirar a sessão após 30 minutos
+         * - Remover as informações do usuário e mostrar o modal de login quando o temporizador expirar
+         *
+         * @function
+         * @name checkAndSetTimer
+         * @returns {boolean} Retorna true se um temporizador foi configurado, false caso contrário
+         * 
+         * @example
+         * // Verificar e configurar o temporizador de sessão
+         * if (checkAndSetTimer()) {
+         *     console.log('Temporizador de sessão configurado');
+         * } else {
+         *     console.log('Nenhum usuário logado');
+         * }
+         */
         function checkAndSetTimer() {
             var timeout = 18_000_00; // 30 minutos
 
             if (localStorage.getItem('personInChargeName')) {
                 setTimeout(() => {
                     localStorage.removeItem('personInChargeName');
-                    console.log('personInChargeName removed from localStorage after 30 minutes');
                     showNotification('Sua sessão expirou. Por favor, faça login novamente.', 'warning');
-                    personInChargeModal.show();
+                    loginModal.show();
+                    containerId.innerHTML = ''
                 }, timeout);
-
-                selectOpenTab();
+                return true
             }
+
+            return false;
         }
 
-        function selectOpenTab() {
-            const openTab = document.getElementById('pills-open-tab');
-            if (openTab) {
-                openTab.click();
-            }
-        }
-
+        /**
+         * Define o estado do formulário de login com base no status de carregamento.
+         * 
+         * Esta função é responsável por:
+         * - Habilitar ou desabilitar os campos de entrada e o botão de login
+         * - Alterar a aparência do botão de login para indicar o estado de carregamento
+         * - Limpar mensagens de erro quando o carregamento é concluído
+         *
+         * @function
+         * @name setLoginFormState
+         * @param {boolean} isLoading - Indica se o formulário está em estado de carregamento
+         * 
+         * @example
+         * // Para definir o formulário como carregando
+         * setLoginFormState(true);
+         * 
+         * // Para definir o formulário como pronto
+         * setLoginFormState(false);
+         */
         function setLoginFormState(isLoading) {
             const personInCharge = document.getElementById('personInCharge');
             const personInChargeCode = document.getElementById('personInChargeCode');
@@ -233,6 +337,21 @@
             }
         }
 
+        /**
+         * Reinicia o formulário de login, limpando os campos e mensagens de erro.
+         * 
+         * Esta função é responsável por:
+         * - Limpar os campos de entrada do formulário de login
+         * - Remover qualquer mensagem de erro exibida
+         * - Redefinir o estado do formulário para seu estado inicial não carregado
+         *
+         * @function
+         * @name resetLoginForm
+         * 
+         * @example
+         * // Para reiniciar o formulário de login
+         * resetLoginForm();
+         */
         function resetLoginForm() {
             const personInCharge = document.getElementById('personInCharge');
             const personInChargeCode = document.getElementById('personInChargeCode');
@@ -244,25 +363,34 @@
             setLoginFormState(false);
         }
 
+        /**
+         * Busca e renderiza as ordens de serviço com base no status especificado.
+         * 
+         * Esta função limpa o conteúdo atual do contêiner, exibe um modal de carregamento,
+         * busca as ordens de serviço do servidor com o status especificado, renderiza as ordens
+         * no contêiner e verifica os dados das datalists.
+         *
+         * @function
+         * @name fetchOrdersWithStatus
+         * @param {string} status - O status das ordens de serviço a serem buscadas ('Aberto' ou 'Em progresso').
+         * 
+         * @throws {Error} Lança um erro se a busca das ordens de serviço falhar.
+         * 
+         * @example
+         * // Busca ordens de serviço com status 'Aberto'
+         * fetchOrdersWithStatus('Aberto');
+         */
         function fetchOrdersWithStatus(status) {
-            const containerId = document.querySelector('#orders')
-            containerId.innerHTML = '';
-
             showLoadingModal(`Carregando ordens de serviço...`);
+            containerId.innerHTML = '';
 
             fetch(`${url}?action=read&table=os&status=${status}`)
                 .then(response => response.json())
                 .then(({ data }) => {
                     renderOrders(data, containerId);
-                    return Promise.all([
-                        fetchDatalistData('defeitos'),
-                        fetchDatalistData('solucoes')
-                    ]);
-                })
-                .then(([defeitosData, solucoesData]) => {
-                    populateDatalist('defeitos', defeitosData);
-                    populateDatalist('solucoes', solucoesData);
-                })
+                }).then(
+                    checkDatalistData
+                )
                 .catch(error => {
                     console.error(`Erro ao buscar ordens de serviço ${status.toLowerCase()}`, error);
                 })
@@ -271,16 +399,281 @@
                 });
         }
 
+        /**
+         * Obtém a visualização da aba atualmente ativa.
+         * 
+         * Esta função identifica qual aba está atualmente ativa na interface do usuário
+         * e retorna um identificador correspondente.
+         * 
+         * @function
+         * @name getCurrentTabView
+         * @returns {string} O identificador da aba atual ('open' ou 'progress').
+         * 
+         * @example
+         * // Obtém a visualização da aba atual
+         * const currentView = getCurrentTabView();
+         * console.log(currentView); // Pode retornar 'open' ou 'progress'
+         */
+        function getCurrentTabView() {
+            const currentTab = document.querySelector('.active');
+            return currentTab.id.split('-')[1];
+        }
+
+        /**
+         * Verifica e carrega os dados para as datalists de defeitos e soluções.
+         * 
+         * Esta função é responsável por verificar qual aba está ativa (aberta ou em progresso)
+         * e carregar os dados apropriados para a datalist correspondente. Ela primeiro tenta
+         * recuperar os dados do localStorage. Se não encontrar, chama a função fetchDatalistData
+         * para buscar os dados do servidor.
+         * 
+         * @function
+         * @name checkDatalistData
+         * 
+         * @example
+         * // Chamada da função
+         * checkDatalistData();
+         * 
+         * // Esta chamada irá:
+         * // 1. Verificar qual aba está ativa
+         * // 2. Tentar carregar os dados do localStorage
+         * // 3. Se não encontrar no localStorage, buscar os dados do servidor
+         * // 4. Preencher a datalist apropriada com os dados obtidos
+         */
+        function checkDatalistData() {
+            let currentTab = getCurrentTabView()
+
+            if (currentTab === 'open') {
+                const defectsLocalData = localStorage.getItem('defeitos')
+
+                if (defectsLocalData) {
+                    populateDatalist('defeitos', JSON.parse(defectsLocalData));
+                    return;
+                }
+
+                fetchDatalistData('defeitos')
+                return
+            }
+
+            if (currentTab === 'progress') {
+                const solutionsLocalData = localStorage.getItem('solucoes')
+
+                if (solutionsLocalData) {
+                    populateDatalist('solucoes', JSON.parse(solutionsLocalData));
+                    return;
+                }
+
+                fetchDatalistData('solucoes')
+                return
+            }
+        }
+
+        /**
+         * Busca dados para preencher uma datalist específica.
+         * @param {string} item - O nome do item para buscar dados (ex: 'defeitos', 'solucoes').
+         */
         function fetchDatalistData(item) {
-            return fetch(`${url}?action=read&table=${item}`)
+            fetch(`${url}?action=read&table=${item}`)
                 .then(response => response.json())
-                .then(({ data }) => data)
+                .then(({ data }) => {
+                    localStorage.setItem(`${item}LocalData`, JSON.stringify(data));
+                    populateDatalist(item, data);
+                })
                 .catch(error => {
                     console.error(`Erro ao buscar dados para ${item}:`, error);
                     return [];
                 });
+
         }
 
+        /**
+         * Preenche as datalists com os dados fornecidos.
+         * @param {string} id - O identificador base para as datalists (ex: 'defeitos', 'solucoes').
+         * @param {Array} data - Array de objetos contendo os dados para preencher as datalists.
+         */
+        function populateDatalist(id, data) {
+            const datalists = document.querySelectorAll(`[id*='lista-de-${id}']`)
+
+            datalists.forEach(datalist => {
+                datalist.innerHTML = '';
+
+                data.forEach(item => {
+                    if (item && item.name && item.id) {
+                        const option = document.createElement('option');
+                        option.value = `${item.id} - ${item.name}`;
+                        datalist.appendChild(option);
+                    } else {
+                        console.warn(`Invalid ${listName} object:`, item);
+                    }
+                });
+            });
+        }
+
+        /**
+         * Lida com o envio do formulário de atualização de status da ordem de serviço.
+         * 
+         * @param {Event} event - O evento de submit do formulário.
+         * @param {string} orderId - O ID da ordem de serviço.
+         * @param {string} action - A ação a ser realizada ('Em progresso', 'Finalizado', 'Cancelar').
+         * 
+         */
+        function handleFormSubmit(event, orderId, action) {
+            event.preventDefault();
+
+            const form = document.getElementById(`form-${orderId}`);
+
+            if (action === 'Cancelar') {
+                cancelMotiveModal.show();
+
+                document.getElementById('confirmCancelButton').onclick = function () {
+                    const cancelMotive = document.getElementById('cancelMotiveText').value;
+                    if (cancelMotive.trim() === '') {
+                        showNotification('Por favor, forneça um motivo para o cancelamento.', 'warning');
+                        return;
+                    }
+
+                    const motiveInput = document.createElement('input');
+                    motiveInput.type = 'hidden';
+                    motiveInput.name = 'cancel_description';
+                    motiveInput.value = cancelMotive;
+                    form.appendChild(motiveInput);
+
+                    cancelMotiveModal.hide();
+                    submitForm(form, orderId, 'Cancelado');
+                };
+                return;
+            }
+
+            if (!form.checkValidity() && action !== 'Cancelar') {
+                event.stopPropagation();
+                form.classList.add('was-validated');
+                return;
+            }
+
+            let newStatus;
+            switch (action) {
+                case 'Em progresso':
+                    newStatus = 'Em progresso';
+                    break;
+                case 'Finalizado':
+                    newStatus = 'Finalizado';
+                    break;
+                default:
+                    console.error('Ação inválida');
+                    return;
+            }
+
+            submitForm(form, orderId, newStatus);
+        }
+        
+        /**
+         * Submete o formulário de atualização de status da ordem de serviço.
+         * 
+         * Esta função é responsável por processar o envio do formulário de atualização
+         * de status de uma ordem de serviço. Ela exibe um modal de carregamento,
+         * prepara os dados do formulário, adiciona informações específicas com base
+         * no novo status e envia a atualização para o servidor.
+         *
+         * @function
+         * @name submitForm
+         * @param {HTMLFormElement} form - O elemento do formulário a ser submetido.
+         * @param {string} orderId - O ID da ordem de serviço sendo atualizada.
+         * @param {string} newStatus - O novo status da ordem de serviço ('Em progresso', 'Finalizado', ou 'Cancelado').
+         * 
+         * @example
+         * // Submete o formulário para atualizar o status de uma ordem de serviço
+         * const form = document.getElementById('orderForm');
+         * submitForm(form, '12345', 'Em progresso');
+         */
+        function submitForm(form, orderId, newStatus) {
+            showLoadingModal(`Atualizando ordem de serviço ${orderId}`);
+
+            const formData = new FormData(form);
+            formData.append('status', newStatus);
+
+            if (newStatus === 'Em progresso') {
+                const [defectCode, defectDescription] = document.querySelector(`[id='defeito-${orderId}']`).value.split('-');
+                formData.append('in_progress_date', new Date().toISOString());
+                formData.append('defect_code', defectCode.trim());
+                formData.append('defect_description', defectDescription.trim());
+                formData.append('in_progress_person', localStorage.getItem('personInChargeName'));
+            } else if (newStatus === 'Finalizado') {
+                const [solutionCode, solutionDescription] = document.querySelector(`[id='solucoes-${orderId}']`).value.split('-');
+                formData.append('done_date', new Date().toISOString());
+                formData.append('solution_code', solutionCode.trim());
+                formData.append('solution_description', solutionDescription.trim());
+                formData.append('done_person', localStorage.getItem('personInChargeName'));
+            } else if (newStatus === 'Cancelado') {
+                formData.append('canceled_date', new Date().toISOString());
+                formData.append('canceled_person', localStorage.getItem('personInChargeName'));
+            }
+
+            const formDataObject = {};
+            for (let [key, value] of formData.entries()) {
+                formDataObject[key] = value;
+            }
+
+            updateStatusOrder(orderId, formDataObject, newStatus);
+
+            form.classList.remove('was-validated');
+        }
+
+        /**
+         * Atualiza o status de uma ordem de serviço no servidor.
+         * 
+         * Esta função envia uma requisição para atualizar o status de uma ordem de serviço específica,
+         * e em seguida atualiza a interface do usuário com as ordens de serviço atualizadas.
+         *
+         * @function
+         * @name updateStatusOrder
+         * @param {string} orderId - O ID da ordem de serviço a ser atualizada.
+         * @param {Object} data - Os dados atualizados da ordem de serviço.
+         * @param {string} newStatus - O novo status da ordem de serviço.
+         * 
+         * @throws {Error} Lança um erro se a atualização da ordem de serviço falhar.
+         * 
+         * @example
+         * // Atualiza o status de uma ordem de serviço
+         * updateStatusOrder('123', { status: 'Em progresso', in_progress_date: '2023-05-10T10:00:00Z' }, 'Em progresso');
+         */
+        function updateStatusOrder(orderId, data, newStatus) {
+            fetch(`${url}?action=update&table=os&id=${orderId}&data=${JSON.stringify(data)}`)
+                .then(response => response.json())
+                .then(({ data }) => {
+                    const currentTab = getCurrentTabView()
+                    if (currentTab === 'open') {
+                        fetchOrdersWithStatus('Aberto');
+                    } else {
+                        fetchOrdersWithStatus('Em progresso');
+                    }
+                })
+                .catch(error => {
+                    console.error(`Erro ao atualizar ordem de serviço ${orderId}:`, error);
+                    showNotification(`Erro ao atualizar ordem de serviço ${orderId}. Por favor, tente novamente.`, 'danger');
+                })
+        }
+
+        /**
+         * Renderiza as ordens de serviço na interface do usuário.
+         * 
+         * Esta função é responsável por exibir as ordens de serviço no contêiner especificado.
+         * Se não houver ordens, exibe uma mensagem de alerta. Caso contrário, gera o HTML
+         * para cada ordem de serviço e o adiciona ao contêiner.
+         *
+         * @function
+         * @name renderOrders
+         * @param {Array} data - Um array de objetos representando as ordens de serviço.
+         * @param {HTMLElement} container - O elemento HTML onde as ordens serão renderizadas.
+         * 
+         * @example
+         * // Exemplo de uso:
+         * const ordersData = [
+         *   { id: 1, status: 'Aberto', created_at: '2023-05-01T10:00:00Z', owner: 'João', department: 'TI', equipment: 'Computador', description: 'Tela não liga' },
+         *   { id: 2, status: 'Em progresso', created_at: '2023-05-02T11:00:00Z', owner: 'Maria', department: 'RH', equipment: 'Impressora', description: 'Papel atolado' }
+         * ];
+         * const containerElement = document.getElementById('ordersContainer');
+         * renderOrders(ordersData, containerElement);
+         */
         function renderOrders(data, container) {
             if (data.length === 0) {
                 container.innerHTML = `<div class="alert alert-warning w-100 mt-5 mx-2" role="alert">Nenhuma OS encontrada.</div>`;
@@ -289,19 +682,20 @@
 
             data.forEach(order => {
                 container.innerHTML += `
-                    <form id="form-${order.id}" class="needs-validation" onsubmit="handleFormSubmit(event, '${order.id}')">
-                        <div class="accordion " id="orderAccordion-${order.id}">
+                    <form id="form-${order.id}" class="needs-validation">
+                        <div class="accordion" id="orderAccordion-${order.id}">
                             <div class="accordion-item mt-3">
-                                <h2 class="accordion-header" id="flush-heading-${order.id}">
+                                <h2 class="accordion-header" id="heading-${order.id}">
                                     <button class="accordion-button collapsed d-flex justify-content-between align-items-center"
-                                        type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse${order.id}">
+                                        type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${order.id}"
+                                        aria-expanded="false" aria-controls="collapse-${order.id}">
                                         <div>
                                             <span class="card-title fw-semibold text-muted" id="order-number-${order.id}">OS ${order.id}</span>
                                         </div>
                                     </button>
                                 </h2>
-                                <div id="flush-collapse-${order.id}" class="accordion-collapse collapse"
-                                    aria-labelledby="flush-heading${order.id}" data-bs-parent="#orderAccordion-${order.id}">
+                                <div id="collapse-${order.id}" class="accordion-collapse collapse"
+                                    aria-labelledby="heading-${order.id}" data-bs-parent="#orderAccordion-${order.id}">
                                     <div class="accordion-body">
                                         <ul class="list-group list-group-flush">
                                             <li class="list-group-item">
@@ -349,34 +743,35 @@
                                             <li class="list-group-item">
                                                 ${order.status === 'Aberto' ? `<div>
                                                     <h6 class="card-subtitle mb-2 fw-semibold">Descrição do defeito</h6>
-                                                    <input class="form-control" list="defeitosList" id="defeito" placeholder="Motivo da parada de máquina" required>
+                                                    <input class="form-control" list="lista-de-defeitos-${order.id}" id="defeito-${order.id}" placeholder="Motivo da parada de máquina" required>
                                                     <div class="invalid-feedback">
                                                         Por favor, forneça a descrição do defeito.
                                                     </div>
-                                                    <datalist id="defeitosList"></datalist>
+                                                    <datalist id="lista-de-defeitos-${order.id}"></datalist>
                                                 </div>`: `
                                                 <div>
                                                     <h6 class="card-subtitle mb-2 fw-semibold">Descrição do defeito</h6>
-                                                    <span class="text-muted" id="defect_code-${order.id}">${order.defect_code} - ${order.defect_description}</span>
+                                                    <span class="text-muted" id="codigo-defeito-${order.id}">${order.defect_code} - ${order.defect_description}</span>
                                                 </div>
                                                 `}
                                             </li>
                                             ${order.status === 'Em progresso' ? `<li class="list-group-item">
                                                 <div>
                                                     <h6 class="card-subtitle mb-2 fw-semibold">Solução da Parada</h6>
-                                                    <input class="form-control" list="solucoesList" id="solucao" placeholder="Descrição da solução da parada" required>
+                                                        <input class="form-control" list="lista-de-solucoes-${order.id}" id="solucoes-${order.id}" placeholder="Descrição da solução da parada" required aria-label="Solução da Parada">
                                                     <div class="invalid-feedback">
                                                         Por favor, forneça uma solução para a parada.
                                                     </div>
-                                                    <datalist id="solucoesList"></datalist>
+                                                    <datalist id="lista-de-solucoes-${order.id}"></datalist>
                                                 </div>
                                             </li>` : ''}
                                             <li class="list-group-item mt-4">
                                                 <div class="d-flex justify-content-between">
                                                     ${order.status === 'Aberto'
-                        ? `<button type="button" class="btn btn-sm btn-danger fw-semibold w-50 me-1">Cancelar</button>
-                                                        <button type="but ton" class="btn btn-sm btn-primary fw-semibold w-50 me-1">Em progresso</button>`
-                        : `<button type="button" class="btn btn-primary fw-semibold w-100 me-1">Finalizar</button>`}
+                        ? `<button type="button" class="btn btn btn-danger fw-semibold w-50 me-1" onclick="handleFormSubmit(event, '${order.id}', 'Cancelar')">Cancelar</button>
+                                                        <button type="button" class="btn btn btn-primary fw-semibold w-50 me-1" onclick="handleFormSubmit(event, '${order.id}', 'Em progresso')">Em progresso</button>`
+                        : `<button type="button" class="btn btn-success fw-semibold w-100 me-1" onclick="handleFormSubmit(event, '${order.id}', 'Finalizado')">Finalizar</button>`
+                    }
                                                 </div>
                                             </li>
                                         </ul>
@@ -389,130 +784,34 @@
             });
         }
 
-        function openSetPersonInChargeModal(orderId) {
-            currentOrderId = orderId;
-            personInChargeModal.show();
-        }
-
-        function updateOrderStatus(personInCharge) {
-            const formData = {
-                id: currentOrderId,
-                status: 'Em progresso',
-                in_progress_date: new Date().toISOString(),
-                technician: personInCharge
-            };
-
-            showLoadingModal('Atualizando status da OS...');
-
-            fetch(`${url}?action=update&table=os&data=${JSON.stringify(formData)}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        showNotification('Status da OS atualizado com sucesso!', 'success');
-                        fetchOrdersWithStatus('Em progresso');
-                        personInChargeModal.hide();
-                    } else {
-                        throw new Error('Falha ao atualizar o status da OS');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showNotification('Erro ao atualizar o status da OS. Por favor, tente novamente.', 'danger');
-                })
-                .finally(() => {
-                    loadingModal.hide();
-                });
-        }
-
-        function handleFormSubmit(event, orderId) {
-            event.preventDefault();
-            const form = document.getElementById(`form-${orderId}`);
-
-            if (!form.checkValidity()) {
-                event.stopPropagation();
-                form.classList.add('was-validated');
-                return;
-            }
-
-            const formData = new FormData(form);
-
-            const currentStatus = formData.get('status') || 'Aberto';
-            const newStatus = currentStatus === 'Aberto' ? 'Em progresso' : 'Finalizado';
-
-            formData.append('status', newStatus);
-
-            if (newStatus === 'Em progresso') {
-                formData.append('in_progress_date', new Date().toISOString());
-
-                const defectInput = form.querySelector('#defeito');
-                const defectValue = defectInput.value;
-                const defectDatalist = form.querySelector('#defeitosList');
-                const selectedOption = Array.from(defectDatalist.options).find(option => option.value === defectValue);
-
-                formData.append('defect_code', selectedOption.textContent);
-                formData.append('defect_description', defectValue);
-            }
-
-            const formDataObject = {};
-            for (let [key, value] of formData.entries()) {
-                formDataObject[key] = value;
-            }
-
-            updateStatusOrder(orderId, formDataObject);
-
-            form.classList.remove('was-validated');
-        }
-
-        function updateStatusOrder(orderId, data) {
-            const containerId = document.querySelector('#orders')
-            containerId.innerHTML = '';
-
-            showLoadingModal(`Atualizando ordem de serviço ${orderId}`);
-
-            fetch(`${url}?action=update&table=os&id=${orderId}&data=${JSON.stringify(data)}`)
-                .then(response => response.json())
-                .then(({ data }) => {
-                    fetchOrdersWithStatus('Aberto');
-                })
-                .catch(error => {
-                    console.error(`Erro ao buscar ordens de serviço ${status.toLowerCase()}:`, error);
-                })
-        }
-
-        function populateDatalist(listName, data) {
-            const datalists = document.querySelectorAll(`#${listName}List`);
-
-            datalists.forEach(datalist => {
-                datalist.innerHTML = '';
-
-                data.forEach(item => {
-                    if (item && item.name && item.id) {
-                        const option = document.createElement('option');
-                        option.value = item.name;
-                        option.textContent = item.id;
-                        datalist.appendChild(option);
-                    } else {
-                        console.warn(`Invalid ${listName} object:`, item);
-                    }
-                });
-            });
-        }
-
+        /**
+         * Exibe um modal de carregamento com uma mensagem personalizada.
+         * 
+         * @param {string} message - A mensagem a ser exibida no modal de carregamento.
+         */
         function showLoadingModal(message) {
             document.getElementById('modalMessage').textContent = message;
             loadingModal.show();
         }
 
-        function showLoadingModal(message) {
-            document.getElementById('modalMessage').textContent = message;
-            loadingModal.show();
-        }
-
+        /**
+         * Converte uma data para o formato local brasileiro.
+         * 
+         * @param {string|Date} date - A data a ser formatada.
+         * @returns {string} A data formatada no padrão brasileiro (dd/mm/yyyy às hh:mm).
+         */
         function toLocateDate(date) {
             const options = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' };
             return new Date(date).toLocaleDateString('pt-BR', options).replace(',', ' às');
         }
 
+        /**
+         * Calcula a diferença de tempo entre duas datas.
+         * 
+         * @param {string|Date} startDate - A data de início.
+         * @param {string|Date} endDate - A data de término.
+         * @returns {string} A diferença de tempo formatada como "HH:MM:SS hrs".
+         */
         function calculateTimeDifference(startDate, endDate) {
             const start = new Date(startDate);
             const end = new Date(endDate);
@@ -529,12 +828,18 @@
             return `${formattedHours}:${formattedMinutes}:${formattedSeconds} hrs`;
         }
 
+        /**
+         * Exibe uma notificação toast com uma mensagem e tipo específicos.
+         * 
+         * @param {string} message - A mensagem a ser exibida na notificação.
+         * @param {string} type - O tipo de notificação (ex: 'success', 'danger', 'warning').
+         */
         function showNotification(message, type) {
             const toast = document.getElementById('notificationToast');
             const toastHeader = toast.querySelector('.toast-header');
             const toastMessage = document.getElementById('toastMessage');
 
-            toastHeader.classList.remove('bg-success', 'bg-danger', 'text-white');
+            toastHeader.classList.remove('bg-success', 'bg-danger', 'bg-waring', 'text-white');
             toastHeader.classList.add(`bg-${type}`, 'text-white');
 
             toastMessage.innerHTML = message;
