@@ -100,7 +100,7 @@
                                             <div id="erroMessageModal" class="mb-3 text-danger"></div>
                                             <div class="d-grid gap-2" id="btnLogin">
                                                 <button type="submit"
-                                                    class="btn btn-primary fw-semibold text-uppercase">Entrar</button>
+                                                    class="btn btn-outline-primary fw-semibold text-uppercase">Entrar</button>
                                             </div>
                                         </form>
                                     </div>
@@ -129,7 +129,7 @@
         const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
         const personInChargeModal = new bootstrap.Modal(document.getElementById('setPersonInChargeModal'));
         var personInChargeName = localStorage.getItem('personInChargeName') || null
-        let currentOrderId;
+        var currentOrderId;
 
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -180,6 +180,7 @@
                 personInChargeModal.hide();
                 fetchOrdersWithStatus('Aberto');
                 checkAndSetTimer();
+                selectOpenTab(); // Add this line to select the "Em aberto" tab after login
             } catch (error) {
                 console.error('Error:', error);
             } finally {
@@ -194,18 +195,24 @@
         }
 
         function checkAndSetTimer() {
-            const timer = 60 * 60 * 30; // 30 minutos de sessão
-            if (localStorage.getItem('personInChargeName')) {
-                let remainingTime = timer;
-                const intervalId = setInterval(() => {
-                    remainingTime -= 1000;
+            var timeout = 18_000_00; // 30 minutos
 
-                    if (remainingTime <= 0) {
-                        clearInterval(intervalId);
-                        logout();
-                        showNotification('Sua sessão expirou. Por favor, faça login novamente.', 'warning');
-                    }
-                }, 1000);
+            if (localStorage.getItem('personInChargeName')) {
+                setTimeout(() => {
+                    localStorage.removeItem('personInChargeName');
+                    console.log('personInChargeName removed from localStorage after 30 minutes');
+                    showNotification('Sua sessão expirou. Por favor, faça login novamente.', 'warning');
+                    personInChargeModal.show();
+                }, timeout);
+
+                selectOpenTab();
+            }
+        }
+
+        function selectOpenTab() {
+            const openTab = document.getElementById('pills-open-tab');
+            if (openTab) {
+                openTab.click();
             }
         }
 
@@ -219,7 +226,7 @@
 
             btnLogin.innerHTML = isLoading
                 ? `<div class="placeholder-glow"><span class="btn btn-primary disabled placeholder col-12"></span></div>`
-                : `<button type="submit" class="btn btn-primary">Entrar</button>`;
+                : `<button type="submit" class="btn btn-outline-primary fw-semibold text-uppercase">Entrar</button>`;
 
             if (!isLoading) {
                 errorMessageElement.textContent = '';
@@ -283,19 +290,18 @@
             data.forEach(order => {
                 container.innerHTML += `
                     <form id="form-${order.id}" class="needs-validation" onsubmit="handleFormSubmit(event, '${order.id}')">
-                        <div class="accordion " id="orderAccordion">
+                        <div class="accordion " id="orderAccordion-${order.id}">
                             <div class="accordion-item mt-3">
                                 <h2 class="accordion-header" id="flush-heading-${order.id}">
                                     <button class="accordion-button collapsed d-flex justify-content-between align-items-center"
                                         type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse${order.id}">
                                         <div>
-                                            <span class="card-title fw-bold">OS</span>
-                                            <span class="card-title fw-semibold text-muted" id="order-number-${order.id}">${order.id}</span>
+                                            <span class="card-title fw-semibold text-muted" id="order-number-${order.id}">OS ${order.id}</span>
                                         </div>
                                     </button>
                                 </h2>
-                                <div id="flush-collapse${order.id}" class="accordion-collapse collapse"
-                                    aria-labelledby="flush-heading${order.id}" data-bs-parent="#orderAccordion">
+                                <div id="flush-collapse-${order.id}" class="accordion-collapse collapse"
+                                    aria-labelledby="flush-heading${order.id}" data-bs-parent="#orderAccordion-${order.id}">
                                     <div class="accordion-body">
                                         <ul class="list-group list-group-flush">
                                             <li class="list-group-item">
@@ -365,13 +371,7 @@
                                                     <datalist id="solucoesList"></datalist>
                                                 </div>
                                             </li>` : ''}
-                                            <li class="list-group-item">
-                                                <div>
-                                                    <h6 class="card-subtitle mb-2 fw-semibold">Comentário</h6>
-                                                    <textarea type="search" rows=4 class="form-control" placeholder="Adicionar comentário" id="comentario-${order.id}" style="resize: none"></textarea>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item">
+                                            <li class="list-group-item mt-4">
                                                 <div class="d-flex justify-content-between">
                                                     ${order.status === 'Aberto'
                         ? `<button type="button" class="btn btn-sm btn-danger fw-semibold w-50 me-1">Cancelar</button>
