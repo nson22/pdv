@@ -175,6 +175,60 @@
             });
         });
 
+        document.querySelector('#formDate').addEventListener('submit', function (event) {
+            event.preventDefault();
+            if (!start_dateEl.value || !end_dateEl.value) {
+                alert('Please select both start and end dates.');
+                return;
+            }
+
+            const offcanvas = bootstrap.Offcanvas.getInstance('#offcanvasWithBothOptions');
+            offcanvas.hide();
+
+            const elements = [revenueEl, costEl, profitEl];
+            setPlaceholders(elements, true);
+
+            fetchDataAndUpdateUI(start_dateEl.value, end_dateEl.value)
+                .catch(error => {
+                    console.error("Error in fetching data:", error);
+                })
+                .finally(() => {
+                    setPlaceholders(elements, false);
+                });
+        });
+
+        function setPlaceholders(elements, isLoading) {
+            elements.forEach(el => {
+                if (isLoading) {
+                    el.textContent = 'R$ 00,00';
+                    el.classList.add('placeholder', 'col-12');
+                } else {
+                    el.classList.remove('placeholder', 'col-12');
+                }
+            });
+            profitEl.classList.remove('text-success', 'text-danger');
+        }
+
+        async function fetchDataAndUpdateUI(startDate, endDate) {
+            const [revenueData, costData] = await Promise.all([
+                setRevenue(startDate, endDate),
+                getCostData()
+            ]);
+
+            const totalRevenue = revenueData[0];
+            const totalCost = costData.reduce((acc, item) => acc + parseFloat(item.value), 0);
+            const profit = totalRevenue - totalCost;
+
+            updateUIElements(totalRevenue, totalCost, profit);
+        }
+
+        function updateUIElements(revenue, cost, profit) {
+            revenueEl.textContent = formatCurrency(revenue);
+            costEl.textContent = formatCurrency(cost);
+            profitEl.textContent = formatCurrency(profit);
+            profitEl.classList.add(profit >= 0 ? 'text-success' : 'text-danger');
+        }
+
         form.addEventListener('submit', function (event) {
             event.preventDefault();
             event.stopPropagation();
@@ -376,8 +430,6 @@
                 cleanValue = cleanValue.replace(",", ".");
                 return parseFloat(cleanValue);
             }
-
-
         }
 
     </script>
